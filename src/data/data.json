@@ -1,0 +1,110 @@
+{
+  "Header": {
+    "title": "Embark on a Journey of Islamic Enlightenment",
+    "paragraph": "With Nur Al Huda - Your dedicated AI Research Assistant for authentic Islamic knowledge."
+  },
+  "About": {
+    "paragraph": "Our Mission: \n At Nur Al Huda, our mission is to make the profound wisdom of the Quran and Hadith accessible to all, bridging the gap between traditional Islamic scholarship and modern technology. We aspire to provide a reliable and user-friendly platform for exploring and understanding Islamic teachings. \n Our Approach: \nNur Al Huda combines the latest in AI technology with the rich heritage of Islamic scholarship. Our platform is built upon authenticated sources, including the Quran and Sahih Hadith collections, ensuring that every piece of information shared is rooted in credibility and authenticity. We embrace the advancements in technology to bring you an interactive, engaging experience in Islamic learning.",
+    "Why": [
+      "Lorem ipsum dolor",
+      "Tempor incididunt",
+      "Lorem ipsum dolor",
+      "Incididunt ut labore"
+    ],
+    "Why2": [
+      "Aliquip ex ea commodo",
+      "Lorem ipsum dolor",
+      "Exercitation ullamco",
+      "Lorem ipsum dolor"
+    ]
+  },
+  "Gallery": [
+    
+    {
+      "title": "Nur Al Huda",
+      "largeImage": "img/about.jpg",
+      "smallImage": "img/about.jpg"
+    },
+    {
+      "title": "Nur Al Huda For Kids",
+      "largeImage": "img/nuralhudaforkids.png",
+      "smallImage": "img/nuralhudaforkids.png"
+    },
+    {
+      "title": "Islamic Socratic Method",
+      "largeImage": "img/islamicsocratic.png",
+      "smallImage": "img/islamicsocratic.png"
+    },
+    {
+      "title": "AI For Islmaic Reasearch",
+      "largeImage": "img/Nuralhuda-applogo.png",
+      "smallImage": "img/Nuralhuda-applogo.png"
+    }
+  ],
+  "Services": [
+    {
+      "icon": "fa fa-wordpress",
+      "name": "Nur Al Huda",
+      "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis sed dapibus leo nec ornare diam sedasd commodo nibh ante facilisis bibendum dolor feugiat at."
+    },
+    {
+      "icon": "fa fa-cart-arrow-down",
+      "name": "Nur Al Huda For Kids",
+      "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis sed dapibus leo nec ornare diam sedasd commodo nibh ante facilisis bibendum dolor feugiat at."
+    },
+    {
+      "icon": "fa fa-cloud-download",
+      "name": "Islamic Socratic Method",
+      "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis sed dapibus leo nec ornare diam sedasd commodo nibh ante facilisis bibendum dolor feugiat at."
+    },
+    {
+      "icon": "fa fa-language",
+      "name": "Multi-lingual",
+      "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis sed dapibus leo nec ornare diam sedasd commodo nibh ante facilisis bibendum dolor feugiat at."
+    }
+
+  ],
+  
+  "Team": [
+    {
+      "img": "img/team/01.jpg",
+      "name": "Mohammed Abdul Jabbar",
+      "job": "Director"
+    },
+    {
+      "img": "img/team/02.jpg",
+      "name": "Ibrahim Murtaza",
+      "job": "Senior Designer"
+    }
+  ],
+  "Contact": {
+    "address": "4321 California St, San Francisco, CA 12345 ",
+    "phone": "+1 123 456 1234",
+    "email": "info@company.com",
+    "facebook": "fb.com",
+    "twitter": "twitter.com",
+    "youtube": "youtube.com"
+  },
+  "Features": [
+    {
+      "icon": "fa fa-comments-o",
+      "title": "Lorem ipsum",
+      "text": "Lorem ipsum dolor sit amet placerat facilisis felis mi in tempus eleifend pellentesque natoque etiam."
+    },
+    {
+      "icon": "fa fa-bullhorn",
+      "title": "Lorem ipsum",
+      "text": "Lorem ipsum dolor sit amet placerat facilisis felis mi in tempus eleifend pellentesque natoque etiam."
+    },
+    {
+      "icon": "fa fa-group",
+      "title": "Lorem ipsum",
+      "text": "Lorem ipsum dolor sit amet placerat facilisis felis mi in tempus eleifend pellentesque natoque etiam."
+    },
+    {
+      "icon": "fa fa-magic",
+      "title": "Lorem ipsum",
+      "text": "Lorem ipsum dolor sit amet placerat facilisis felis mi in tempus eleifend pellentesque natoque etiam."
+    }
+  ]
+}
