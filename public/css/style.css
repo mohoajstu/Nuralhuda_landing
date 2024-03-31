@@ -3,7 +3,7 @@ html {
   font-family: "Open Sans", sans-serif;
   text-rendering: optimizeLegibility !important;
   -webkit-font-smoothing: antialiased !important;
-  color: #0e553a95;
+  color: #000000;
   font-weight: 400;
   width: 100% !important;
   height: 100% !important;
@@ -23,11 +23,11 @@ h2 {
 h3 {
   font-size: 20px;
   font-weight: 600;
-  color: #333;
+  color: #114040;
 }
 h4 {
   font-size: 18px;
-  color: #333;
+  color: #000000;
   font-weight: 600;
 }
 h5 {
@@ -66,7 +66,7 @@ hr {
   width: 70px;
   text-align: center;
   position: relative;
-  background: #1e7a46;
+  background: #000000;
   margin-bottom: 20px;
   border: 0;
 }
@@ -84,13 +84,13 @@ hr {
   font-family: "Raleway", sans-serif;
   font-size: 24px;
   font-weight: 700;
-  color: #333;
+  color: #000000;
   text-transform: uppercase;
 }
 #menu.navbar-default .navbar-nav > li > a {
   font-family: "Lato", sans-serif;
   text-transform: uppercase;
-  color: #555;
+  color: #000000;
   font-size: 15px;
   font-weight: 400;
   padding: 8px 2px;
@@ -104,7 +104,7 @@ hr {
   bottom: -1px;
   width: 0;
   height: 2px;
-  background: linear-gradient(to right, #6372ff 0%, #5ca9fb 100%);
+  background: linear-gradient(to right, #114040 0%, #144c4c 100%);
   content: "";
   transition: width 0.2s;
 }
@@ -125,7 +125,7 @@ hr {
   bottom: -1px !important;
   width: 100% !important;
   height: 2px !important;
-  background: linear-gradient(to right, #6372ff 0%, #5ca9fb 100%) !important;
+  background: linear-gradient(to right, #114040 0%, #144c4c 100%) !important;
   content: "" !important;
   transition: width 0.2s !important;
 }
@@ -152,7 +152,7 @@ hr {
 .section-title h2::after {
   position: absolute;
   content: "";
-  background: linear-gradient(to right, #5ca9fb 0%, #6372ff 100%);
+  background: linear-gradient(to right, #114040 0%, #144c4c 100%);
   height: 4px;
   width: 60px;
   bottom: 0;
@@ -165,9 +165,9 @@ hr {
 .btn-custom {
   font-family: "Raleway", sans-serif;
   text-transform: uppercase;
-  color: #fff;
+  color: #dcca98;
   background-color: #5ca9fb;
-  background-image: linear-gradient(to right, #5ca9fb 0%, #6372ff 100%);
+  background-image: linear-gradient(to right, #114040 0%, #144c4c 100%);
   padding: 14px 34px;
   letter-spacing: 1px;
   margin: 0;
@@ -219,8 +219,8 @@ a:focus,
   background: rgba(0, 0, 0, 0.2);
 }
 .intro h1 {
-  font-family: "Raleway", sans-serif;
-  color: #e1a03e;
+  font-family: "Times", cursive;
+  color: #ffbb00;
   font-size: 82px;
   font-weight: 700;
   text-transform: uppercase;
@@ -232,9 +232,10 @@ a:focus,
   color: #5ca9fb;
 }
 .intro p {
-  color: #cf8645;
-  font-size: 25px;
-  font-weight: 300;
+  font-family: "Times", cursive;
+  color: #ffbb10;
+  font-size: 30px;
+  font-weight: 500;
   line-height: 30px;
   margin: 0 auto;
   margin-bottom: 60px;
@@ -246,7 +247,16 @@ header .intro-text {
 }
 /* Features Section */
 #features {
-  background: #dcca98;
+  background: #114040;
+}
+#features h2 {
+  color: #dcca98;
+}
+#features h3 {
+  color: #dcca98;
+}
+#features p {
+  color: #dcca98;
 }
 #features i.fa {
   font-size: 38px;
@@ -257,7 +267,7 @@ header .intro-text {
   height: 100px;
   padding: 30px 0;
   border-radius: 50%;
-  background: linear-gradient(to right, #114040 0%, #144c4c 100%);
+  background: linear-gradient(to right, #dcca98 0%, #dcca98 100%);
   box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.05);
 }
 /* About Section */
@@ -289,14 +299,16 @@ header .intro-text {
   list-style: none;
   padding: 0;
 }
+
 #about .about-text li:before {
   content: "\f00c";
   font-family: "FontAwesome";
-  color: #5ca9fb;
+  color: #114040;
   font-size: 11px;
   font-weight: 300;
   padding-right: 8px;
 }
+
 #about img {
   width: 520px;
   margin-top: 10px;
@@ -323,7 +335,7 @@ header .intro-text {
 #services .section-title h2::after {
   position: absolute;
   content: "";
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(0, 0, 0, 0.3);
   height: 4px;
   width: 60px;
   bottom: 0;
@@ -337,16 +349,16 @@ header .intro-text {
   padding: 40px 0;
   background: linear-gradient(to right, #114040 0%, #144c4c 100%);
   border-radius: 50%;
-  color: #fff;
+  color: #dcca98;
   box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.05);
 }
 #services h3 {
   font-weight: 500;
   padding: 5px 0;
-  color: #fff;
+  color: #dcca98;
 }
 #services p {
-  color: rgba(255, 255, 255, 0.75);
+  color: #dcca98;
 }
 #services .service-desc {
   margin-bottom: 40px;
@@ -369,7 +381,7 @@ header .intro-text {
   position: absolute;
   text-align: center;
   margin: 0 auto;
-  color: #fff;
+  color: #dcca98;
   background: linear-gradient(
     to right,
     rgba(99, 114, 255, 0.8) 0%,
@@ -460,13 +472,13 @@ header .intro-text {
 }
 #team .thumbnail .caption {
   padding: 10px 0 0;
-  color: #888;
+  color: #000000;
 }
 /* Contact Section */
 #contact {
   padding: 100px 0 60px;
   background: linear-gradient(to right, #114040 0%, #144c4c 100%);
-  color: rgba(255, 255, 255, 0.75);
+  color: #dcca98;
 }
 #contact .section-title {
   margin-bottom: 40px;
@@ -475,7 +487,7 @@ header .intro-text {
   font-size: 16px;
 }
 #contact h2 {
-  color: #fff;
+  color: #dcca98;
   margin-top: 10px;
   margin-bottom: 15px;
   padding-bottom: 15px;
@@ -490,7 +502,7 @@ header .intro-text {
   left: 30px;
 }
 #contact h3 {
-  color: #fff;
+  color: #dcca98;
   margin-top: 80px;
   margin-bottom: 25px;
   padding-bottom: 20px;
@@ -506,13 +518,14 @@ header .intro-text {
 #contact .btn-custom {
   margin: 30px 0;
   background: transparent;
-  border: 2px solid #fff;
+  border: 2px solid #dcca98;
 }
 #contact .btn-custom:hover {
   color: #1f386e;
-  background: #fff;
+  background: #dcca98;
 }
 label {
+  color: #dcca98;
   font-size: 12px;
   font-weight: 400;
   font-family: "Open Sans", sans-serif;
@@ -525,9 +538,9 @@ label {
   font-size: 16px;
   line-height: 1.42857143;
   color: #444;
-  background-color: #fff;
+  background-color: #dcca98;
   background-image: none;
-  border: 1px solid #ddd;
+  border: 1px solid #dcca98;;
   border-radius: 0;
   -webkit-box-shadow: none;
   box-shadow: none;
@@ -557,7 +570,7 @@ label {
   margin: 20px 0;
 }
 #contact .contact-item span {
-  color: rgba(255, 255, 255, 1);
+  color: #dcca98;
   margin-bottom: 10px;
   display: block;
 }
@@ -579,23 +592,23 @@ label {
   width: 48px;
   height: 48px;
   padding: 12px 0;
-  border: 2px solid #fff;
-  color: #fff;
+  border: 2px solid #dcca98;
+  color: #dcca98;
   border-radius: 50%;
   transition: all 0.3s;
 }
 #contact .social i.fa:hover {
   color: #608dfd;
-  background: #fff;
+  background: #dcca98;
 }
 /* Footer Section*/
 #footer {
-  background: #f6f6f6;
+  background: #dcca98;
   padding: 30px 0;
 }
 #footer p {
-  color: #888;
-  font-size: 14px;
+  color: #114040;
+  font-size: 16px;
 }
 #footer a {
   color: #114040;

@@ -22,8 +22,8 @@
     
     {
       "title": "Nur Al Huda",
-      "largeImage": "img/about.jpg",
-      "smallImage": "img/about.jpg"
+      "largeImage": "img/about-nbg.png",
+      "smallImage": "img/about-nbg.png"
     },
     {
       "title": "Nur Al Huda For Kids",
@@ -32,8 +32,8 @@
     },
     {
       "title": "Islamic Socratic Method",
-      "largeImage": "img/islamicsocratic.png",
-      "smallImage": "img/islamicsocratic.png"
+      "largeImage": "img/islamic_socratic_method.png",
+      "smallImage": "img/islamic_socratic_method.png"
     },
     {
       "title": "AI For Islmaic Reasearch",
@@ -43,68 +43,60 @@
   ],
   "Services": [
     {
-      "icon": "fa fa-wordpress",
-      "name": "Nur Al Huda",
-      "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis sed dapibus leo nec ornare diam sedasd commodo nibh ante facilisis bibendum dolor feugiat at."
-    },
+      "icon": "fa fa-book",
+      "name": "Authentic Sources",
+      "text": "Using The Quran and Authentic Hadith as our Primary Sources"    },
     {
-      "icon": "fa fa-cart-arrow-down",
-      "name": "Nur Al Huda For Kids",
-      "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis sed dapibus leo nec ornare diam sedasd commodo nibh ante facilisis bibendum dolor feugiat at."
-    },
-    {
-      "icon": "fa fa-cloud-download",
-      "name": "Islamic Socratic Method",
-      "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis sed dapibus leo nec ornare diam sedasd commodo nibh ante facilisis bibendum dolor feugiat at."
-    },
+      "icon": "fa fa-search",
+      "name": "Islamic Reaseach Methods",
+      "text": "Islamic Reaseach Methods giving you an Islamic perspective to all your researching needs"    },
     {
       "icon": "fa fa-language",
       "name": "Multi-lingual",
-      "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis sed dapibus leo nec ornare diam sedasd commodo nibh ante facilisis bibendum dolor feugiat at."
-    }
-
+      "text": "We offer a variaty of languages English, Arabic, and more!"
+        },
+    {
+      "icon": "fa fa-user",
+      "name": "User Feedback",
+      "text": "User satisfaction is our top priority, suggest features or new assistants to make Nur Al Huda better for you and the community. \n Help us, Help you."    }
   ],
   
   "Team": [
     {
       "img": "img/team/01.jpg",
       "name": "Mohammed Abdul Jabbar",
-      "job": "Director"
+      "job": "Founder"
     },
     {
       "img": "img/team/02.jpg",
       "name": "Ibrahim Murtaza",
-      "job": "Senior Designer"
+      "job": "Co-Founder"
     }
   ],
   "Contact": {
-    "address": "4321 California St, San Francisco, CA 12345 ",
-    "phone": "+1 123 456 1234",
-    "email": "info@company.com",
+    "address": "4321 smith St, Ottawa, Ontario 12345 ",
+    "phone": "+1 604 339 2925",
+    "email": "nuralhudaco@gmail.com",
     "facebook": "fb.com",
-    "twitter": "twitter.com",
+    "instagram": "instagram.com",
     "youtube": "youtube.com"
   },
   "Features": [
     {
-      "icon": "fa fa-comments-o",
-      "title": "Lorem ipsum",
-      "text": "Lorem ipsum dolor sit amet placerat facilisis felis mi in tempus eleifend pellentesque natoque etiam."
-    },
+      "iconImg": "img/about-nbg.png",
+      "title": "Nur Al Huda",
+      "text": "As-salaam-alaikum! I am Nur Al-Huda, an AI assistant designed to provide compassionate, accurate, and reliable guidance on Sunni Islamic teachings, rooted in the Quran and authentic Hadith. My purpose is to serve as a trusted companion and source of knowledge for those seeking to deepen their understanding and connection with Islam, while maintaining a warm, empathetic, and non-judgmental approach. It is my honor and privilege to assist you on your journey of spiritual growth and self-discovery, in sha Allah."    },
     {
-      "icon": "fa fa-bullhorn",
-      "title": "Lorem ipsum",
-      "text": "Lorem ipsum dolor sit amet placerat facilisis felis mi in tempus eleifend pellentesque natoque etiam."
-    },
+      "iconImg": "img/nuralhudaforkids.png",
+      "title": "Nur Al Huda Kids",
+      "text": "Hello there! I'm Nur Al Huda Kids, your friendly guide to learning about Islam. I'm here to answer your questions and share stories about our beautiful religion in a way that's easy and fun for you to understand. Feel free to ask me anything, and let's explore the wonders of Islam together!"    },
     {
-      "icon": "fa fa-group",
-      "title": "Lorem ipsum",
-      "text": "Lorem ipsum dolor sit amet placerat facilisis felis mi in tempus eleifend pellentesque natoque etiam."
-    },
+      "iconImg": "img/islamic_socratic_method.png",
+      "title": "Islamic Socratic Method",
+      "text": "The Socratic method is a form of cooperative argumentative dialogue between individuals, based on asking and answering questions to stimulate critical thinking and to draw out ideas and underlying presuppositions. The Socratic method is a method of hypothesis elimination, in that better hypotheses are found by steadily identifying and eliminating those that lead to contradictions."    },
     {
-      "icon": "fa fa-magic",
-      "title": "Lorem ipsum",
-      "text": "Lorem ipsum dolor sit amet placerat facilisis felis mi in tempus eleifend pellentesque natoque etiam."
-    }
+      "iconImg": "img/Nuralhuda-applogo.png",
+      "title": "AI For Islamic Reasearch",
+      "text": "Salam, as your Islamic Research Assistant, my primary role is to help you find relevant sources and provide information that aligns with your research hypothesis within the context of Sunni Islam. To do this effectively, you can share your hypothesis or the specific topic you're researching. I will then guide you through a focused exploration of Islamic sources, including Quranic verses and Authentic Hadiths, along with scholarly interpretations that pertain to your area of study. "    }
   ]
 }
