@@ -205,7 +205,7 @@ a:focus,
 }
 /* Header Section */
 .intro {
-  display: table;
+  /*display: table;*/
   width: 100%;
   padding: 0;
   background: url(../img/intro-bg.jpg) center center no-repeat;
@@ -221,7 +221,7 @@ a:focus,
 .intro h1 {
   font-family: "Times", cursive;
   color: #ffbb00;
-  font-size: 82px;
+  font-size: 48px;
   font-weight: 700;
   text-transform: uppercase;
   margin-top: 0;
@@ -244,6 +244,29 @@ header .intro-text {
   padding-top: 350px;
   padding-bottom: 200px;
   text-align: center;
+
+  
+/* Responsive adjustments for smaller screens */
+@media screen and (max-width: 767px) {
+  .intro {
+    height: auto; /* Or set a minimum height */
+    padding: 50px 20px; /* Smaller padding */
+  }
+
+  .intro h1 {
+    font-size: 24px; /* Smaller font size for small screens */
+  }
+
+  .intro p {
+    font-size: 16px; /* Smaller font size for small screens */
+    margin-bottom: 30px;
+  }
+
+  .intro-text {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+}
 }
 /* Features Section */
 #features {
