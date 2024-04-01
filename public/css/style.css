@@ -274,6 +274,7 @@ header .intro-text {
 }
 #features h2 {
   color: #dcca98;
+  
 }
 #features h3 {
   color: #dcca98;
@@ -290,8 +291,18 @@ header .intro-text {
   height: 100px;
   padding: 30px 0;
   border-radius: 50%;
-  background: linear-gradient(to right, #dcca98 0%, #dcca98 100%);
+  background: linear-gradient(to right, #d7c799 0%, #dcca98 100%);
   box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.05);
+}
+#features h2::after {
+  position: absolute;
+  content: "";
+  background: linear-gradient(to right, #d7c799 0%, #dcca98 100%);
+  height: 4px;
+  width: 60px;
+  bottom: 0;
+  margin-left: -30px;
+  left: 50%;
 }
 /* About Section */
 #about {
@@ -310,11 +321,12 @@ header .intro-text {
 #about h2::after {
   position: absolute;
   content: "";
-  background: linear-gradient(to right, #114040 0%, #144c4c 100%);
+  background-image: linear-gradient(to right, #114040 0%, #144c4c 100%);
   height: 4px;
   width: 60px;
   bottom: 0;
-  left: 0;
+  margin-left: -30px;
+  left: 50%;
 }
 #about .about-text li {
   margin-bottom: 6px;
@@ -334,7 +346,7 @@ header .intro-text {
 
 #about img {
   width: 520px;
-  margin-top: 10px;
+  margin-top: 30px;
   background: #dcca98;
   border-right: 0;
   box-shadow: 0 0 50px rgba(0, 0, 0, 0.06);
@@ -343,7 +355,7 @@ header .intro-text {
   line-height: 24px;
   margin: 30px 0;
 }
-/* Services Section */
+/* Assistants Section */
 #services {
   padding: 100px 0;
   background: linear-gradient(to right, #114040 0%, #144c4c 100%);
@@ -358,7 +370,7 @@ header .intro-text {
 #services .section-title h2::after {
   position: absolute;
   content: "";
-  background: rgba(0, 0, 0, 0.3);
+  background: linear-gradient(to right, #d7c799 0%, #dcca98 100%);
   height: 4px;
   width: 60px;
   bottom: 0;
@@ -492,10 +504,18 @@ header .intro-text {
 #team .thumbnail {
   background: transparent;
   border: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 100%; /* ensures the image is responsive within its container */
+  height: auto; /* maintains the aspect ratio of the image */
+  margin-bottom: 15px; /* adds some space below the image */
+
 }
 #team .thumbnail .caption {
   padding: 10px 0 0;
   color: #000000;
+  text-align: center; /* Center the text inside the caption for each member */
 }
 /* Contact Section */
 #contact {
@@ -518,7 +538,7 @@ header .intro-text {
 #contact .section-title h2::after {
   position: absolute;
   content: "";
-  background: rgba(255, 255, 255, 0.3);
+  background: linear-gradient(to right, #d7c799 0%, #dcca98 100%);
   height: 4px;
   width: 60px;
   bottom: 0;

@@ -21,7 +21,7 @@ export const Contact = (props) => {
     e.preventDefault();
     console.log(name, email, message);
     
-    {/* replace below with your own Service ID, Template ID and Public Key from your EmailJS account */ }
+    /* replace below with your own Service ID, Template ID and Public Key from your EmailJS account */ 
     
     emailjs
       .sendForm("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", e.target, "YOUR_PUBLIC_KEY")
@@ -152,9 +152,11 @@ export const Contact = (props) => {
       </div>
       <div id="footer">
         <div className="container text-center">
-          <p>
-             Disclaimer{" "}
-          </p>
+        <p>
+  Disclaimer: <br />
+  At Nur Al Huda, we strive to provide insightful Islamic teachings using advanced AI technology. While our AI continuously evolves and improves for an enhanced user experience, it is not flawless. The responses and information provided here are for educational and informational purposes only and should not be taken as Islamic legal rulings (fatwa). We recommend consulting qualified Islamic scholars for detailed guidance, particularly on matters related to fiqh (Islamic jurisprudence). Your journey of understanding and knowledge is important to us, and we are committed to supporting it with the most accurate and helpful information possible.
+</p>
+
         </div>
       </div>
     </div>

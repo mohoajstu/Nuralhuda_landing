@@ -1,22 +1,17 @@
 {
   "Header": {
-    "title": "Embark on a Journey of Islamic Enlightenment",
-    "paragraph": "With Nur Al Huda - Your dedicated AI Research Assistant for authentic Islamic knowledge."
+    "title": "Engage With Islamic Knowledge Like Never Before" ,
+    "paragraph": "Explore Nur Al Huda Today" 
   },
   "About": {
-    "paragraph": "Our Mission: \n At Nur Al Huda, our mission is to make the profound wisdom of the Quran and Hadith accessible to all, bridging the gap between traditional Islamic scholarship and modern technology. We aspire to provide a reliable and user-friendly platform for exploring and understanding Islamic teachings. \n Our Approach: \nNur Al Huda combines the latest in AI technology with the rich heritage of Islamic scholarship. Our platform is built upon authenticated sources, including the Quran and Sahih Hadith collections, ensuring that every piece of information shared is rooted in credibility and authenticity. We embrace the advancements in technology to bring you an interactive, engaging experience in Islamic learning.",
+    "paragraph": "Nur Al Huda is dedicated to bridging the gap between traditional Islamic education and the fast-paced modern world. By providing innovative assistants that offer reliable, on-demand answers to Islamic questions, we aim to make Islamic knowledge more accessible and engaging for people of all ages. Our goal is to ensure that Islamic education remains relevant and available to all, especially the younger generation. Through our technology-driven approach, we hope to inspire a deeper understanding of Islam and help keep people connected to their faith. ",
+    "mission": "At Nur Al Huda, our mission is to make the profound wisdom of the Quran and Hadith accessible to all, combining the best of traditional Islamic scholarship and modern technology. We aspire to provide a reliable and user-friendly platform for exploring and understanding Islamic teachings.",    
     "Why": [
-      "Lorem ipsum dolor",
-      "Tempor incididunt",
-      "Lorem ipsum dolor",
-      "Incididunt ut labore"
-    ],
-    "Why2": [
-      "Aliquip ex ea commodo",
-      "Lorem ipsum dolor",
-      "Exercitation ullamco",
-      "Lorem ipsum dolor"
-    ]
+      "Nur Al Huda combines the latest in AI technology with the rich heritage of Islamic scholarship.",
+      "Our platform is built upon authenticated sources, including the Quran and Sahih Hadith collections, ensuring that every piece of information shared is rooted in credibility and authenticity.",
+      "We embrace advancements in technology to bring you an interactive, engaging experience in Islamic learning."
+        ],
+    "Why2": "By bringing together innovation and tradition, Nur Al Huda is committed to fostering a deeper connection to Islam and its teachings for generations to come."
   },
   "Gallery": [
     
@@ -63,14 +58,16 @@
   
   "Team": [
     {
-      "img": "img/team/01.jpg",
+      "img": "img/team/moho.jpg",
       "name": "Mohammed Abdul Jabbar",
-      "job": "Founder"
+      "job": "Founder",
+      "description":"As a student of electrical engineering and an employee at the University of British Columbia's Center for Teaching, Learning and Technology, I bring valuable expertise in education technology and pedagogy to Nur Al Huda. Driven by a lifelong passion for learning and a desire to address the challenges of accessing Islamic knowledge in today's fast-paced world, I am committed to developing innovative assistants that provide reliable, on-demand answers to Islamic questions."
     },
     {
-      "img": "img/team/02.jpg",
+      "img": "img/team/Ibrahim.jpg",
       "name": "Ibrahim Murtaza",
-      "job": "Co-Founder"
+      "job": "Co-Founder",
+      "description":"As an electrical engineer raised between Qatar and Ottawa, I've experienced  Islamic education my whole life. With a family background in education and active involvement in the Islamic community, my passion for community service has always been strong. Recognizing a void in the AI landscape concerning Muslims and Islamic research, I felt compelled to explore this intersection further. This inspiration fuels my dedication to contribute meaningfully to the advancement of AI technology within the Muslim community."
     }
   ],
   "Contact": {
