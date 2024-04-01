@@ -33,7 +33,7 @@ export const About = (props) => {
             
           </div>
         </div>
-        <p>{props.data ? props.data.Why2 : "loading..."}</p>
+        <h3 className = "text-center"> {props.data.Why2}</h3>
       </div>
       
     </div>
