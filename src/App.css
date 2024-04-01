@@ -1,18 +1,21 @@
 @media screen and (max-width: 400px) {
-  #features {
-    padding: 20px;
-    width: 111%;
-  }
+  #features,
   #about,
   #services,
   /*#testimonials,*/
   #team,
   #contact,
   #footer {
-    width: 111%;
+    padding: 20px; /* Adjust padding as needed */
+    width: auto;   /* Instead of a percentage over 100%, use auto */
+    max-width: 100%; /* This ensures elements don't exceed the viewport width */
+    box-sizing: border-box; /* Ensures padding is included in the element's width */
   }
 
   #portfolio {
-    width: 110%;
+    padding: 20px; /* Adjust padding as needed */
+    width: auto;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 }
