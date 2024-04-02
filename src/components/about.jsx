@@ -31,7 +31,7 @@ export const About = (props) => {
             </div>
           </div>
         </div>
-        <h3 className = "text-center"> {props.data ? props.data.Why2: "loading..."}</h3>
+        <h3 className = "text-center"> <br/> {props.data ? props.data.Why2: "loading..."}</h3>
       </div>
       
     </div>
