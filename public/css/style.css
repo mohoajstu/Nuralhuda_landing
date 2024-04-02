@@ -270,10 +270,13 @@ header .intro-text {
 }
 /* Features Section */
 #features {
+  padding: 100px 0;
   background: #114040;
 }
 #features h2 {
   color: #dcca98;
+  margin-bottom: 15px;
+  padding-bottom: 15px;
   
 }
 #features h3 {
@@ -294,7 +297,7 @@ header .intro-text {
   background: linear-gradient(to right, #d7c799 0%, #dcca98 100%);
   box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.05);
 }
-#features h2::after {
+#features .section-title h2::after {
   position: absolute;
   content: "";
   background: linear-gradient(to right, #d7c799 0%, #dcca98 100%);
