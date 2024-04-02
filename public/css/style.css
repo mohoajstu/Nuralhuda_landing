@@ -226,12 +226,14 @@ a:focus,
   text-transform: uppercase;
   margin-top: 0;
   margin-bottom: 10px;
+  text-align: center;
 }
 .intro h1 span {
   font-weight: 800;
   color: #5ca9fb;
 }
 .intro p {
+  text-align: center;
   font-family: "Times", cursive;
   color: #ffbb10;
   font-size: 30px;
@@ -255,16 +257,19 @@ header .intro-text {
 
   .intro h1 {
     font-size: 24px; /* Smaller font size for small screens */
+    text-align: center;
   }
 
   .intro p {
     font-size: 16px; /* Smaller font size for small screens */
     margin-bottom: 30px;
+    text-align: center;
   }
 
   .intro-text {
     padding-top: 0;
     padding-bottom: 0;
+    text-align: center;
   }
 }
 }
