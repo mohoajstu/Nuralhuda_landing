@@ -28,9 +28,7 @@ export const About = (props) => {
                   </ul>
                 </div>
               </div>
-              
             </div>
-            
           </div>
         </div>
         <h3 className = "text-center"> {props.data.Why2}</h3>
