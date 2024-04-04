@@ -37,6 +37,7 @@ h5 {
 }
 p {
   font-size: 15px;
+  
 }
 p.intro {
   margin: 12px 0 0;
@@ -221,6 +222,11 @@ a:focus,
 .intro h1 {
   font-family: "Times", cursive;
   color: #ffbb00;
+  text-shadow:
+    -1px -1px 0 #000,
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+    1px 1px 0 #000;
   font-size: 40px;
   font-weight: 700;
   text-transform: uppercase;
@@ -236,6 +242,11 @@ a:focus,
   text-align: center;
   font-family: "Times", cursive;
   color: #ffbb10;
+  text-shadow:
+    -1px -1px 0 #000,
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+    1px 1px 0 #000;
   font-size: 30px;
   font-weight: 500;
   line-height: 30px;
