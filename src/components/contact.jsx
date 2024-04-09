@@ -7,6 +7,7 @@ const initialState = {
   email: "",
   message: "",
 };
+
 export const Contact = (props) => {
   const [{ name, email, message }, setState] = useState(initialState);
 
@@ -24,7 +25,7 @@ export const Contact = (props) => {
     /* replace below with your own Service ID, Template ID and Public Key from your EmailJS account */ 
     
     emailjs
-      .sendForm("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", e.target, "YOUR_PUBLIC_KEY")
+      .sendForm("service_rpg9tsq", "template_t06rk76", e.target, "2c0CoID2ucNYaKVFe")
       .then(
         (result) => {
           console.log(result.text);
