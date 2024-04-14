@@ -1,7 +1,6 @@
 import { Configuration, OpenAIApi } from 'openai';
 
-// Default API key for all chatbots, replace with your actual key.
-// If you have different keys for each chatbot, add them here accordingly.
+
 const OPENAI_API_KEYS = {
 
     default: OPENAI_API_KEY ,
