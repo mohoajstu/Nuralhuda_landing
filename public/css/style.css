@@ -284,24 +284,24 @@ header .intro-text {
   }
 }
 }
-/* Features Section */
-#features {
+/* meetyourassistants Section */
+#meetyourassistants {
   padding: 100px 0;
   background: #114040;
 }
-#features h2 {
+#meetyourassistants h2 {
   color: #dcca98;
   margin-bottom: 15px;
   padding-bottom: 15px;
   
 }
-#features h3 {
+#meetyourassistants h3 {
   color: #dcca98;
 }
-#features p {
+#meetyourassistants p {
   color: #dcca98;
 }
-#features i.fa {
+#meetyourassistants i.fa {
   font-size: 38px;
   margin-bottom: 20px;
   transition: all 0.5s;
@@ -313,7 +313,7 @@ header .intro-text {
   background: linear-gradient(to right, #d7c799 0%, #dcca98 100%);
   box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.05);
 }
-#features .section-title h2::after {
+#meetyourassistants .section-title h2::after {
   position: absolute;
   content: "";
   background: linear-gradient(to right, #d7c799 0%, #dcca98 100%);
@@ -375,18 +375,18 @@ header .intro-text {
   margin: 30px 0;
 }
 /* Assistants Section */
-#services {
+#features {
   padding: 100px 0;
   background: linear-gradient(to right, #114040 0%, #144c4c 100%);
   color: #dcca98;
 }
-#services .service-desc {
+#features .features-desc {
   margin: 10px 10px 20px;
 }
-#services h2 {
+#features h2 {
   color: #dcca98;
 }
-#services .section-title h2::after {
+#features .section-title h2::after {
   position: absolute;
   content: "";
   background: linear-gradient(to right, #d7c799 0%, #dcca98 100%);
@@ -396,7 +396,7 @@ header .intro-text {
   margin-left: -30px;
   left: 50%;
 }
-#services i.fa {
+#features i.fa {
   font-size: 42px;
   width: 120px;
   height: 120px;
@@ -406,27 +406,27 @@ header .intro-text {
   color: #dcca98;
   box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.05);
 }
-#services h3 {
+#features h3 {
   font-weight: 500;
   padding: 5px 0;
   color: #dcca98;
 }
-#services p {
+#features p {
   color: #dcca98;
 }
-#services .service-desc {
+#features .features-desc {
   margin-bottom: 40px;
 }
-/* Portfolio Section */
-#portfolio {
+/* assistants Section */
+#assistants {
   padding: 100px 0;
   background:#dcca98;
 }
-.portfolio-item {
+.assistants-item {
   margin: 1px -15px 0 -14px;
   padding: 0;
 }
-.portfolio-item .hover-bg {
+.assistants-item .hover-bg {
   overflow: hidden;
   position: relative;
   margin: 0;
