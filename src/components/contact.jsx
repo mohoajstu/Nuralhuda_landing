@@ -15,7 +15,7 @@ export const Contact = (props) => {
     const { name, value } = e.target;
     setState((prevState) => ({ ...prevState, [name]: value }));
   };
-  const clearState = () => setState({initialState});
+  const clearState = () => setState({ ...initialState });
   
   
   const handleSubmit = (e) => {
@@ -30,7 +30,6 @@ export const Contact = (props) => {
         (result) => {
           console.log(result.text);
           clearState();
-          setState({initialState });
         },
         (error) => {
           console.log(error.text);

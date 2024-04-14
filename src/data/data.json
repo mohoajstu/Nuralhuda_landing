@@ -13,7 +13,7 @@
         ],
     "Why2": "By bringing together innovation and tradition, Nur Al Huda is committed to fostering a deeper connection to Islam and its teachings for generations to come."
   },
-  "Assistants": [
+  "Gallery": [
     
     {
       "title": "Nur Al Huda",
@@ -36,7 +36,7 @@
       "smallImage": "img/Nuralhuda-applogo.png"
     }
   ],
-  "Features": [
+  "Services": [
     {
       "icon": "fa fa-book",
       "name": "Authentic Sources",
@@ -78,7 +78,7 @@
     "instagram": "https://www.instagram.com/_nur_al_huda_/",
     "youtube": "https://www.youtube.com/channel/UCrMvCuQepj_ZO1OeMcw_ljQ"
   },
-  "Meetyourassistants": [
+  "Features": [
     {
       "iconImg": "img/about-nbg.png",
       "title": "Nur Al Huda",

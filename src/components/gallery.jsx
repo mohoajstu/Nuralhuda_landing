@@ -1,9 +1,9 @@
 import { Image } from "./image";
 import React from "react";
 
-export const Assistants = (props) => {
+export const Gallery = (props) => {
   return (
-    <div id="assistants" className="text-center">
+    <div id="portfolio" className="text-center">
       <div className="container">
         <div className="section-title">
           <h2>Assistants</h2>
@@ -12,7 +12,7 @@ export const Assistants = (props) => {
           </p>
         </div>
         <div className="row">
-          <div className="assitants-items">
+          <div className="portfolio-items">
             {props.data
               ? props.data.map((d, i) => (
                   <div

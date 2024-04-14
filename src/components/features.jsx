@@ -1,29 +1,24 @@
 import React from "react";
+import { Image } from "./image";
 
 export const Features = (props) => {
-
   return (
     <div id="features" className="text-center">
       <div className="container">
         <div className="section-title">
-          <h2>Our Features</h2>
-          <p>
-            We offer a varity of different features including:
-          </p>
+          <h2>Meet Your Assistants</h2>
         </div>
         <div className="row">
           {props.data
             ? props.data.map((d, i) => (
-                <div key={`${d.name}-${i}`} className="col-md-3">
+                <div key={`${d.title}-${i}`} className="col-s-1 col-md-3">
                   {" "}
-                  <i className={d.icon}></i>
-                  <div className="features-desc">
-                    <h3>{d.name}</h3>
-                    <p>{d.text}</p>
-                  </div>
+                  <Image iconImg={d.iconImg} size={75} />
+                  <h3>{d.title}</h3>
+                  <p>{d.text}</p>
                 </div>
               ))
-            : "loading"}
+            : "Loading..."}
         </div>
       </div>
     </div>

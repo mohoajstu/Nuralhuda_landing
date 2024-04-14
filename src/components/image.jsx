@@ -6,7 +6,7 @@ export const Image = ({ title, largeImage, smallImage, iconImg,size }) => {
     height: 'auto', // Maintain aspect ratio
   };
   return (
-    <div className="assistants-item">
+    <div className="portfolio-item">
       <div className="hover-bg">
         {" "}
         <a href={largeImage} title={title} data-lightbox-gallery="gallery1">
