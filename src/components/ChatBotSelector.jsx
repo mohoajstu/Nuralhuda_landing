@@ -17,18 +17,19 @@ const ChatBotSelector = ({ visible, onSelect, onClose }) => {
         <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent}>
           <View style={styles.modalContent}>
           <TouchableOpacity style={styles.option} onPress={() => handleSelect('nurAlHuda')}>
-          <Image source={require('/Users/mohammedabduljabbar/NurAlHuda/components/images/Nuralhuda_applogo.png')} style={styles.icon} />
+          <Image source={require('/Users/mohammedabduljabbar/Downloads/Nuralhuda_landing/public/img/about-nbg.png')} style={styles.icon} />
             <Text style={styles.optionText}>Nur Al Huda</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.option} onPress={() => handleSelect('nurAlHudaForKids')}>
-          <Image source={require('/Users/mohammedabduljabbar/NurAlHuda/components/images/nuralhudaforkids.png')} style={styles.icon} />
+          <Image source={require('/Users/mohammedabduljabbar/Downloads/Nuralhuda_landing/public/img/nuralhudaforkids.png')} style={styles.icon} />
             <Text style={styles.optionText}>Nur Al Huda for Kids</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.option} onPress={() => handleSelect('islamicSocraticMethod')}>
-          <Image source={require('/Users/mohammedabduljabbar/NurAlHuda/components/images/Nuralhuda-applogo.png')} style={styles.icon} />
+          <Image source={require('/Users/mohammedabduljabbar/Downloads/Nuralhuda_landing/public/img/islamic_socratic_method.png')} style={styles.icon} />
             <Text style={styles.optionText}>Islamic Socratic Method</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.option} onPress={() => handleSelect('aiForIslamicResearch')}>
+          <Image source={require('/Users/mohammedabduljabbar/Downloads/Nuralhuda_landing/public/img/Nuralhuda-applogo.png')} style={styles.icon} />
             <Text style={styles.optionText}>AI for Islamic Research</Text>
           </TouchableOpacity>
           </View>

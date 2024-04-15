@@ -82,18 +82,26 @@
     {
       "iconImg": "img/about-nbg.png",
       "title": "Nur Al Huda",
-      "text": "As-salaam-alaikum! I am Nur Al-Huda, an AI assistant designed to provide compassionate, accurate, and reliable guidance on Sunni Islamic teachings, rooted in the Quran and authentic Hadith. My purpose is to serve as a trusted companion and source of knowledge for those seeking to deepen their understanding and connection with Islam, while maintaining a warm, empathetic, and non-judgmental approach. It is my honor and privilege to assist you on your journey of spiritual growth and self-discovery, in sha Allah."    },
-    {
+      "text": "As-salaam-alaikum! I am Nur Al-Huda, an AI assistant designed to provide compassionate, accurate, and reliable guidance on Sunni Islamic teachings, rooted in the Quran and authentic Hadith. My purpose is to serve as a trusted companion and source of knowledge for those seeking to deepen their understanding and connection with Islam, while maintaining a warm, empathetic, and non-judgmental approach. It is my honor and privilege to assist you on your journey of spiritual growth and self-discovery, in sha Allah.",
+      "description": ""
+      },
+      {
       "iconImg": "img/nuralhudaforkids.png",
       "title": "Nur Al Huda Kids",
-      "text": "Hello there! I'm Nur Al Huda Kids, your friendly guide to learning about Islam. I'm here to answer your questions and share stories about our beautiful religion in a way that's easy and fun for you to understand. Feel free to ask me anything, and let's explore the wonders of Islam together!"    },
-    {
+      "text": "Hello there! I'm Nur Al Huda Kids, your friendly guide to learning about Islam. I'm here to answer your questions and share stories about our beautiful religion in a way that's easy and fun for you to understand. Feel free to ask me anything, and let's explore the wonders of Islam together!" ,
+      "description": ""
+    },
+      {
       "iconImg": "img/islamic_socratic_method.png",
       "title": "Islamic Socratic Method",
-      "text": "The Socratic method is a form of cooperative argumentative dialogue between individuals, based on asking and answering questions to stimulate critical thinking and to draw out ideas and underlying presuppositions. The Socratic method is a method of hypothesis elimination, in that better hypotheses are found by steadily identifying and eliminating those that lead to contradictions."    },
+      "text": "The Socratic method is a form of cooperative argumentative dialogue between individuals, based on asking and answering questions to stimulate critical thinking and to draw out ideas and underlying presuppositions. The Socratic method is a method of hypothesis elimination, in that better hypotheses are found by steadily identifying and eliminating those that lead to contradictions.",
+      "description": ""
+    },
     {
       "iconImg": "img/Nuralhuda-applogo.png",
       "title": "AI For Islamic Reasearch",
-      "text": "Salam, as your Islamic Research Assistant, my primary role is to help you find relevant sources and provide information that aligns with your research hypothesis within the context of Sunni Islam. To do this effectively, you can share your hypothesis or the specific topic you're researching. I will then guide you through a focused exploration of Islamic sources, including Quranic verses and Authentic Hadiths, along with scholarly interpretations that pertain to your area of study. "    }
+      "text": "Salam, as your Islamic Research Assistant, my primary role is to help you find relevant sources and provide information that aligns with your research hypothesis within the context of Sunni Islam. To do this effectively, you can share your hypothesis or the specific topic you're researching. I will then guide you through a focused exploration of Islamic sources, including Quranic verses and Authentic Hadiths, along with scholarly interpretations that pertain to your area of study. ",
+      "description": ""
+    }
   ]
 }

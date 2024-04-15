@@ -1,20 +1,17 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { StyleSheet, Text, View, TextInput, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform, Image} from 'react-native';
-//import { createThreadRun } from '../utils/openai';
-import loadingDots from './loadingDots'; // Adjust the path according to your file structure
-import { fetchChatCompletion } from '../utils/openai';
-import ChatBotSelector from './ChatBotSelector';
+import { fetchChatCompletion } from '../openai';
+import ChatBotSelector from '../ChatBotSelector';
 import { useNavigation } from '@react-navigation/native';
-
 
 const chatBotInfo = {
     nurAlHuda: {
-      logo: require('/Users/mohammedabduljabbar/NurAlHuda/components/images/Nuralhuda_applogo_transparent.png'), // Replace with actual logo path
+      logo: require('/Users/mohammedabduljabbar/Downloads/Nuralhuda_landing/public/img/about-nbg.png'), // Replace with actual logo path
       description: 'Nur Al Huda: Your guide to spiritual conversations.'
       // Add more chatbots here
     },
     nurAlHudaForKids: {
-        logo: require('/Users/mohammedabduljabbar/NurAlHuda/components/images/nuralhudaforkids.png'), // Replace with actual logo path
+        logo: require('/Users/mohammedabduljabbar/Downloads/Nuralhuda_landing/public/img/nuralhudaforkids.png'), // Replace with actual logo path
         description: 'Nur Al Huda for kids: Your guide to spiritual conversations.'
         // Add more chatbots here
       },
@@ -24,12 +21,12 @@ const chatBotInfo = {
         // Add more chatbots here
       },
       aiForIslamicResearch: {
-        logo: require('/Users/mohammedabduljabbar/NurAlHuda/components/images/Nuralhuda-applogo.png'), // Replace with actual logo path
+        logo: require('/Users/mohammedabduljabbar/Downloads/Nuralhuda_landing/public/img/islamic_socratic_method.png'), // Replace with actual logo path
         description: 'AI For Islamic Research.'
         // Add more chatbots here
       },
       quranCompanion: {
-        logo: require('/Users/mohammedabduljabbar/NurAlHuda/components/images/nuralhudalogo.jpg'), // Replace with actual logo path
+        logo: require('/Users/mohammedabduljabbar/Downloads/Nuralhuda_landing/public/img/Nuralhuda-applogo.png'), // Replace with actual logo path
         description: 'Quran Companion'
         // Add more chatbots here
       },
@@ -96,7 +93,6 @@ useEffect(() => {
     const message = typeof messageToSend === 'string' ? messageToSend : currentMessage;
     const trimmedMessage = message.trim();
     
-    
     if (trimmedMessage !== '') {
       const updatedConversations = [...conversations];
       updatedConversations[currentConversationIndex].messages.push({ sender: 'user', text: trimmedMessage });
@@ -124,7 +120,6 @@ useEffect(() => {
       }
     }
   };
-  
 
 const handleSelectPrompt = (prompt) => {
     setCurrentMessage(prompt);
