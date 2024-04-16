@@ -18,22 +18,26 @@
     {
       "title": "Nur Al Huda",
       "largeImage": "img/about-nbg.png",
-      "smallImage": "img/about-nbg.png"
+      "smallImage": "img/about-nbg.png",
+      "type": "nurAlHuda"
     },
     {
       "title": "Nur Al Huda For Kids",
       "largeImage": "img/nuralhudaforkids.png",
-      "smallImage": "img/nuralhudaforkids.png"
+      "smallImage": "img/nuralhudaforkids.png",
+      "type": "nurAlHudaForKids"
     },
     {
       "title": "Islamic Socratic Method",
       "largeImage": "img/islamic_socratic_method.png",
-      "smallImage": "img/islamic_socratic_method.png"
+      "smallImage": "img/islamic_socratic_method.png",
+      "type": "islamicSocraticMethod"
     },
     {
-      "title": "AI For Islmaic Reasearch",
+      "title": "Iqra With Us",
       "largeImage": "img/Nuralhuda-applogo.png",
-      "smallImage": "img/Nuralhuda-applogo.png"
+      "smallImage": "img/Nuralhuda-applogo.png",
+      "type": "iqraWithUs"
     }
   ],
   "Features": [
@@ -99,8 +103,8 @@
     },
     {
       "iconImg": "img/Nuralhuda-applogo.png",
-      "title": "AI For Islamic Reasearch",
-      "text": "Salam, as your Islamic Research Assistant, my primary role is to help you find relevant sources and provide information that aligns with your research hypothesis within the context of Sunni Islam. To do this effectively, you can share your hypothesis or the specific topic you're researching. I will then guide you through a focused exploration of Islamic sources, including Quranic verses and Authentic Hadiths, along with scholarly interpretations that pertain to your area of study. ",
+      "title": "Iqra With Us",
+      "text": "",
       "description": ""
     }
   ]

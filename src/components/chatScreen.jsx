@@ -1,375 +1,198 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { StyleSheet, Text, View, TextInput, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform, Image} from 'react-native';
-import { fetchChatCompletion } from '../openai';
-import ChatBotSelector from '../ChatBotSelector';
-import { useNavigation } from '@react-navigation/native';
-
-const chatBotInfo = {
-    nurAlHuda: {
-      logo: require('/Users/mohammedabduljabbar/Downloads/Nuralhuda_landing/public/img/about-nbg.png'), // Replace with actual logo path
-      description: 'Nur Al Huda: Your guide to spiritual conversations.'
-      // Add more chatbots here
-    },
-    nurAlHudaForKids: {
-        logo: require('/Users/mohammedabduljabbar/Downloads/Nuralhuda_landing/public/img/nuralhudaforkids.png'), // Replace with actual logo path
-        description: 'Nur Al Huda for kids: Your guide to spiritual conversations.'
-        // Add more chatbots here
-      },
-      islamicSocraticMethod: {
-        logo: require('/Users/mohammedabduljabbar/NurAlHuda/components/images/islamic_socratic_method.png'), // Replace with actual logo path
-        description: 'Islamic Socratic Method: Socratic method.'
-        // Add more chatbots here
-      },
-      aiForIslamicResearch: {
-        logo: require('/Users/mohammedabduljabbar/Downloads/Nuralhuda_landing/public/img/islamic_socratic_method.png'), // Replace with actual logo path
-        description: 'AI For Islamic Research.'
-        // Add more chatbots here
-      },
-      quranCompanion: {
-        logo: require('/Users/mohammedabduljabbar/Downloads/Nuralhuda_landing/public/img/Nuralhuda-applogo.png'), // Replace with actual logo path
-        description: 'Quran Companion'
-        // Add more chatbots here
-      },
-  };
-
-const SuggestedPrompts = ({ onSelectPrompt }) => {
-    const prompts = ["What are the 5 Pillars of Islam?", "What is Ramadan?", "Random Fact!"];
-    return (
-        <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={styles.promptsScrollView}
-        contentContainerStyle={styles.promptsContainer}
-      >
-        {prompts.map((prompt, index) => (
-          <TouchableOpacity
-            key={index}
-            style={styles.promptButton}
-            onPress={() => onSelectPrompt(prompt)}
-          >
-            <Text style={styles.promptText}>{prompt}</Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
-    );
-  };
+import { useNavigate } from 'react-router-dom';
+import { fetchChatCompletion } from './openai';
+import { useParams } from 'react-router-dom';
 
 
-  
-export default function ChatScreen({ route }) {
-  const [conversations, setConversations] = useState([{ messages: [] }]);
-  const [hasStartedConversation, setHasStartedConversation] = useState(false);
-  const [currentConversationIndex, setCurrentConversationIndex] = useState(0);
-  const [currentMessage, setCurrentMessage] = useState('');
-  const scrollViewRef = useRef(null);
-  const [showChatBotSelector, setShowChatBotSelector] = useState(false);
-  const [selectedChatBot, setSelectedChatBot] = useState('nurAlHuda');
-  const navigation = useNavigation();
-  const chatbotType = route.params?.chatbotType;
-  const [, forceUpdate] = useState();
-  const [showChatBotInfo, setShowChatBotInfo] = useState(true);
-  const threshold = 1;
-// Call this function to force a re-render
-const triggerReRender = () => {  
-  forceUpdate(n => !n);
+const titleToChatbotTypeMap = {
+  'Nur Al Huda': 'nurAlHuda',
+  'Nur Al Huda For Kids': 'nurAlHudaForKids',
+  'Islamic Socratic Method': 'islamicSocraticMethod',
+  'AI for Islamic Research': 'aiForIslamicResearch',
+  'Iqra With Us': 'iqraWithUs',
+  default: 'default', 
 };
 
-useEffect(() => {
-    console.log('Selected chatbot:', selectedChatBot);
-  }, [selectedChatBot]);
+const SuggestedPrompts = ({ onSelectPrompt }) => {
+  const prompts = ["What are the 5 Pillars of Islam?", "What is Ramadan?", "Random Fact!"];
 
-  useEffect(() => {
-    if (route.params?.chatbotType && chatBotInfo[route.params.chatbotType]) {
-      setSelectedChatBot(route.params.chatbotType);
-    } else {
-      console.warn('Chatbot type from route is undefined or does not match any keys in chatBotInfo.');
-    }
-  }, [route.params?.chatbotType]);
+  return (
+    <div style={styles.promptsContainer}>
+      {prompts.map((prompt, index) => (
+        <button key={index} style={styles.promptButton} onClick={() => onSelectPrompt(prompt)}>
+          {prompt}
+        </button>
+      ))}
+    </div>
+  );
+};
 
-  
-  const handleSendMessage = async (messageToSend) => {
-    // Make sure we have a string to trim and send
+export default function ChatScreen() {
+  const { chatbotType } = useParams();
+  const assistantTitle = Object.keys(titleToChatbotTypeMap).find(key => titleToChatbotTypeMap[key] === chatbotType);
+  const [messages, setMessages] = useState([]);
+  const [currentMessage, setCurrentMessage] = useState('');
+  const scrollViewRef = useRef(null);
+  const navigate = useNavigate();
 
-    const message = typeof messageToSend === 'string' ? messageToSend : currentMessage;
-    const trimmedMessage = message.trim();
-    
-    if (trimmedMessage !== '') {
-      const updatedConversations = [...conversations];
-      updatedConversations[currentConversationIndex].messages.push({ sender: 'user', text: trimmedMessage });
-      setConversations(updatedConversations);
-      setHasStartedConversation(true);
+  const handleSendMessage = async () => {
+    if (currentMessage.trim() !== '') {
+      const userMessage = { sender: 'user', text: currentMessage.trim() };
+      setMessages((prevMessages) => [...prevMessages, userMessage]);
       setCurrentMessage('');
-    
+  
       try {
-        const responseText = await fetchChatCompletion(trimmedMessage, chatbotType || selectedChatBot);
-        updatedConversations[currentConversationIndex].messages.push({ sender: 'bot', text: responseText });
-        setConversations(updatedConversations); // Update the state with the new conversations array
-        triggerReRender();
-          if (updatedConversations[currentConversationIndex].messages.length > threshold) {
-    setShowChatBotInfo(false);
-    
-  }
+        console.log('chatbotType:', chatbotType); // Add this line
+        const responseText = await fetchChatCompletion(userMessage.text, chatbotType);
+        const botMessage = { sender: 'bot', text: responseText };
+        setMessages((prevMessages) => [...prevMessages, botMessage]);
       } catch (error) {
-        console.error(error);
-        updatedConversations[currentConversationIndex].messages.push({ sender: 'bot', text: `Error: ${error.message}` });
-        setConversations(updatedConversations);
-        triggerReRender();
-        if (updatedConversations[currentConversationIndex].messages.length > threshold) {
-            setShowChatBotInfo(false);
-          }
+        console.error('Error fetching response from OpenAI:', error);
+        // Handle the error, e.g., show an error message to the user
       }
     }
   };
 
-const handleSelectPrompt = (prompt) => {
+  const handleSelectPrompt = (prompt) => {
     setCurrentMessage(prompt);
-    handleSendMessage(prompt); // This will auto-send the prompt
+    handleSendMessage();
   };
-  
-  const handleSelectThread = (index) => {
-    navigation.navigate('Thread', { conversationData: conversations[index] });
-  };
-  
+
   const scrollToBottom = useCallback(() => {
     if (scrollViewRef.current) {
-      scrollViewRef.current.scrollToEnd({ animated: true });
+      scrollViewRef.current.scrollTop = scrollViewRef.current.scrollHeight;
     }
   }, []);
 
   useEffect(() => {
     scrollToBottom();
-    // The scrollToBottom will be triggered every time conversations change
-  }, [conversations]);
-
-
-  const handleCreateNewThread = () => {
-    setConversations([...conversations, { messages: [] }]);
-    setCurrentConversationIndex(conversations.length);
-  };
+  }, [messages, scrollToBottom]);
 
   const handleGoToHome = () => {
-    navigation.navigate('Home');
+    navigate('/');
   };
 
-  const handleSelectConversation = (index) => {
-    setCurrentConversationIndex(index);
-  };
-
-  const handleSelectChatBot = (option) => {
-    // Set the selected chatbot to the new option
-    setSelectedChatBot(option);
-  
-    // Reset the current message
-    setCurrentMessage('');
-  
-    // Create a new conversation thread
-    const newConversations = [...conversations, { messages: [] }];
-  
-    // Update the conversations array with the new thread
-    setConversations(newConversations);
-  
-    // Set the current conversation index to the new conversation thread
-    setCurrentConversationIndex(newConversations.length - 1);
-  
-    // Close the chatbot selector
-    setShowChatBotSelector(false);
-  };
-
-  const handleOpenChatBotSelector = () => {
-    setShowChatBotSelector(true);
-  };
-
-  const handleCloseChatBotSelector = () => {
-    setShowChatBotSelector(false);
-  };
-
-return (
-    <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}>
-     
-     <View style={styles.mainContainer}>
-          {/* Change ChatBot Button */}
-          <TouchableOpacity style={styles.changeChatBotButton} onPress={handleOpenChatBotSelector}>
-          <Text style={styles.changeChatBotButtonText}>Change ChatBot</Text>
-        </TouchableOpacity>
-        
-        {/* Only render chatbot info if below the threshold */}
-        {showChatBotInfo && (
-        <View style={styles.chatBotInfoContainer}>
-          <Image source={chatBotInfo[selectedChatBot]?.logo} style={styles.chatBotLogo} />
-          <Text style={styles.chatBotDescription}>{chatBotInfo[selectedChatBot]?.description}</Text>
-        </View>
-        )}
-
-        {/* Conversation ScrollView */}
-        <ScrollView ref={scrollViewRef} style={styles.conversationContainer} contentContainerStyle={styles.scrollViewContent}>
-          {conversations[currentConversationIndex].messages.map((message, index) => (
-            <View key={index} style={[
-                styles.messageContainer,
-                message.sender === 'user' ? styles.userMessage : styles.botMessage,
-              ]}>
-              <Text style={styles.messageText}>{message.text}</Text>
-            </View>
-          ))}
-        </ScrollView>
-        {/* Wrapper view for prompts and input */}
-      <View style={styles.bottomContainer}>
-        {/* Suggested Prompts directly above input container */}
-        {!hasStartedConversation && (
-          <SuggestedPrompts onSelectPrompt={handleSelectPrompt} />
-        )}
-            {/* Message Input and Send Button */}
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            value={currentMessage}
-            onChangeText={setCurrentMessage}
-            placeholder="Type your message..."
-          />
-          <TouchableOpacity style={styles.sendButton} onPress={handleSendMessage}>
-            <Text style={styles.sendButtonText}>Send</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-      </View>
-      {/* ChatBot Selector Modal */}
-      <ChatBotSelector visible={showChatBotSelector} onSelect={handleSelectChatBot} onClose={handleCloseChatBotSelector} />
-    </KeyboardAvoidingView>
+  return (
+    <div style={styles.container}>
+      <div style={styles.headerContainer}>
+        <button style={styles.homeButton} onClick={handleGoToHome}>
+          Home
+        </button>
+      </div>
+      <div ref={scrollViewRef} style={styles.messagesContainer}>
+        {messages.map((message, index) => (
+          <div
+            key={index}
+            style={{
+              ...styles.messageContainer,
+              ...(message.sender === 'user' ? styles.userMessage : styles.botMessage),
+            }}
+          >
+            <span style={styles.messageText}>{message.text}</span>
+          </div>
+        ))}
+      </div>
+      <SuggestedPrompts onSelectPrompt={handleSelectPrompt} />
+      <div style={styles.inputContainer}>
+        <input
+          style={styles.input}
+          value={currentMessage}
+          onChange={(e) => setCurrentMessage(e.target.value)}
+          placeholder="Type your message..."
+        />
+        <button style={styles.sendButton} onClick={handleSendMessage}>
+          Send
+        </button>
+      </div>
+    </div>
   );
 }
 
-const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: '#DCCA98',
-    },
-    mainContainer: {
-      flex: 1,
-      flexDirection: 'column',
-    },
-    headerContainer: {
-      flexDirection: 'row',
-      justifyContent: 'flex-end',
-      paddingHorizontal: 16,
-      paddingVertical: 8,
-    },
-    changeChatBotButton: {
-      backgroundColor: '#164F48',
-      paddingHorizontal: 16,
-      paddingVertical: 4,
-      borderRadius: 90,
-      maxWidth: 168,
-      top: 3,              // Distance from the top of the container
-      left: 250,     
-      marginTop:2,
-      marginBottom: 4,
-    },
-    changeChatBotButtonText: {
-      color: '#fff',
-      fontWeight: 'bold',
-    },
-    conversationContainer: {
-      flex: 1,
-      padding: 16,
-    },
-    messageContainer: {
-      borderRadius: 8,
-      padding: 12,
-      marginVertical: 4,
-      maxWidth: '80%',
-      marginBottom: Platform.OS === 'ios' ? 30: 0, // Add some bottom margin on iOS to ensure visibility above the keyboard
+const styles = {
+  container: {
+    display: 'flex',
+    flexDirection: 'column',
+    height: '100vh',
+    backgroundColor: '#dcca98',
+  },
+  headerContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    padding: '10px',
+    borderBottom: '1px solid #ccc',
+  },
+  homeButton: {
+    padding: '10px',
+    fontSize: '16px',
+    fontWeight: 'bold',
+    color: '#144040',
+    backgroundColor: 'transparent',
+    border: 'none',
+    cursor: 'pointer',
+  },
+  messagesContainer: {
+    flex: 1,
+    overflowY: 'auto',
+    padding: '10px',
+  },
+  messageContainer: {
+    borderRadius: '10px',
+    padding: '10px',
+    marginBottom: '10px',
+    maxWidth: '80%',
+  },
+  userMessage: {
+    alignSelf: 'flex-end',
+    backgroundColor: '#DCF8C6',
+  },
+  botMessage: {
+    alignSelf: 'flex-start',
+    backgroundColor: '#ade6e6',
+  },
+  messageText: {
+    fontSize: '16px',
+  },
+  promptsContainer: {
+    display: 'flex',
+    justifyContent: 'space-around',
+    padding: '10px',
+    borderTop: '1px solid #ccc',
+    backgroundColor: '#DccA98',
+  },
+  promptButton: {
+    backgroundColor: '#144040',
+    padding: '10px',
+    borderRadius: '10px',
+    border: 'none',
+    fontSize: '14px',
+    cursor: 'pointer',
+    color: '#fff',
+  },
+  inputContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    padding: '10px',
+    borderTop: '1px solid #ccc',
+    backgroundColor: '#114040',
+  },
+  
+  input: {
+    flex: 1,
+    height: '40px',
+    border: '1px solid #ccc',
+    borderRadius: '20px',
+    paddingLeft: '10px',
+    paddingRight: '10px',
+    marginRight: '10px',
+  },
 
-    },
-    userMessage: {
-      backgroundColor: '#e6e6e6',
-      alignSelf: 'flex-end',
-    },
-    botMessage: {
-      backgroundColor: '#f2f2f2',
-      alignSelf: 'flex-start',
-    },
-    messageText: {
-      fontSize: 16,
-    },
-
-    bottomContainer: {
-        justifyContent: 'flex-end',
-        // If you have additional padding or margin that might be causing issues, remove them
-      },
-
-    inputContainer: {
-      flexDirection: 'row',      
-      alignItems: 'center',
-      paddingHorizontal: 5,
-      paddingVertical: 5,
-      backgroundColor: '#164F48',
-      //marginBottom: Platform.OS === 'ios' ? 30: 0, // Add some bottom margin on iOS to ensure visibility above the keyboard
-
-    },
-    input: {
-      flex: 1,
-      backgroundColor: '#f2f2f2',
-      borderRadius: 8,
-      paddingHorizontal: 12,
-      paddingVertical: 1,
-      marginRight: 8,
-      
-    },
-    sendButton: {
-      backgroundColor: '#639F65',
-      paddingHorizontal: 16,
-      paddingVertical: 4,
-      borderRadius: 8,
-    },
-    sendButtonText: {
-      color: '#fff',
-      fontWeight: 'bold',
-    },
-    homeButton: {
-        backgroundColor: '#007AFF',
-        padding: 10,
-        borderRadius: 5,
-      },
-      homeButtonText: {
-        color: 'white',
-        fontSize: 16,
-        fontWeight: 'bold',
-      },
-      chatBotInfoContainer: {
-        alignSelf: 'stretch',
-        backgroundColor: '#DCCA98',
-        padding: 10,
-        alignItems: 'center',
-        justifyContent: 'center',
-      },
-      chatBotLogo: {
-        width: 150,
-        height: 200,
-      },
-      chatBotDescription: {
-        fontSize: 16,
-        textAlign: 'center',
-      },
-      promptsScrollView: {
-        paddingHorizontal: 16, // Adjust as needed
-      },
-      promptsContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingVertical: 2, // Adjust as needed
-      },
-      promptButton: {
-        backgroundColor: '#164F48', // Customize as desired
-        padding: 5,
-        borderRadius: 10,
-        marginRight: 10, // Spacing between buttons
-      },
-      promptText: {
-        color: '#fff', // Text color
-        fontSize: 14, // Reduced font size
-      },
-      scrollViewContent: {
-        flexGrow: 1,
-        justifyContent: 'flex-end', // Keep the conversation at the bottom
-      },
-      
-  });
+  sendButton: {
+    backgroundColor: '#2196F3',
+    color: '#fff',
+    fontWeight: 'bold',
+    padding: '10px',
+    borderRadius: '20px',
+    border: 'none',
+    cursor: 'pointer',
+  },
+};
