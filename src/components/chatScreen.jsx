@@ -17,13 +17,18 @@ const titleToChatbotTypeMap = {
   default: 'default', 
 };
 
-const SuggestedPrompts = ({ onSelectPrompt }) => {
+const SuggestedPrompts = ({ onSelectPrompt, isSending }) => {
   const prompts = ["Who Are You?", "What are the 5 Pillars of Islam?", "What is Ramadan?", "Random Fact!"];
 
   return (
     <div className="chatscreen-prompts-container">
       {prompts.map((prompt, index) => (
-        <button key={index} className="chatscreen-prompt-button" onClick={() => onSelectPrompt(prompt)}>
+        <button
+          key={index}
+          className="chatscreen-prompt-button"
+          onClick={() => onSelectPrompt(prompt)}
+          disabled={isSending} // Disable button if isSending is true
+        >
           {prompt}
         </button>
       ))}
@@ -31,35 +36,39 @@ const SuggestedPrompts = ({ onSelectPrompt }) => {
   );
 };
 
+
 export default function ChatScreen() {
   const { chatbotType } = useParams();
   const assistantTitle = Object.keys(titleToChatbotTypeMap).find(key => titleToChatbotTypeMap[key] === chatbotType);
   const [messages, setMessages] = useState([]);
   const [currentMessage, setCurrentMessage] = useState('');
+  const [isSending, setIsSending] = useState(false); // State to manage if a message is being sent
   const scrollViewRef = useRef(null);
   const navigate = useNavigate();
 
   const handleSendMessage = async () => {
-    if (currentMessage.trim() !== '') {
+    if (!isSending && currentMessage.trim() !== '') {
+      setIsSending(true); // Disable sending of new message until this one is processed
       const userMessage = { sender: 'user', text: currentMessage.trim() };
       setMessages((prevMessages) => [...prevMessages, userMessage]);
       setCurrentMessage('');
   
       try {
-        console.log('chatbotType:', chatbotType); // Add this line
         const responseText = await fetchChatCompletion(userMessage.text, chatbotType);
         const botMessage = { sender: 'bot', text: responseText };
         setMessages((prevMessages) => [...prevMessages, botMessage]);
       } catch (error) {
         console.error('Error fetching response from OpenAI:', error);
-        // Handle the error, e.g., show an error message to the user
       }
+      setIsSending(false); // Re-enable sending of messages
     }
   };
 
   const handleSelectPrompt = (prompt) => {
-    setCurrentMessage(prompt);
-    handleSendMessage();
+    if (!isSending) {
+      setCurrentMessage(prompt);
+      handleSendMessage();
+    }
   };
 
   const scrollToBottom = useCallback(() => {
@@ -95,18 +104,24 @@ export default function ChatScreen() {
           </div>
         ))}
       </div>
-      <SuggestedPrompts onSelectPrompt={handleSelectPrompt} />
+      <SuggestedPrompts onSelectPrompt={handleSelectPrompt} isSending={isSending} />
       <div className="chatscreen-input-container">
-        <input
-          className="chatscreen-input"
-          value={currentMessage}
-          onChange={(e) => setCurrentMessage(e.target.value)}
-          placeholder="Type your message..."
-          onKeyDown={(e) => { if (e.key === 'Enter') handleSendMessage(); }}
-        />
-        <button className="chatscreen-send-button" onClick={handleSendMessage}>
-          Send
-        </button>
+      <input
+  className="chatscreen-input"
+  value={currentMessage}
+  onChange={(e) => setCurrentMessage(e.target.value)}
+  placeholder="Type your message..."
+  onKeyDown={(e) => { if (e.key === 'Enter' && !isSending) handleSendMessage(); }}
+  disabled={isSending} // Disable the input while sending
+/>
+<button
+  className="chatscreen-sendButton"
+  onClick={handleSendMessage}
+  disabled={isSending} // Disable the button while sending
+>
+  Send
+</button>
+
       </div>
     </div>
   );

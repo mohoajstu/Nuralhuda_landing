@@ -55,7 +55,7 @@ const SYSTEM_PROMPTS = {
             "content": message
           }
         ],
-        temperature: 0.1,
+        temperature: 0.3,
         max_tokens: 300,
         top_p: 1,
         frequency_penalty: 0,

@@ -790,6 +790,7 @@ label {
   flex-direction: column;
   height: 100vh;
   background-color: #357d7c;
+  -webkit-overflow-scrolling: touch; /* Enables smooth scrolling in iOS devices */  
 }
 
 .chatscreen-header-title {
@@ -888,6 +889,8 @@ label {
   border-radius: 20px;
   border: none;
   cursor: pointer;
+    transition: background-color 0.3s ease;
+    -webkit-transition: background-color 0.3s ease;  
 }
 
 /* Media Queries for Responsiveness *//* Media Queries for Responsiveness */
@@ -969,4 +972,12 @@ label {
     font-size: 14px;
     margin-right: 5px;
   }
+}
+
+button,
+a,
+input[type="submit"],
+input[type="button"] {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent; /* Remove tap highlight color */
 }
