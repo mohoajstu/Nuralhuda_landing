@@ -3,6 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { fetchChatCompletion } from './openai';
 import { useParams } from 'react-router-dom';
 
+const Header = ({ title }) => (
+  <div style={styles.headerTitle}>
+    <h6>{title}</h6>
+  </div>
+);
 
 const titleToChatbotTypeMap = {
   'Nur Al Huda': 'nurAlHuda',
@@ -14,7 +19,7 @@ const titleToChatbotTypeMap = {
 };
 
 const SuggestedPrompts = ({ onSelectPrompt }) => {
-  const prompts = ["What are the 5 Pillars of Islam?", "What is Ramadan?", "Random Fact!"];
+  const prompts = ["Who Are You?", "What are the 5 Pillars of Islam?", "What is Ramadan?", "Random Fact!"];
 
   return (
     <div style={styles.promptsContainer}>
@@ -74,11 +79,13 @@ export default function ChatScreen() {
 
   return (
     <div style={styles.container}>
+      <Header title={assistantTitle} />
       <div style={styles.headerContainer}>
         <button style={styles.homeButton} onClick={handleGoToHome}>
           Home
         </button>
       </div>
+
       <div ref={scrollViewRef} style={styles.messagesContainer}>
         {messages.map((message, index) => (
           <div
@@ -94,16 +101,17 @@ export default function ChatScreen() {
       </div>
       <SuggestedPrompts onSelectPrompt={handleSelectPrompt} />
       <div style={styles.inputContainer}>
-        <input
-          style={styles.input}
-          value={currentMessage}
-          onChange={(e) => setCurrentMessage(e.target.value)}
-          placeholder="Type your message..."
-        />
-        <button style={styles.sendButton} onClick={handleSendMessage}>
-          Send
-        </button>
-      </div>
+    <input
+      style={styles.input}
+      value={currentMessage}
+      onChange={(e) => setCurrentMessage(e.target.value)}
+      placeholder="Type your message..."
+      onKeyDown={(e) => { if (e.key === 'Enter') handleSendMessage(); }} // Add this line
+    />
+    <button style={styles.sendButton} onClick={handleSendMessage}>
+      Send
+    </button>
+  </div>
     </div>
   );
 }
@@ -113,8 +121,18 @@ const styles = {
     display: 'flex',
     flexDirection: 'column',
     height: '100vh',
-    backgroundColor: '#dcca98',
+    backgroundColor: '#357d7c',
   },
+
+  headerTitle: {
+    color: '#dcca98', // Corrected the color value to have a '#'
+    fontSize: '25px',
+    display: 'flex', // This will enable flexbox for this container
+    justifyContent: 'center', // This will center the children horizontally
+    alignItems: 'center', // This will center the children vertically
+    height: '60px', // You can set a specific height for your header
+  },
+  
   headerContainer: {
     display: 'flex',
     alignItems: 'center',
@@ -125,7 +143,7 @@ const styles = {
     padding: '10px',
     fontSize: '16px',
     fontWeight: 'bold',
-    color: '#144040',
+    color: '#dcca98',
     backgroundColor: 'transparent',
     border: 'none',
     cursor: 'pointer',
@@ -143,11 +161,11 @@ const styles = {
   },
   userMessage: {
     alignSelf: 'flex-end',
-    backgroundColor: '#DCF8C6',
+    backgroundColor: '#abdbe3',
   },
   botMessage: {
     alignSelf: 'flex-start',
-    backgroundColor: '#ade6e6',
+    backgroundColor: '#DCF8C6',
   },
   messageText: {
     fontSize: '16px',
@@ -156,23 +174,27 @@ const styles = {
     display: 'flex',
     justifyContent: 'space-around',
     padding: '10px',
-    borderTop: '1px solid #ccc',
-    backgroundColor: '#DccA98',
+    //borderTop: '1px solid #ccc',
+    backgroundColor: '#357d7c',
   },
+  
   promptButton: {
-    backgroundColor: '#144040',
-    padding: '10px',
-    borderRadius: '10px',
+    backgroundColor: '#dcca98',
+    padding: '10px 20px',
+    borderRadius: '20px',
     border: 'none',
-    fontSize: '14px',
+    fontSize: '16px',
     cursor: 'pointer',
-    color: '#fff',
+    color: '#000000',
+    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
+    marginRight: '10px',
   },
+
   inputContainer: {
     display: 'flex',
     alignItems: 'center',
     padding: '10px',
-    borderTop: '1px solid #ccc',
+    //borderTop: '1px solid #ccc',
     backgroundColor: '#114040',
   },
   
