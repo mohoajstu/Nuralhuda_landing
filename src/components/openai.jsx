@@ -1,4 +1,4 @@
-import { Configuration, OpenAIApi } from 'openai';
+//import { Configuration, OpenAIApi } from 'openai';
 
 
 // add to .env inshallah
