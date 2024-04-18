@@ -1,10 +1,9 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useRef, useEffect, useCallback } from 'react'; // useCallback is removed since it is not being used.
+import { useNavigate, useParams } from 'react-router-dom';
 import { fetchChatCompletion } from './openai';
-import { useParams } from 'react-router-dom';
 
 const Header = ({ title }) => (
-  <div style={styles.headerTitle}>
+  <div className="chatscreen-header-title">
     <h6>{title}</h6>
   </div>
 );
@@ -22,9 +21,9 @@ const SuggestedPrompts = ({ onSelectPrompt }) => {
   const prompts = ["Who Are You?", "What are the 5 Pillars of Islam?", "What is Ramadan?", "Random Fact!"];
 
   return (
-    <div style={styles.promptsContainer}>
+    <div className="chatscreen-prompts-container">
       {prompts.map((prompt, index) => (
-        <button key={index} style={styles.promptButton} onClick={() => onSelectPrompt(prompt)}>
+        <button key={index} className="chatscreen-prompt-button" onClick={() => onSelectPrompt(prompt)}>
           {prompt}
         </button>
       ))}
@@ -78,143 +77,37 @@ export default function ChatScreen() {
   };
 
   return (
-    <div style={styles.container}>
+    <div className="chatscreen-container">
       <Header title={assistantTitle} />
-      <div style={styles.headerContainer}>
-        <button style={styles.homeButton} onClick={handleGoToHome}>
+      <div className="chatscreen-header-container">
+        <button className="chatscreen-home-button" onClick={handleGoToHome}>
           Home
         </button>
       </div>
 
-      <div ref={scrollViewRef} style={styles.messagesContainer}>
+      <div ref={scrollViewRef} className="chatscreen-messages-container">
         {messages.map((message, index) => (
           <div
             key={index}
-            style={{
-              ...styles.messageContainer,
-              ...(message.sender === 'user' ? styles.userMessage : styles.botMessage),
-            }}
+            className={`chatscreen-message-container ${message.sender === 'user' ? 'chatscreen-user-message' : 'chatscreen-bot-message'}`}
           >
-            <span style={styles.messageText}>{message.text}</span>
+            <span className="chatscreen-message-text">{message.text}</span>
           </div>
         ))}
       </div>
       <SuggestedPrompts onSelectPrompt={handleSelectPrompt} />
-      <div style={styles.inputContainer}>
-    <input
-      style={styles.input}
-      value={currentMessage}
-      onChange={(e) => setCurrentMessage(e.target.value)}
-      placeholder="Type your message..."
-      onKeyDown={(e) => { if (e.key === 'Enter') handleSendMessage(); }} // Add this line
-    />
-    <button style={styles.sendButton} onClick={handleSendMessage}>
-      Send
-    </button>
-  </div>
+      <div className="chatscreen-input-container">
+        <input
+          className="chatscreen-input"
+          value={currentMessage}
+          onChange={(e) => setCurrentMessage(e.target.value)}
+          placeholder="Type your message..."
+          onKeyDown={(e) => { if (e.key === 'Enter') handleSendMessage(); }}
+        />
+        <button className="chatscreen-send-button" onClick={handleSendMessage}>
+          Send
+        </button>
+      </div>
     </div>
   );
 }
-
-const styles = {
-  container: {
-    display: 'flex',
-    flexDirection: 'column',
-    height: '100vh',
-    backgroundColor: '#357d7c',
-  },
-
-  headerTitle: {
-    color: '#dcca98', // Corrected the color value to have a '#'
-    fontSize: '25px',
-    display: 'flex', // This will enable flexbox for this container
-    justifyContent: 'center', // This will center the children horizontally
-    alignItems: 'center', // This will center the children vertically
-    height: '60px', // You can set a specific height for your header
-  },
-  
-  headerContainer: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '10px',
-    borderBottom: '1px solid #ccc',
-  },
-  homeButton: {
-    padding: '10px',
-    fontSize: '16px',
-    fontWeight: 'bold',
-    color: '#dcca98',
-    backgroundColor: 'transparent',
-    border: 'none',
-    cursor: 'pointer',
-  },
-  messagesContainer: {
-    flex: 1,
-    overflowY: 'auto',
-    padding: '10px',
-  },
-  messageContainer: {
-    borderRadius: '10px',
-    padding: '10px',
-    marginBottom: '10px',
-    maxWidth: '80%',
-  },
-  userMessage: {
-    alignSelf: 'flex-end',
-    backgroundColor: '#abdbe3',
-  },
-  botMessage: {
-    alignSelf: 'flex-start',
-    backgroundColor: '#DCF8C6',
-  },
-  messageText: {
-    fontSize: '16px',
-  },
-  promptsContainer: {
-    display: 'flex',
-    justifyContent: 'space-around',
-    padding: '10px',
-    //borderTop: '1px solid #ccc',
-    backgroundColor: '#357d7c',
-  },
-  
-  promptButton: {
-    backgroundColor: '#dcca98',
-    padding: '10px 20px',
-    borderRadius: '20px',
-    border: 'none',
-    fontSize: '16px',
-    cursor: 'pointer',
-    color: '#000000',
-    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
-    marginRight: '10px',
-  },
-
-  inputContainer: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '10px',
-    //borderTop: '1px solid #ccc',
-    backgroundColor: '#114040',
-  },
-  
-  input: {
-    flex: 1,
-    height: '40px',
-    border: '1px solid #ccc',
-    borderRadius: '20px',
-    paddingLeft: '10px',
-    paddingRight: '10px',
-    marginRight: '10px',
-  },
-
-  sendButton: {
-    backgroundColor: '#2196F3',
-    color: '#fff',
-    fontWeight: 'bold',
-    padding: '10px',
-    borderRadius: '20px',
-    border: 'none',
-    cursor: 'pointer',
-  },
-};

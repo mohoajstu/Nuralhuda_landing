@@ -21,13 +21,13 @@ h2 {
   color: #114040;
 }
 h3 {
-  font-size: 20px;
+  font-size: 30px;
   font-weight: 600;
   color: #114040;
 }
 h4 {
   font-size: 18px;
-  color: #000000;
+  color: #dcca98;
   font-weight: 600;
 }
 h5 {
@@ -43,7 +43,7 @@ h6{
   color: #dcca98;
 }
 p {
-  font-size: 15px;
+  font-size: 16px;
   
 }
 p.intro {
@@ -99,7 +99,7 @@ hr {
   font-family: "Lato", sans-serif;
   text-transform: uppercase;
   color: #000000;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 400;
   padding: 8px 2px;
   border-radius: 0;
@@ -179,7 +179,7 @@ hr {
   padding: 14px 34px;
   letter-spacing: 1px;
   margin: 0;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 500;
   border-radius: 25px;
   transition: all 0.5s linear;
@@ -359,13 +359,14 @@ header .intro-text {
   margin-left: 6px;
   list-style: none;
   padding: 0;
+  font-size: 16px;
 }
 
 #about .about-text li:before {
   content: "\f00c";
   font-family: "FontAwesome";
   color: #114040;
-  font-size: 11px;
+  font-size: 16px;
   font-weight: 300;
   padding-right: 8px;
 }
@@ -456,7 +457,7 @@ header .intro-text {
 }
 .hover-bg .hover-text > h4 {
   opacity: 0;
-  color: #dcca98;
+  color: #000000;
   -webkit-transform: translateY(100%);
   transform: translateY(100%);
   transition: all 0.3s;
@@ -707,14 +708,265 @@ label {
 }
 
 .brand-subtitle {
-  font-size: 14px; /* Example font size, adjust as needed */
+  font-size: 16px; /* Example font size, adjust as needed */
   color: #114040; /* Adjust color as needed */
   margin-top: 0; /* Aligns closely with the title */
 }
 
+.assistants-section .assistant-title h4 {
+  margin: 0 auto; /* Center the title horizontally */
+  text-align: center; /* Center the text within the title */
+  padding-bottom: 10px; /* Provide space between the title and the image */
+  color: #dcca98;
+
+}
+.assistants-section .assistant-title-button {
+  background-color: #144c4c; /* Green background */
+  border: none; /* No border */
+  color: white; /* White text */
+  padding: 10px 20px; /* Padding inside the button */
+  text-align: center; /* Center the text */
+  width: 100%; /* Full width */
+  display: block; /* Block display to fill the container */
+  cursor: pointer; /* Cursor appears as pointer */
+  transition: transform 0.3s ease, background-color 0.3s ease; /* Smooth transition for hover effect */
+  border-radius: 5px; /* Slight rounding of corners */
+}
+
+.assistants-section .assistant-title-button:hover {
+  background-color: #114040; /* Darker green on hover */
+  transform: scale(1.05); /* Slight scaling on hover */
+}
+
+.assistants-section .assistant-container {
+  margin-top: 10px; /* Space between title button and image */
+  cursor: pointer;
+  overflow: hidden; /* Keeps the image scaling within the container */
+}
+
+.assistants-section .hover-bg {
+  position: relative;
+  transition: transform 0.3s ease; /* Smooth transformation for the entire block */
+}
+
+.assistants-section .hover-bg:hover {
+  transform: scale(1.05); /* Slight zoom effect on hover */
+}
+
+.assistants-section .hover-bg img {
+  width: 100%;
+  display: block; /* Ensures the image fills its container */
+  transition: transform 0.3s ease; /* Smooth transformation on hover */
+}
+
+.assistants-section .hover-text {
+  position: absolute;
+  width: 100%;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  text-align: center;
+  color: white;
+  font-size: 20px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  background: rgba(49, 159, 218, 0.7); /* Semi-transparent background for text visibility */
+  padding: 10px 0;
+}
+
+.assistants-section .hover-bg:hover .hover-text {
+  opacity: 1; /* Show text on hover */
+}
 
 @media (max-width: 768px) {
   #about img {
     margin: 50px 0;
+  }
+}
+
+/* Chat Screen Styles */
+.chatscreen-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #357d7c;
+}
+
+.chatscreen-header-title {
+  color: #dcca98;
+  font-size: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 60px;
+}
+
+.chatscreen-header-container {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+}
+
+.chatscreen-home-button {
+  padding: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #dcca98;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.chatscreen-messages-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+.chatscreen-message-container {
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 10px;
+  max-width: 80%;
+}
+
+.chatscreen-user-message {
+  align-self: flex-end;
+  background-color: #abdbe3;
+}
+
+.chatscreen-bot-message {
+  align-self: flex-start;
+  background-color: #DCF8C6;
+}
+
+.chatscreen-message-text {
+  font-size: 16px;
+}
+
+.chatscreen-prompts-container {
+  display: flex;
+  justify-content: space-around;
+  padding: 10px;
+  background-color: #357d7c;
+}
+
+.chatscreen-prompt-button {
+  background-color: #dcca98;
+  padding: 10px 20px;
+  border-radius: 20px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  color: #000000;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  margin-right: 10px;
+}
+
+.chatscreen-input-container {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background-color: #114040;
+}
+
+.chatscreen-input {
+  flex: 1;
+  height: 40px;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  padding: 0 10px;
+  margin-right: 10px;
+}
+
+.chatscreen-send-button {
+  background-color: #2196F3;
+  color: #fff;
+  font-weight: bold;
+  padding: 10px;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+}
+
+/* Media Queries for Responsiveness *//* Media Queries for Responsiveness */
+@media (max-width: 768px) {
+  .chatscreen-header-title {
+    font-size: 20px; /* Adjust the font size */
+    text-align: center; /* Center the title text */
+  }
+
+  .chatscreen-header-title h6 {
+    margin: 0; /* Remove margin to center the title correctly */
+  }
+
+  .chatscreen-prompts-container {
+    display: flex;
+    overflow-x: auto; /* Allow horizontal scrolling */
+    flex-wrap: nowrap; /* Keep prompts in a single line */
+    -webkit-overflow-scrolling: touch; /* For smoother scrolling on iOS */
+    align-items: center;
+    justify-content: flex-start; /* Align to the start to ensure all items are visible */
+    gap: 10px; /* Spacing between prompts */
+    padding: 10px 0; /* Padding around prompts */
+  }
+
+  .chatscreen-prompt-button {
+    flex: 0 0 auto; /* Do not grow, do not shrink, and be based on content width */
+    margin-right: 10px; /* Space between buttons */
+    white-space: nowrap; /* Prevent text wrapping within buttons */
+  }
+
+  .chatscreen-messages-container,
+  .chatscreen-input-container {
+    padding: 0 15px; /* Add padding on smaller screens */
+  }
+
+  .chatscreen-input,
+  .chatscreen-send-button {
+    margin-top: 10px;
+    margin-bottom: 10px; /* Spacing between input and button */
+  }
+
+  .chatscreen-input {
+    width: 100%; /* Full width minus padding */
+  }
+
+  .chatscreen-send-button {
+    padding: 10px 20px; /* Padding inside the send button */
+  }
+}
+
+@media (max-width: 480px) {
+  .chatscreen-header-title {
+    font-size: 18px; /* Smaller font size for very small screens */
+  }
+
+  .chatscreen-message-text {
+    font-size: 14px; /* Smaller font size for message text */
+  }
+
+  .chatscreen-prompt-button {
+    font-size: 14px; /* Smaller font size for prompt buttons */
+    padding: 8px 16px; /* Smaller padding for prompt buttons */
+  }
+}
+
+
+@media (max-width: 480px) {
+  .chatscreen-header-title {
+    font-size: 18px;
+    justify-content: center;
+  }
+
+  .chatscreen-message-text {
+    font-size: 14px;
+  }
+
+  .chatscreen-prompt-button {
+    padding: 8px 16px;
+    font-size: 14px;
+    margin-right: 5px;
   }
 }
