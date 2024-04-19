@@ -901,16 +901,14 @@ label {
     padding-top: 10px; /* Add padding to ensure it's not cut off */
 
   }
-
   .chatscreen-container {
+    padding-top: 10vh;
     padding-bottom: 10vh; /* Add padding at the bottom to avoid URL overlap */
     padding-bottom: env(safe-area-inset-bottom); /* Additional padding for iPhone X and later */
   }
-
   .chatscreen-header-title h6 {
     margin: 0; /* Remove margin to center the title correctly */
   }
-
   .chatscreen-prompts-container {
     display: flex;
     overflow-x: auto; /* Allow horizontal scrolling */
@@ -952,11 +950,12 @@ label {
   .chatscreen-header-title {
     text-align: center; /* Center the title text */
     font-size: 4vw; /* Use viewport width for responsive font size */
-    padding-top: 10px; /* Add padding to ensure it's not cut off */
+    padding-top: 10vh; /* Add padding to ensure it's not cut off */
 
   }
 
   .chatscreen-container {
+    padding-top: 10vh;
     padding-bottom: 10vh; /* Add padding at the bottom to avoid URL overlap */
     padding-bottom: env(safe-area-inset-bottom); /* Additional padding for iPhone X and later */
   }
