@@ -8,6 +8,7 @@ const Header = ({ title }) => (
   </div>
 );
 
+
 const titleToChatbotTypeMap = {
   'Nur Al Huda': 'nurAlHuda',
   'Nur Al Huda For Kids': 'nurAlHudaForKids',
@@ -115,7 +116,7 @@ export default function ChatScreen() {
   disabled={isSending} // Disable the input while sending
 />
 <button
-  className="chatscreen-sendButton"
+  className="chatscreen-send-button"
   onClick={handleSendMessage}
   disabled={isSending} // Disable the button while sending
 >

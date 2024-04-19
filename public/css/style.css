@@ -815,7 +815,7 @@ label {
   font-weight: bold;
   color: #dcca98;
   background-color: transparent;
-  border: none;
+  border: #6372ff;
   cursor: pointer;
 }
 
@@ -896,8 +896,15 @@ label {
 /* Media Queries for Responsiveness *//* Media Queries for Responsiveness */
 @media (max-width: 768px) {
   .chatscreen-header-title {
-    font-size: 20px; /* Adjust the font size */
     text-align: center; /* Center the title text */
+    font-size: 4vw; /* Use viewport width for responsive font size */
+    padding-top: 10px; /* Add padding to ensure it's not cut off */
+
+  }
+
+  .chatscreen-container {
+    padding-bottom: 10vh; /* Add padding at the bottom to avoid URL overlap */
+    padding-bottom: env(safe-area-inset-bottom); /* Additional padding for iPhone X and later */
   }
 
   .chatscreen-header-title h6 {
@@ -943,7 +950,15 @@ label {
 
 @media (max-width: 480px) {
   .chatscreen-header-title {
-    font-size: 18px; /* Smaller font size for very small screens */
+    text-align: center; /* Center the title text */
+    font-size: 4vw; /* Use viewport width for responsive font size */
+    padding-top: 10px; /* Add padding to ensure it's not cut off */
+
+  }
+
+  .chatscreen-container {
+    padding-bottom: 10vh; /* Add padding at the bottom to avoid URL overlap */
+    padding-bottom: env(safe-area-inset-bottom); /* Additional padding for iPhone X and later */
   }
 
   .chatscreen-message-text {
@@ -953,6 +968,7 @@ label {
   .chatscreen-prompt-button {
     font-size: 14px; /* Smaller font size for prompt buttons */
     padding: 8px 16px; /* Smaller padding for prompt buttons */
+    margin-right: 5px;
   }
 }
 
