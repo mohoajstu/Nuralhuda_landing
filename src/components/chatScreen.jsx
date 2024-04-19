@@ -133,7 +133,7 @@ export default function ChatScreen() {
       </div>
       {showImage && chatbotImage && (
         <div className="chatscreen-message-image">
-          <img src={chatbotImage} alt={assistantTitle} />
+          <img src={chatbotImage} alt='' />
         </div>
       )}
 
