@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react'; // useCallback is removed since it is not being used.
 import { useNavigate, useParams } from 'react-router-dom';
 import { fetchChatCompletion } from './openai';
-import '../../public/css/style';
 
 const Header = ({ title }) => (
   <div className="chatscreen-header-title">
