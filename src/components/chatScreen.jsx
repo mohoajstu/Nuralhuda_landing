@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react'; // useCallback is removed since it is not being used.
 import { useNavigate, useParams } from 'react-router-dom';
 import { fetchChatCompletion } from './openai';
+import '../../public/css/style';
 
 const Header = ({ title }) => (
   <div className="chatscreen-header-title">
@@ -94,7 +95,7 @@ export default function ChatScreen() {
           Home
         </button>
       </div>
-
+  
       <div ref={scrollViewRef} className="chatscreen-messages-container">
         {messages.map((message, index) => (
           <div
@@ -104,26 +105,34 @@ export default function ChatScreen() {
             <span className="chatscreen-message-text">{message.text}</span>
           </div>
         ))}
+        {isSending && (
+          <div className="chatscreen-message-container chatscreen-bot-message">
+            <div className="typing-indicator">
+              <div className="typing-indicator-dot"></div>
+              <div className="typing-indicator-dot"></div>
+              <div className="typing-indicator-dot"></div>
+            </div>
+          </div>
+        )}
       </div>
       <SuggestedPrompts onSelectPrompt={handleSelectPrompt} isSending={isSending} />
       <div className="chatscreen-input-container">
-      <input
-  className="chatscreen-input"
-  value={currentMessage}
-  onChange={(e) => setCurrentMessage(e.target.value)}
-  placeholder="Type your message..."
-  onKeyDown={(e) => { if (e.key === 'Enter' && !isSending) handleSendMessage(); }}
-  disabled={isSending} // Disable the input while sending
-/>
-<button
-  className="chatscreen-send-button"
-  onClick={handleSendMessage}
-  disabled={isSending} // Disable the button while sending
->
-  Send
-</button>
-
+        <input
+          className="chatscreen-input"
+          value={currentMessage}
+          onChange={(e) => setCurrentMessage(e.target.value)}
+          placeholder="Type your message..."
+          onKeyDown={(e) => { if (e.key === 'Enter' && !isSending) handleSendMessage(); }}
+          disabled={isSending} // Disable the input while sending
+        />
+        <button
+          className="chatscreen-send-button"
+          onClick={handleSendMessage}
+          disabled={isSending} // Disable the button while sending
+        >
+          Send
+        </button>
       </div>
     </div>
-  );
+  );  
 }
