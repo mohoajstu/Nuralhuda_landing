@@ -47,6 +47,7 @@ export default function ChatScreen() {
   const scrollViewRef = useRef(null);
   const navigate = useNavigate();
 
+  
   const handleSendMessage = async () => {
     if (!isSending && currentMessage.trim() !== '') {
       setIsSending(true); // Disable sending of new message until this one is processed
