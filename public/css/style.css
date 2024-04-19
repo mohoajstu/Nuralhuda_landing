@@ -884,7 +884,7 @@ label {
 }
 
 .chatscreen-send-button {
-  background-color: #2196F3;
+  background-color: #57a3e1;
   color: #fff;
   font-weight: bold;
   padding: 10px;
@@ -1030,3 +1030,17 @@ input[type="button"] {
 .typing-indicator-dot:nth-child(3) {
   animation-delay: 0.4s;
 }
+
+.chatscreen-message-image {
+  margin: 10px 20px; /* Spacing around the image for better layout */
+  height: 70vh;
+  padding: 5px; /* Optional padding around the image */
+  text-align: center; /* Centers the image in the div */
+  background-color: transparent; /* Light background for the image area */
+}
+
+.chatscreen-message-image img {
+  width: 50vh; /* Makes the image fully occupy the container's width */
+  height: 50vh; /* Maintains the aspect ratio of the image */
+ }
+

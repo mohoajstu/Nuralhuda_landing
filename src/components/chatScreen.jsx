@@ -1,6 +1,11 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react'; // useCallback is removed since it is not being used.
 import { useNavigate, useParams } from 'react-router-dom';
 import { fetchChatCompletion } from './openai';
+import nurAlHudaImg from '../img/about-nbg.png';
+import nurAlHudaForKidsImg from '../img/nuralhudaforkids.png';
+import islamicSocraticMethodImg from '../img/islamic_socratic_method.png';
+import iqraWithUsImg from '../img/Nuralhuda-applogo.png';
+
 
 const Header = ({ title }) => (
   <div className="chatscreen-header-title">
@@ -16,6 +21,13 @@ const titleToChatbotTypeMap = {
   'AI for Islamic Research': 'aiForIslamicResearch',
   'Iqra With Us': 'iqraWithUs',
   default: 'default', 
+};
+
+const titleToImageMap = {
+  'Nur Al Huda': nurAlHudaImg,
+  'Nur Al Huda For Kids': nurAlHudaForKidsImg,
+  'Islamic Socratic Method': islamicSocraticMethodImg,
+  'Iqra With Us': iqraWithUsImg,
 };
 
 const SuggestedPrompts = ({ onSelectPrompt, isSending }) => {
@@ -41,9 +53,11 @@ const SuggestedPrompts = ({ onSelectPrompt, isSending }) => {
 export default function ChatScreen() {
   const { chatbotType } = useParams();
   const assistantTitle = Object.keys(titleToChatbotTypeMap).find(key => titleToChatbotTypeMap[key] === chatbotType);
+  const chatbotImage = titleToImageMap[assistantTitle];
   const [messages, setMessages] = useState([]);
   const [currentMessage, setCurrentMessage] = useState('');
   const [isSending, setIsSending] = useState(false); // State to manage if a message is being sent
+  const [showImage, setShowImage] = useState(true); // State to manage image display
   const scrollViewRef = useRef(null);
   const navigate = useNavigate();
 
@@ -53,6 +67,8 @@ export default function ChatScreen() {
       const userMessage = { sender: 'user', text: currentMessage.trim() };
       setMessages((prevMessages) => [...prevMessages, userMessage]);
       setCurrentMessage('');
+      setShowImage(false); // Hide the image after sending a message
+
   
       try {
         const responseText = await fetchChatCompletion(userMessage.text, chatbotType);
@@ -69,6 +85,7 @@ export default function ChatScreen() {
     if (!isSending) {
       setCurrentMessage(prompt);
       handleSendMessage();
+      
     }
   };
 
@@ -114,6 +131,13 @@ export default function ChatScreen() {
           </div>
         )}
       </div>
+      {showImage && chatbotImage && (
+        <div className="chatscreen-message-image">
+          <img src={chatbotImage} alt={assistantTitle} />
+        </div>
+      )}
+
+
       <SuggestedPrompts onSelectPrompt={handleSelectPrompt} isSending={isSending} />
       <div className="chatscreen-input-container">
         <input
