@@ -55,11 +55,11 @@ const SYSTEM_PROMPTS = {
             "content": message
           }
         ],
-        temperature: 0.3,
-        max_tokens: 300,
+        temperature: 0.5,
+        max_tokens: 400,
         top_p: 1,
-        frequency_penalty: 0,
-        presence_penalty: 0,
+        frequency_penalty: 1,
+        presence_penalty: 2,
       }),
     });
 

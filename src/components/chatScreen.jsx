@@ -30,9 +30,9 @@ const titleToImageMap = {
 };
 
 const titleToPromptMap = {
-  'Nur Al Huda': ["Who Are You?", "What are the 5 Pillars of Islam?", "What is Ramadan?", "Random Fact!"],
-  'Nur Al Huda For Kids': ["Tell me a story", "Teach me a prayer", "What is Ramadan?", "Tell me a fun Islamic Fact!"],
-  'Islamic Socratic Method': ["Explain Tawhid", "What is Islamic Philosophy?", "Tell me about Ijtihad", "Impacts"],
+  'Nur Al Huda': ["Who Are You?", "What are the 5 Pillars of Islam?", "What is Ramadan?", "New Random Fact!"],
+  'Nur Al Huda For Kids': ["Tell me a story", "Teach me a prayer", "What is Ramadan?", "New Random Fact!"],
+  'Islamic Socratic Method': ["Explain Tawhid", "What is Islamic Philosophy?", "Tell me about Ijtihad", "Socratic Method!"],
   'AI for Islamic Research': ["Latest research on Islamic History", "AI and Quranic studies", "Islam and Science intersection", "Research Fact!"],
   'Iqra With Us': ["Let's read a surah together", "Teach me about Tajweed", "What is Iqra?", "Quranic Arabic lesson"],
 };
