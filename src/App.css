@@ -811,10 +811,11 @@ label {
 
 .chatscreen-home-button {
   padding: 10px;
-  font-size: 16px;
+  font-size: 25px;
   font-weight: bold;
-  color: #dcca98;
-  background-color: transparent;
+  color: #fff;
+  border-radius: 20px;
+  background-color: #57a3e1;
   border: #6372ff;
   cursor: pointer;
 }
@@ -900,11 +901,11 @@ label {
   .chatscreen-header-title {
     text-align: center; /* Center the title text */
     font-size: 4vw; /* Use viewport width for responsive font size */
-    padding-top: 10px; /* Add padding to ensure it's not cut off */
+    padding-top: 5px; /* Add padding to ensure it's not cut off */
 
   }
   .chatscreen-container {
-    padding-top: 10vh;
+    padding-top: 1vh;
     padding-bottom: 10vh; /* Add padding at the bottom to avoid URL overlap */
     padding-bottom: env(safe-area-inset-bottom); /* Additional padding for iPhone X and later */
   }
@@ -931,6 +932,7 @@ label {
   .chatscreen-messages-container,
   .chatscreen-input-container {
     padding: 0 15px; /* Add padding on smaller screens */
+    padding-bottom: 5vh; /* Add padding to ensure it's not cut off */
   }
 
   .chatscreen-input,
@@ -952,12 +954,12 @@ label {
   .chatscreen-header-title {
     text-align: center; /* Center the title text */
     font-size: 4vw; /* Use viewport width for responsive font size */
-    padding-top: 10vh; /* Add padding to ensure it's not cut off */
+    padding-top: 5vh; /* Add padding to ensure it's not cut off */
 
   }
 
   .chatscreen-container {
-    padding-top: 10vh;
+    padding-top: 5vh;
     padding-bottom: 10vh; /* Add padding at the bottom to avoid URL overlap */
     padding-bottom: env(safe-area-inset-bottom); /* Additional padding for iPhone X and later */
   }
@@ -970,6 +972,10 @@ label {
     font-size: 14px; /* Smaller font size for prompt buttons */
     padding: 8px 16px; /* Smaller padding for prompt buttons */
     margin-right: 5px;
+  }
+  .chatscreen-input-container {
+    padding: 0 15px; /* Add padding on smaller screens */
+    padding-bottom: 5vh; /* Add padding to ensure it's not cut off */
   }
 }
 
@@ -988,6 +994,10 @@ label {
     padding: 8px 16px;
     font-size: 14px;
     margin-right: 5px;
+  }
+  .chatscreen-input-container {
+    padding: 0 15px; /* Add padding on smaller screens */
+    padding-bottom: 5vh; /* Add padding to ensure it's not cut off */
   }
 }
 

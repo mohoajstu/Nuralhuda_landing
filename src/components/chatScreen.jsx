@@ -13,7 +13,6 @@ const Header = ({ title }) => (
   </div>
 );
 
-
 const titleToChatbotTypeMap = {
   'Nur Al Huda': 'nurAlHuda',
   'Nur Al Huda For Kids': 'nurAlHudaForKids',
@@ -30,8 +29,15 @@ const titleToImageMap = {
   'Iqra With Us': iqraWithUsImg,
 };
 
-const SuggestedPrompts = ({ onSelectPrompt, isSending }) => {
-  const prompts = ["Who Are You?", "What are the 5 Pillars of Islam?", "What is Ramadan?", "Random Fact!"];
+const titleToPromptMap = {
+  'Nur Al Huda': ["Who Are You?", "What are the 5 Pillars of Islam?", "What is Ramadan?", "Random Fact!"],
+  'Nur Al Huda For Kids': ["Tell me a story", "Teach me a prayer", "What is Ramadan?", "Tell me a fun Islamic Fact!"],
+  'Islamic Socratic Method': ["Explain Tawhid", "What is Islamic Philosophy?", "Tell me about Ijtihad", "Impacts"],
+  'AI for Islamic Research': ["Latest research on Islamic History", "AI and Quranic studies", "Islam and Science intersection", "Research Fact!"],
+  'Iqra With Us': ["Let's read a surah together", "Teach me about Tajweed", "What is Iqra?", "Quranic Arabic lesson"],
+};
+
+const SuggestedPrompts = ({ onSelectPrompt, isSending, prompts }) => { // Now the component receives 'prompts' as a prop
 
   return (
     <div className="chatscreen-prompts-container">
@@ -49,8 +55,8 @@ const SuggestedPrompts = ({ onSelectPrompt, isSending }) => {
   );
 };
 
-
 export default function ChatScreen() {
+
   const { chatbotType } = useParams();
   const assistantTitle = Object.keys(titleToChatbotTypeMap).find(key => titleToChatbotTypeMap[key] === chatbotType);
   const chatbotImage = titleToImageMap[assistantTitle];
@@ -60,6 +66,8 @@ export default function ChatScreen() {
   const [showImage, setShowImage] = useState(true); // State to manage image display
   const scrollViewRef = useRef(null);
   const navigate = useNavigate();
+  const chatbotPrompts = titleToPromptMap[assistantTitle] || []; // Define chatbotPrompts here
+
 
   const handleSendMessage = async () => {
     if (!isSending && currentMessage.trim() !== '') {
@@ -137,8 +145,7 @@ export default function ChatScreen() {
         </div>
       )}
 
-
-      <SuggestedPrompts onSelectPrompt={handleSelectPrompt} isSending={isSending} />
+       <SuggestedPrompts onSelectPrompt={handleSelectPrompt} isSending={isSending} prompts={chatbotPrompts} /> 
       <div className="chatscreen-input-container">
         <input
           className="chatscreen-input"
