@@ -1,17 +1,83 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react'; // useCallback is removed since it is not being used.
+import React, { useState, useRef, useEffect, useCallback} from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { fetchChatCompletion } from './openai';
+import OpenAI from "openai";
+// Helper images and prompts maps
 import nurAlHudaImg from '../img/about-nbg.png';
 import nurAlHudaForKidsImg from '../img/nuralhudaforkids.png';
 import islamicSocraticMethodImg from '../img/islamic_socratic_method.png';
 import iqraWithUsImg from '../img/Nuralhuda-applogo.png';
 
 
+// Initialize OpenAI client with the default API key
+const openai = new OpenAI({apiKey: process.env.REACT_APP_OPENAI_API_KEY_NUR_ALHUDA, dangerouslyAllowBrowser: true});
+
 const Header = ({ title }) => (
   <div className="chatscreen-header-title">
     <h6>{title}</h6>
   </div>
 );
+const SuggestedPrompts = ({ onSelectPrompt, isSending, prompts }) => (
+  <div className="chatscreen-prompts-container">
+    {prompts.map((prompt, index) => (
+      <button
+        key={index}
+        className="chatscreen-prompt-button"
+        onClick={() => onSelectPrompt(prompt)}
+        disabled={isSending}
+      >
+        {prompt}
+      </button>
+    ))}
+  </div>
+);
+
+// Function to create a thread
+async function createThread() {
+  try {
+    const thread = await openai.beta.threads.create();
+    return thread;
+  } catch (error) {
+    console.error("Error creating thread:", error);
+    throw error;
+  }
+}
+
+// Function to add a message to the thread and get a response
+async function createMessage(threadId, newMessage) {
+  try {
+    const response = await openai.beta.threads.messages.create(threadId, {
+      role: "user",
+      content: newMessage
+    });
+    return response;
+  } catch (error) {
+    console.error("Error sending message to thread:", error);
+    throw error;
+  }
+}
+
+// Function to initiate a run with the assistant
+async function createRun(threadId, assistantId) {
+  try {
+    const response = await openai.beta.threads.runs.createAndPoll(threadId, {
+      assistant_id: assistantId
+    });
+    return response;
+  } catch (error) {
+    console.error("Error initiating run with assistant:", error);
+    throw error;
+  }
+}
+
+const extractLatestAssistantMessage = (messages) => {
+  const assistantMessages = messages.data
+    .filter(message => message.role === 'assistant' || message.role === 'system')
+    .map(message => ({
+      sender: 'assistant',
+      text: message.content[0].text.value, // Make sure this matches the structure of your API response
+    }));
+  return assistantMessages[assistantMessages.length - 1]; // Return the last message
+};
 
 const titleToChatbotTypeMap = {
   'Nur Al Huda': 'nurAlHuda',
@@ -37,66 +103,85 @@ const titleToPromptMap = {
   'Iqra With Us': ["Let's read a surah together", "Teach me about Tajweed", "What is Iqra?", "Quranic Arabic lesson"],
 };
 
-const SuggestedPrompts = ({ onSelectPrompt, isSending, prompts }) => { // Now the component receives 'prompts' as a prop
-
-  return (
-    <div className="chatscreen-prompts-container">
-      {prompts.map((prompt, index) => (
-        <button
-          key={index}
-          className="chatscreen-prompt-button"
-          onClick={() => onSelectPrompt(prompt)}
-          disabled={isSending} // Disable button if isSending is true
-        >
-          {prompt}
-        </button>
-      ))}
-    </div>
-  );
+const titleToAssistantIDMap = {
+  'Nur Al Huda':"asst_0UOsgGXyWL19iwxrR1tqt56p",
+  'Nur Al Huda For Kids':"asst_2z9CBAnU88vgmSnZnNHZVaGz",
+  'Islamic Socratic Method':"asst_nUrppuSP9pPPjRPHDD3l13bH",
+  'Iqra With Us':"asst_NSjlngEyPNwU1PeAcmZZHC9K",
+  default: process.env.REACT_APP_NUR_ALHUDA_ASSISTANT_ID, // Use a default assistant if title is not matched
 };
 
-export default function ChatScreen() {
-
+const ChatScreen = () => {
   const { chatbotType } = useParams();
-  const assistantTitle = Object.keys(titleToChatbotTypeMap).find(key => titleToChatbotTypeMap[key] === chatbotType);
-  const chatbotImage = titleToImageMap[assistantTitle];
+  const navigate = useNavigate();
   const [messages, setMessages] = useState([]);
   const [currentMessage, setCurrentMessage] = useState('');
-  const [isSending, setIsSending] = useState(false); // State to manage if a message is being sent
-  const [showImage, setShowImage] = useState(true); // State to manage image display
+  const [threadId, setThreadId] = useState(null);
+  const [isSending, setIsSending] = useState(false);
+  const [showImage, setShowImage] = useState(true);
   const scrollViewRef = useRef(null);
-  const navigate = useNavigate();
-  const chatbotPrompts = titleToPromptMap[assistantTitle] || []; // Define chatbotPrompts here
+  const assistantTitle = Object.keys(titleToChatbotTypeMap).find(key => titleToChatbotTypeMap[key] === chatbotType);
+  const chatbotPrompts = titleToPromptMap[assistantTitle] || [];
+  const chatbotImage = titleToImageMap[assistantTitle];
+  const assistantId = titleToAssistantIDMap[assistantTitle];;
 
+  useEffect(() => {
+    scrollViewRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
   const handleSendMessage = async () => {
-    if (!isSending && currentMessage.trim() !== '') {
-      setIsSending(true); // Disable sending of new message until this one is processed
-      const userMessage = { sender: 'user', text: currentMessage.trim() };
+    if (isSending || !currentMessage.trim()) return;
+    const userMessage = { sender: 'user', text: currentMessage.trim() };
       setMessages((prevMessages) => [...prevMessages, userMessage]);
       setCurrentMessage('');
-      setShowImage(false); // Hide the image after sending a message
+    setShowImage(false); // Hide the image after sending a message
+    setIsSending(true);
 
+    let localThreadId = threadId; 
   
+    if (!localThreadId) {
       try {
-        const responseText = await fetchChatCompletion(userMessage.text, chatbotType);
-        const botMessage = { sender: 'bot', text: responseText };
-        setMessages((prevMessages) => [...prevMessages, botMessage]);
+        const threadResponse = await createThread();
+        if (threadResponse?.id) {
+          setThreadId(threadResponse.id);
+          localThreadId = threadResponse.id;
+        } else {
+          throw new Error('Thread creation failed: No ID returned');
+        }
       } catch (error) {
-        console.error('Error fetching response from OpenAI:', error);
+        console.error("Error creating thread:", error);
+        setIsSending(false);
+        return;
       }
-      setIsSending(false); // Re-enable sending of messages
     }
-  };
-
-  const handleSelectPrompt = (prompt) => {
-    if (!isSending) {
-      setCurrentMessage(prompt);
-      handleSendMessage();
+    try {
+      await createMessage(localThreadId, currentMessage);
+      //setMessages(prev => [...prev, { sender: 'user', text: currentMessage }]);
       
+      const runResponse = await createRun(localThreadId, assistantId);
+    if (runResponse?.status === "completed") {
+      const newMessagesResponse = await openai.beta.threads.messages.list(localThreadId);
+      const formattedMessages = newMessagesResponse.data.map(message => ({
+        sender: message.role === 'system' ? 'assistant' : message.role,
+        text: message.content[0].text.value,
+      }));
+      // This will set the messages state to only the latest set of messages from the thread
+      setMessages(formattedMessages.reverse());
+    } else {
+      // The run has not completed yet, handle accordingly
+    }
+    } catch (error) {
+      console.error("Communication error:", error);
+    } finally {
+      setIsSending(false);
+      setCurrentMessage('');
     }
   };
-
+  
+  const handleSelectPrompt = (prompt) => {
+    setCurrentMessage(prompt);
+    handleSendMessage();
+  };
   const scrollToBottom = useCallback(() => {
     if (scrollViewRef.current) {
       scrollViewRef.current.scrollTop = scrollViewRef.current.scrollHeight;
@@ -112,57 +197,60 @@ export default function ChatScreen() {
   };
 
   return (
-    <div className="chatscreen-container">
-      <Header title={assistantTitle} />
-      <div className="chatscreen-header-container">
+      <div className="chatscreen-container">
+        <Header title={assistantTitle} />
+        <div className="chatscreen-header-container">
         <button className="chatscreen-home-button" onClick={handleGoToHome}>
           Home
         </button>
       </div>
-  
-      <div ref={scrollViewRef} className="chatscreen-messages-container">
-        {messages.map((message, index) => (
-          <div
-            key={index}
-            className={`chatscreen-message-container ${message.sender === 'user' ? 'chatscreen-user-message' : 'chatscreen-bot-message'}`}
-          >
-            <span className="chatscreen-message-text">{message.text}</span>
-          </div>
-        ))}
-        {isSending && (
-          <div className="chatscreen-message-container chatscreen-bot-message">
-            <div className="typing-indicator">
-              <div className="typing-indicator-dot"></div>
-              <div className="typing-indicator-dot"></div>
-              <div className="typing-indicator-dot"></div>
+
+        {/* Message container will also show loading dots when isSending is true */}
+        <div ref={scrollViewRef} className="chatscreen-messages-container">
+{messages.map((message, index) => (
+  <div key={index} className={`chatscreen-message-container ${message.sender === 'user' ? 'chatscreen-user-message' : 'chatscreen-bot-message'}`}>
+    <span className="chatscreen-message-text">{message.text}</span>
+  </div>
+))}
+
+{isSending && (
+            <div className="chatscreen-message-container chatscreen-bot-message">
+              {/* Render your typing indicator here */}
+              <div className="typing-indicator">
+                <div className="typing-indicator-dot"></div>
+                <div className="typing-indicator-dot"></div>
+                <div className="typing-indicator-dot"></div>
+              </div>
             </div>
-          </div>
-        )}
-      </div>
-      {showImage && chatbotImage && (
+          )}
+        </div>
+        
+        {showImage && chatbotImage && (
         <div className="chatscreen-message-image">
-          <img src={chatbotImage} alt='' />
+          <img src={chatbotImage} alt={assistantTitle + " Image"} />
         </div>
       )}
 
-       <SuggestedPrompts onSelectPrompt={handleSelectPrompt} isSending={isSending} prompts={chatbotPrompts} /> 
-      <div className="chatscreen-input-container">
+      <SuggestedPrompts onSelectPrompt={handleSelectPrompt} isSending={isSending} prompts={chatbotPrompts} />
+          <div className="chatscreen-input-container">
         <input
           className="chatscreen-input"
           value={currentMessage}
           onChange={(e) => setCurrentMessage(e.target.value)}
           placeholder="Type your message..."
           onKeyDown={(e) => { if (e.key === 'Enter' && !isSending) handleSendMessage(); }}
-          disabled={isSending} // Disable the input while sending
+          disabled={isSending}
         />
         <button
           className="chatscreen-send-button"
           onClick={handleSendMessage}
-          disabled={isSending} // Disable the button while sending
+          disabled={isSending}
         >
           Send
         </button>
       </div>
     </div>
-  );  
+  );
 }
+
+export default ChatScreen;
