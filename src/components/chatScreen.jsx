@@ -6,6 +6,26 @@ import nurAlHudaImg from '../img/about-nbg.png';
 import nurAlHudaForKidsImg from '../img/nuralhudaforkids.png';
 import islamicSocraticMethodImg from '../img/islamic_socratic_method.png';
 import iqraWithUsImg from '../img/Nuralhuda-applogo.png';
+import { marked } from 'marked';
+import parse from 'html-react-parser';
+import DOMPurify from 'dompurify';
+
+const parseMarkdown = (markdownText) => {
+  // Use marked to convert Markdown text to HTML
+  const html = marked(markdownText);
+  // Sanitize the HTML using DOMPurify
+  const cleanHtml = DOMPurify.sanitize(html);
+  // Return the sanitized HTML
+  return cleanHtml;
+};
+
+const RenderMarkdown = ({ markdown }) => {
+  // Convert markdown to sanitized HTML then parse it to JSX
+  const html = parseMarkdown(markdown);
+  return <>{parse(html)}</>;
+};
+
+
 
 
 // Initialize OpenAI client with the default API key
@@ -68,16 +88,6 @@ async function createRun(threadId, assistantId) {
     throw error;
   }
 }
-
-const extractLatestAssistantMessage = (messages) => {
-  const assistantMessages = messages.data
-    .filter(message => message.role === 'assistant' || message.role === 'system')
-    .map(message => ({
-      sender: 'assistant',
-      text: message.content[0].text.value, // Make sure this matches the structure of your API response
-    }));
-  return assistantMessages[assistantMessages.length - 1]; // Return the last message
-};
 
 const titleToChatbotTypeMap = {
   'Nur Al Huda': 'nurAlHuda',
@@ -207,11 +217,13 @@ const ChatScreen = () => {
 
         {/* Message container will also show loading dots when isSending is true */}
         <div ref={scrollViewRef} className="chatscreen-messages-container">
-{messages.map((message, index) => (
+        {messages.map((message, index) => (
   <div key={index} className={`chatscreen-message-container ${message.sender === 'user' ? 'chatscreen-user-message' : 'chatscreen-bot-message'}`}>
-    <span className="chatscreen-message-text">{message.text}</span>
+    <RenderMarkdown markdown={message.text} />
   </div>
 ))}
+
+
 
 {isSending && (
             <div className="chatscreen-message-container chatscreen-bot-message">
