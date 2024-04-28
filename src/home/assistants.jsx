@@ -16,9 +16,9 @@ export const Assistants = (props) => {
     navigate(`/chat/${encodeURIComponent(chatbotType)}`);
   };
 
-  return (
-    <div id="assistants" className="assistants-section text-center"> {/* Added assistants-section class */}
-      <div className="container">
+    return (
+      <div id="assistants" className="assistants-section text-center">
+        <div className="container">
         <div className="section-title">
           <h2>Assistants</h2>
           <p>
@@ -29,8 +29,7 @@ export const Assistants = (props) => {
         <div className="row">
           <div className="assistants-items">
             {props.data ? props.data.map((d, i) => (
-              <div key={`${d.title}-${i}`} className="col-sm-6 col-sm-6 col-md-6 col-lg-3">
-                {/* Button with the title */}
+              <div key={`${d.title}-${i}`} className="col-sm-6 col-md-6 col-lg-3">
                 <button
                   className="assistant-title-button"
                   onClick={() => navigateToChat(titleToChatbotTypeMap[d.title] || 'default')}
@@ -44,7 +43,12 @@ export const Assistants = (props) => {
                   style={{ cursor: 'pointer' }}
                 >
                   <div className="hover-bg">
-                    <img src={d.smallImage} className="img-responsive" alt={d.title} />
+                    <img
+                      src={d.smallImage}
+                      className={`img-responsive ${d.title === 'Nur Al Huda For Kids' ? 'nur-al-huda-kids-img' : ''}`}
+                      alt={d.title}
+                      style={d.title === 'Nur Al Huda For Kids' ? { maxWidth: '230px' } : {}}
+                    />
                     <div className="hover-text">
                       <h4>{d.title}</h4>
                     </div>
@@ -57,4 +61,4 @@ export const Assistants = (props) => {
       </div>
     </div>
   );
-};
+  };

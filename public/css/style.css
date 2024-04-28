@@ -36,10 +36,9 @@ h5 {
   line-height: 20px;
 }
 h6{
+  justify-content: center;
   text-transform: uppercase;
   margin: 0 0 20px;
-  font-weight: 800;
-  font-size: 36px;
   color: #dcca98;
 }
 p {
@@ -216,7 +215,7 @@ a:focus,
   /*display: table;*/
   width: 100%;
   padding: 0;
-  background: url(../img/intro-bg.jpg) center center no-repeat;
+  background: url(../src/img/intro-bg.jpg) center center no-repeat;
   background-color: #dcca98;
   -webkit-background-size: cover;
   -moz-background-size: cover;
@@ -793,29 +792,28 @@ label {
   -webkit-overflow-scrolling: touch; /* Enables smooth scrolling in iOS devices */  
 }
 
-.chatscreen-header-title {
-  color: #dcca98;
-  font-size: 25px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 60px;
-}
-
 .chatscreen-header-container {
   display: flex;
+  justify-content: space-between; /* This will space out the home button, title, and spacer */
   align-items: center;
   padding: 10px;
-  border-bottom: 1px solid #ccc;
+  position: relative; /* Needed for absolute positioning of children if required */
+}
+
+.chatscreen-header-title {
+  position: absolute;
+  font-size: 25px;
+  color: #dcca98; /* Color of your title */
 }
 
 .chatscreen-home-button {
   padding: 10px;
-  font-size: 16px;
+  font-size: 25px;
   font-weight: bold;
-  color: #dcca98;
-  background-color: transparent;
-  border: #6372ff;
+  color: #fff;
+  background-color: #57a3e1;
+  border-radius: 20px;
+  border: none; /* Assuming no border is needed */
   cursor: pointer;
 }
 
@@ -899,12 +897,12 @@ label {
 @media (max-width: 768px) {
   .chatscreen-header-title {
     text-align: center; /* Center the title text */
-    font-size: 4vw; /* Use viewport width for responsive font size */
-    padding-top: 10px; /* Add padding to ensure it's not cut off */
+    padding-top: 5px; /* Add padding to ensure it's not cut off */
+    font-size: 20px;
 
   }
   .chatscreen-container {
-    padding-top: 10vh;
+    padding-top: 1vh;
     padding-bottom: 10vh; /* Add padding at the bottom to avoid URL overlap */
     padding-bottom: env(safe-area-inset-bottom); /* Additional padding for iPhone X and later */
   }
@@ -931,6 +929,7 @@ label {
   .chatscreen-messages-container,
   .chatscreen-input-container {
     padding: 0 15px; /* Add padding on smaller screens */
+    padding-bottom: 5vh; /* Add padding to ensure it's not cut off */
   }
 
   .chatscreen-input,
@@ -948,16 +947,16 @@ label {
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 500px) {
   .chatscreen-header-title {
     text-align: center; /* Center the title text */
-    font-size: 4vw; /* Use viewport width for responsive font size */
-    padding-top: 10vh; /* Add padding to ensure it's not cut off */
+    padding-top: 5vh; /* Add padding to ensure it's not cut off */
+    font-size: 16px;
 
   }
 
   .chatscreen-container {
-    padding-top: 10vh;
+    padding-top: 5vh;
     padding-bottom: 10vh; /* Add padding at the bottom to avoid URL overlap */
     padding-bottom: env(safe-area-inset-bottom); /* Additional padding for iPhone X and later */
   }
@@ -970,6 +969,10 @@ label {
     font-size: 14px; /* Smaller font size for prompt buttons */
     padding: 8px 16px; /* Smaller padding for prompt buttons */
     margin-right: 5px;
+  }
+  .chatscreen-input-container {
+    padding: 0 15px; /* Add padding on smaller screens */
+    padding-bottom: 5vh; /* Add padding to ensure it's not cut off */
   }
 }
 
@@ -988,6 +991,10 @@ label {
     padding: 8px 16px;
     font-size: 14px;
     margin-right: 5px;
+  }
+  .chatscreen-input-container {
+    padding: 0 15px; /* Add padding on smaller screens */
+    padding-bottom: 5vh; /* Add padding to ensure it's not cut off */
   }
 }
 
@@ -1044,42 +1051,84 @@ input[type="button"] {
   height: 50vh; /* Maintains the aspect ratio of the image */
  }
 
+
  /* Login.css */
-.login-container {
+ .login-container {
+  position: relative; /* Add this line */
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #f7f7f7;
+  background-color: #114040; /* Updated background color */
+  /* ... */
 }
 
 .login-form {
   padding: 2em;
-  background: white;
+  background: #dcca98; /* Light background for form */
   border-radius: 5px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  max-width: 400px;
-  width: 100%;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Slightly stronger shadow */
+  max-width: 600px; /* Larger max-width for larger screens */
+  width: 50%; /* Set to 50% for larger screens */
+  margin: auto; /* Center the form in the available space */
 }
+
 
 .login-form h2 {
   text-align: center;
   margin-bottom: 1em;
+  color: #144c4c; /* Header color */
+}
+
+@media (max-width: 1024px) {
+  .login-form {
+    width: 70%; /* Set to 70% for medium screens */
+  }
+}
+
+@media (max-width: 600px) {
+  .login-form {
+    width: 90%; /* Set to 90% for small screens */
+    padding: 1em;
+  }
+
+  .input-group input,
+  .login-button,
+  .logout-button {
+    padding: 0.5em;
+  }
 }
 
 .input-group {
-  margin-bottom: 1em;
+  margin-bottom: 1.5em; /* Increased margin for better spacing */
+}
+
+.login-home-button {
+  position: absolute; /* Position the element absolutely within its relative parent */
+  top: 10px; /* Adjust as needed */
+  left: 10px; /* Adjust as needed */
+  padding: 10px;
+  align-items: left;
+  justify-content: left;
+  font-size: 25px;
+  font-weight: bold;
+  color: #144c4c;
+  border-radius: 20px;
+  background-color: #dcca98;
+  border: #6372ff;
+  cursor: pointer;
 }
 
 .input-group label {
   display: block;
   margin-bottom: 0.5em;
+  color: #144c4c; /* Label color */
 }
 
 .input-group input {
   width: 100%;
   padding: 0.75em;
-  border: 1px solid #ccc;
+  border: 1px solid #114040; /* Border color */
   border-radius: 4px;
   box-sizing: border-box;
 }
@@ -1087,15 +1136,42 @@ input[type="button"] {
 .login-button {
   width: 100%;
   padding: 1em;
-  background-color: #0056b3;
+  background-color: #144c4c; /* Primary button color */
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   font-size: 1em;
+  transition: background-color 0.3s; /* Smooth transition for hover effect */
 }
 
 .login-button:hover {
-  background-color: #003d82;
+  background-color: #114040; /* Darker shade on hover */
 }
 
+.logout-button {
+  width: 100%;
+  padding: 1em;
+  margin-top: 1em; /* Added margin for spacing */
+  background-color: #ccc; /* Neutral logout button */
+  color: #333;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: background-color 0.3s;
+}
+
+.logout-button:hover {
+  background-color: #bbb;
+}
+
+@media (max-width: 600px) {
+  .login-form {
+    padding: 1em;
+  }
+
+  .input-group input, .login-button, .logout-button {
+    padding: 0.5em;
+  }
+}
