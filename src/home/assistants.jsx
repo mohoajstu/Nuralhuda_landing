@@ -26,7 +26,7 @@ export const Assistants = (props) => {
           </p>
           <h3>Try Us Now!</h3>
         </div>
-        <div className="row">
+          <div className="row">
           <div className="assistants-items">
             {props.data ? props.data.map((d, i) => (
               <div key={`${d.title}-${i}`} className="col-sm-6 col-md-6 col-lg-3">
@@ -47,7 +47,7 @@ export const Assistants = (props) => {
                       src={d.smallImage}
                       className={`img-responsive ${d.title === 'Nur Al Huda For Kids' ? 'nur-al-huda-kids-img' : ''}`}
                       alt={d.title}
-                      style={d.title === 'Nur Al Huda For Kids' ? { maxWidth: '230px' } : {}}
+                      style={d.title === 'Nur Al Huda For Kids' ? { width: 'auto', maxWidth: '250px', height: 'auto' } : {}}
                     />
                     <div className="hover-text">
                       <h4>{d.title}</h4>
