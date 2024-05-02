@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from 'react-router-dom'; // Add this import
 
 export const Navigation = (props) => {
   return (
@@ -22,12 +23,9 @@ export const Navigation = (props) => {
           </a>
         </div>
 
-        <div
-          className="collapse navbar-collapse"
-          id="bs-example-navbar-collapse-1"
-        >
+        <div className="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
           <ul className="nav navbar-nav navbar-right">
-          <li>
+            <li>
               <a href="#about" className="page-scroll">
                 About
               </a>
@@ -56,6 +54,9 @@ export const Navigation = (props) => {
               <a href="#contact" className="page-scroll">
                 Contact
               </a>
+            </li>
+            <li>
+              <Link to="/login">Login</Link>  {/* Add this line */}
             </li>
           </ul>
         </div>
