@@ -817,22 +817,18 @@ padding: 10px;
   padding: 10px;
   font-size: 25px;
   font-weight: bold;
-  color: #fff;
-  background-color: #57a3e1;
+  color: #144c4c;
   border-radius: 20px;
-  border: none; /* Assuming no border is needed */
+  background-color: #dcca98;
+  border: #6372ff;
   cursor: pointer;
 }
 
 .chatscreen-messages-container {
   flex: 1;
   overflow-y: auto;
-  padding: 10px;
-}
-
-.chatscreen-message-container {
-  border-radius: 10px;
-  padding: 10px;
+  padding: 20px;
+  border-radius: 20px;
   margin-bottom: 10px;
   max-width: 80%;
 }
@@ -842,11 +838,15 @@ padding: 10px;
   background-color: #abdbe3; /* Light blue background */
   margin-left: auto; /* Ensures it sticks to the right */
   max-width: 80%; /* Optional: limits the maximum width of the message */
+  border-radius: 15px;
+  padding: 5px;
 }
 
 .chatscreen-bot-message {
   align-self: flex-start;
   background-color: #DCF8C6;
+  border-radius: 15px;
+  padding: 5px;
 }
 
 .chatscreen-message-text {
@@ -898,8 +898,9 @@ padding: 10px;
   cursor: pointer;
     transition: background-color 0.3s ease;
     -webkit-transition: background-color 0.3s ease;  
-}
-/* Responsive settings for various devices */
+  }
+
+  /* Responsive settings for various devices */
 @media (min-width: 1200px) {
   .chatscreen-header-title {
     position: absolute;

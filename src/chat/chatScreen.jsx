@@ -133,6 +133,18 @@ const ChatScreen = () => {
   const chatbotPrompts = titleToPromptMap[assistantTitle] || [];
   const chatbotImage = titleToImageMap[assistantTitle];
   const assistantId = titleToAssistantIDMap[assistantTitle];;
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const titleSize = windowWidth >= 1200 ? '3em' : windowWidth >= 992 ? '2.5em' : windowWidth >= 768 ? '2em' : '1.5em';
 
   useEffect(() => {
     scrollViewRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -209,11 +221,12 @@ const ChatScreen = () => {
       <div className="chatscreen-container">
       
         <div className="chatscreen-header-container">
-        
         <button className="chatscreen-home-button" onClick={handleGoToHome}>
           Home
         </button>
-        <Header title={assistantTitle} />
+        <div className="chatscreen-header-title" style={{ fontSize: titleSize }}>
+          {assistantTitle}
+        </div>
       </div>
 
         {/* Message container will also show loading dots when isSending is true */}
@@ -223,8 +236,6 @@ const ChatScreen = () => {
     <RenderMarkdown markdown={message.text} />
   </div>
 ))}
-
-
 
 {isSending && (
             <div className="chatscreen-message-container chatscreen-bot-message">
