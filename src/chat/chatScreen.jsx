@@ -26,8 +26,6 @@ const RenderMarkdown = ({ markdown }) => {
 };
 
 
-
-
 // Initialize OpenAI client with the default API key
 const openai = new OpenAI({apiKey: process.env.REACT_APP_OPENAI_API_KEY_NUR_ALHUDA, dangerouslyAllowBrowser: true});
 
@@ -36,6 +34,7 @@ const Header = ({ title }) => (
     <h6>{title}</h6>
   </div>
 );
+
 const SuggestedPrompts = ({ onSelectPrompt, isSending, prompts }) => (
   <div className="chatscreen-prompts-container">
     {prompts.map((prompt, index) => (
@@ -208,11 +207,13 @@ const ChatScreen = () => {
 
   return (
       <div className="chatscreen-container">
-        <Header title={assistantTitle} />
+      
         <div className="chatscreen-header-container">
+        
         <button className="chatscreen-home-button" onClick={handleGoToHome}>
           Home
         </button>
+        <Header title={assistantTitle} />
       </div>
 
         {/* Message container will also show loading dots when isSending is true */}

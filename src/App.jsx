@@ -1,21 +1,16 @@
-import React, { useState, useEffect } from "react";
-import { Routes, Route} from 'react-router-dom'; // Use only Routes and Route here
-import { Navigation } from "./components/navigation";
-import { Header } from "./components/header";
-import { Meetyourassistants } from "./components/meetyourassistants";
-import { About } from "./components/about";
-import { Features } from "./components/features";
-import { Assistants } from "./components/assistants";
-import { Team } from "./components/Team";
-import { Contact } from "./components/contact";
-import JsonData from "./data/data.json";
-import SmoothScroll from "smooth-scroll";
-import "./App.css";
-//import useAuth from "./hooks/useAuth";
-import Login  from "./components/Login.jsx";
-import ProtectedRoute from "./utils/ProtectedRoute";
-import ChatScreen from './components/chatScreen';
+import React, { useState, useEffect } from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { auth } from './config/firebase-config'; // Ensure path accuracy
+import { useLocation } from 'react-router-dom';
 
+import {Navigation} from './home/navigation'; // Adjust according to your structure
+import Home from './home/Home';
+import Login from './login/Login';
+import ChatScreen from './chat/chatScreen';
+import JsonData from './data/data.json';
+import SmoothScroll from 'smooth-scroll';
+import './App.css';
 
 export const scroll = new SmoothScroll('a[href*="#"]', {
   speed: 1000,
@@ -23,37 +18,29 @@ export const scroll = new SmoothScroll('a[href*="#"]', {
 });
 
 const App = () => {
-  const [landingPageData, setLandingPageData] = useState({});
+  const location = useLocation();
+  const [user, loading] = useAuthState(auth);
+  const [landingPageData, setLandingPageData] = useState(null);  // Initialize to null
+
   useEffect(() => {
-    setLandingPageData(JsonData);
+    setLandingPageData(JsonData);  // Assuming JsonData is immediately available or simulated as such
   }, []);
 
-  //const { user } = useAuth();
-
+  if (loading) {
+    return <div>Loading...</div>; // Render loading screen while checking auth state
+  }
+console.log(user);
   return (
-    <>
-      <Navigation />
-      <Header data={landingPageData.Header} />
+    <div className="App">
+      {location.pathname === '/' && <Navigation />}
       <Routes>
+      <Route path="/" element={landingPageData ? <Home data={landingPageData} /> : <div>Loading...</div>} />
         <Route path="/login" element={<Login />} />
-        <Route element={<ProtectedRoute />}>
-          {/* Protected routes go here */}
-          <Route path="/chat/:chatbotType" element={<ChatScreen />} />
-        </Route>
-                  <Route index element={
-            <>
-              <About data={landingPageData.About} />
-              <Meetyourassistants data={landingPageData.Meetyourassistants} />
-              <Assistants data={landingPageData.Assistants} />
-              <Features data={landingPageData.Features} />
-              <Team data={landingPageData.Team} />
-              <Contact data={landingPageData.Contact} />
-            </>
-          } />
-          {/* If you have other routes that require the user to be logged in, they should also be defined here */}
-        {/* If you have additional routes, they should be defined here as well */}
+        <Route path="/chat/:chatbotType" element={
+          user ? <ChatScreen /> : <Navigate to="/login" replace state={{ from: location.pathname }} />
+        } />
       </Routes>
-    </>
+    </div>
   );
 };
 
