@@ -824,29 +824,38 @@ padding: 10px;
   cursor: pointer;
 }
 
+
+
+/* Assuming this container is within a flex parent for centering */
 .chatscreen-messages-container {
   flex: 1;
+  display: flex; /* Added to make this a flex container */
+  flex-direction: column; /* Ensures messages are stacked vertically */
   overflow-y: auto;
   padding: 20px;
   border-radius: 20px;
   margin-bottom: 10px;
   max-width: 80%;
+  width: 100%;
+  margin: auto; /* This will help center it horizontally within its parent */
+  box-sizing: border-box; /* Includes padding in width calculation */
+}
+
+.chatscreen-user-message, .chatscreen-bot-message {
+  max-width: 80%;
+  border-radius: 15px;
+  padding: 10px; /* Reduced padding, adjust as needed */
+  margin-bottom: 10px; /* Adds space between messages */
 }
 
 .chatscreen-user-message {
-  align-self: flex-end; /* Aligns the message to the right */
-  background-color: #abdbe3; /* Light blue background */
-  margin-left: auto; /* Ensures it sticks to the right */
-  max-width: 80%; /* Optional: limits the maximum width of the message */
-  border-radius: 15px;
-  padding: 5px;
+  align-self: flex-end; /* Keeps it on the right */
+  background-color: #abdbe3;
 }
 
 .chatscreen-bot-message {
-  align-self: flex-start;
+  align-self: flex-start; /* Keeps it on the left */
   background-color: #DCF8C6;
-  border-radius: 15px;
-  padding: 5px;
 }
 
 .chatscreen-message-text {
