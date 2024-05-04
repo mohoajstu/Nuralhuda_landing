@@ -29,12 +29,6 @@ const RenderMarkdown = ({ markdown }) => {
 // Initialize OpenAI client with the default API key
 const openai = new OpenAI({apiKey: process.env.REACT_APP_OPENAI_API_KEY_NUR_ALHUDA, dangerouslyAllowBrowser: true});
 
-const Header = ({ title }) => (
-  <div className="chatscreen-header-title">
-    <h6>{title}</h6>
-  </div>
-);
-
 const SuggestedPrompts = ({ onSelectPrompt, isSending, prompts }) => (
   <div className="chatscreen-prompts-container">
     {prompts.map((prompt, index) => (
