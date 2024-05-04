@@ -29,7 +29,7 @@ export const Assistants = (props) => {
           <div className="row">
           <div className="assistants-items">
             {props.data ? props.data.map((d, i) => (
-              <div key={`${d.title}-${i}`} className="col-sm-6 col-md-6 col-lg-3">
+              <div key={`${d.title}-${i}`} className="col-6 col-sm-4 col-md-4 col-lg-3 col-xl-3">
                 <button
                   className="assistant-title-button"
                   onClick={() => navigateToChat(titleToChatbotTypeMap[d.title] || 'default')}
