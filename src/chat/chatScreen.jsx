@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect, useCallback} from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { createThread, createMessage, createRun, titleToAssistantIDMap } from './openAIUtils';
@@ -10,7 +9,6 @@ import nurAlHudaForKidsImg from '../img/nuralhudaforkids.png';
 import islamicSocraticMethodImg from '../img/islamic_socratic_method.png';
 import iqraWithUsImg from '../img/Nuralhuda-applogo.png';
 
-import OpenAI from "openai";
 
 
 const titleToChatbotTypeMap = {
@@ -37,11 +35,6 @@ const titleToPromptMap = {
   'Iqra With Us': ["Let's read a surah together", "Teach me about Tajweed", "What is Iqra?", "Quranic Arabic lesson"],
 };
 
-const openai = new OpenAI({
-  apiKey: process.env.REACT_APP_OPENAI_API_KEY_NUR_ALHUDA,
-  dangerouslyAllowBrowser: true,
-});
-
 const ChatScreen = () => {
   const { chatbotType } = useParams();
   const navigate = useNavigate();
@@ -54,7 +47,8 @@ const ChatScreen = () => {
   const assistantTitle = Object.keys(titleToChatbotTypeMap).find(key => titleToChatbotTypeMap[key] === chatbotType);
   const chatbotPrompts = titleToPromptMap[assistantTitle] || [];
   const chatbotImage = titleToImageMap[assistantTitle];
-  const assistantId = titleToAssistantIDMap[assistantTitle];;
+  const assistantId = titleToAssistantIDMap[assistantTitle];
+  const [streamActive, setStreamActive] = useState(false);  // New state to track stream activity
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
   useEffect(() => {
@@ -71,56 +65,84 @@ const ChatScreen = () => {
   useEffect(() => {
     scrollViewRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+  
+
+  useEffect(() => {
+    let stream;
+    if (threadId) {
+      stream = createRun(threadId, handleNewMessage, handleError);
+      setStreamActive(true);  // Set stream as active
+      return () => {
+        if (stream) {
+          stream.unsubscribe();
+          setStreamActive(false);  // Clean up and mark stream as inactive
+        }
+      };
+    }
+  }, [threadId]);  // Dependency array
+
+  const handleNewMessage = (message) => {
+    setMessages(prevMessages => [...prevMessages, message]);
+  };
+
+  const handleError = (error) => {
+    console.error('Stream error:', error);
+    setStreamActive(false);  // Mark stream as inactive on error
+  };
 
   const handleSendMessage = async () => {
     if (isSending || !currentMessage.trim()) return;
-    const userMessage = { sender: 'user', text: currentMessage.trim() };
-      setMessages((prevMessages) => [...prevMessages, userMessage]);
-      setCurrentMessage('');
-    setShowImage(false); // Hide the image after sending a message
-    setIsSending(true);
 
-    let localThreadId = threadId; 
-  
+    setIsSending(true);
+    const userMessage = { sender: 'user', text: currentMessage.trim() };
+    setMessages(prevMessages => [...prevMessages, userMessage]);
+    setCurrentMessage('');
+    setShowImage(false);
+
+    let localThreadId = threadId;
+
     if (!localThreadId) {
-      try {
-        const threadResponse = await createThread();
-        if (threadResponse?.id) {
-          setThreadId(threadResponse.id);
-          localThreadId = threadResponse.id;
-        } else {
-          throw new Error('Thread creation failed: No ID returned');
+        try {
+            const threadResponse = await createThread();
+            if (threadResponse?.id) {
+                setThreadId(threadResponse.id);
+                localThreadId = threadResponse.id;
+            } else {
+                throw new Error('Thread creation failed: No ID returned');
+            }
+        } catch (error) {
+            console.error("Error creating thread:", error);
+            setIsSending(false);
+            return;
         }
-      } catch (error) {
-        console.error("Error creating thread:", error);
-        setIsSending(false);
-        return;
-      }
     }
+
+    try {
+        await createMessage(localThreadId, currentMessage);
+        createRun(localThreadId, assistantId, handleNewMessage, handleError);
+    } catch (error) {
+        console.error("Error sending message:", error);
+    } finally {
+        setIsSending(false);
+    }
+};
+
+/*  
     try {
       await createMessage(localThreadId, currentMessage);
-      //setMessages(prev => [...prev, { sender: 'user', text: currentMessage }]);
-      
-      const runResponse = await createRun(localThreadId, assistantId);
-    if (runResponse?.status === "completed") {
-      const newMessagesResponse = await openai.beta.threads.messages.list(localThreadId);
-      const formattedMessages = newMessagesResponse.data.map(message => ({
-        sender: message.role === 'system' ? 'assistant' : message.role,
-        text: message.content[0].text.value,
-      }));
-      // This will set the messages state to only the latest set of messages from the thread
-      setMessages(formattedMessages.reverse());
-    } else {
-      // The run has not completed yet, handle accordingly
-    }
+      createRun(localThreadId, assistantId, (eventType, data) => {
+        if (eventType === 'textDelta' || eventType === 'toolCallDelta') {
+          setMessages(prevMessages => [...prevMessages, { sender: 'assistant', text: data }]);
+        }
+      });
     } catch (error) {
       console.error("Communication error:", error);
     } finally {
       setIsSending(false);
-      setCurrentMessage('');
     }
   };
-  
+   */
+
   const handleSelectPrompt = (prompt) => {
     setCurrentMessage(prompt);
     handleSendMessage();
@@ -155,7 +177,7 @@ const ChatScreen = () => {
         <div ref={scrollViewRef} className="chatscreen-messages-container">
         {messages.map((message, index) => (
   <div key={index} className={`chatscreen-message-container ${message.sender === 'user' ? 'chatscreen-user-message' : 'chatscreen-bot-message'}`}>
-    <RenderMarkdown markdown={message.text} />
+    {message.text ? <RenderMarkdown markdown={message.text} /> : null}
   </div>
 ))}
 
@@ -200,4 +222,3 @@ const ChatScreen = () => {
 }
 
 export default ChatScreen;
-

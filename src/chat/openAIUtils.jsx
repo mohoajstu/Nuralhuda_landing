@@ -32,12 +32,28 @@ export async function createMessage(threadId, newMessage) {
 }
 
 // Function to initiate a run with the assistant
-export async function createRun(threadId, assistantId) {
+
+export function createRun(threadId, assistantId, handleMessage, handleError) {
   try {
-    const response = await openai.beta.threads.runs.createAndPoll(threadId, {
-      assistant_id: assistantId,
+    const stream = openai.beta.threads.runs.stream(threadId, {
+      assistant_id: assistantId
+    })
+    .on('textDelta', (textDelta) => {
+      if (textDelta.value) {
+        // Handle new message text here
+        handleMessage({ sender: 'assistant', text: textDelta.value });
+      }
+    })
+  
+    .on('error', (error) => {
+      console.error("Stream error:", error);
+      if (handleError) {
+        handleError(error);
+      }
     });
-    return response;
+
+    return stream;
+
   } catch (error) {
     console.error("Error initiating run with assistant:", error);
     throw error;
