@@ -213,25 +213,25 @@ const ChatScreen = () => {
 
   return (
       <div className="chatscreen-container">
-      
         <div className="chatscreen-header-container">
-        <button className="chatscreen-home-button" onClick={handleGoToHome}>
-          Home
-        </button>
-        <div className="chatscreen-header-title" style={{ fontSize: titleSize }}>
-          {assistantTitle}
+          <button className="chatscreen-home-button" onClick={handleGoToHome}>
+            Home
+          </button>
+          <div className="chatscreen-header-title" style={{ fontSize: titleSize }}>
+            {assistantTitle}
+          </div>
         </div>
-      </div>
 
         {/* Message container will also show loading dots when isSending is true */}
-        <div ref={scrollViewRef} className="chatscreen-messages-container">
-        {messages.map((message, index) => (
-  <div key={index} className={`chatscreen-message-container ${message.sender === 'user' ? 'chatscreen-user-message' : 'chatscreen-bot-message'}`}>
-    <RenderMarkdown markdown={message.text} />
-  </div>
-))}
 
-{isSending && (
+        <div ref={scrollViewRef} className="chatscreen-messages-container">
+          {messages.map((message, index) => (
+            <div key={index} className={`chatscreen-message-container ${message.sender === 'user' ? 'chatscreen-user-message' : 'chatscreen-bot-message'}`}>
+              <RenderMarkdown markdown={message.text} />
+            </div>
+          ))}
+
+          {isSending && (
             <div className="chatscreen-message-container chatscreen-bot-message">
               {/* Render your typing indicator here */}
               <div className="typing-indicator">
@@ -244,10 +244,10 @@ const ChatScreen = () => {
         </div>
         
         {showImage && chatbotImage && (
-        <div className="chatscreen-message-image">
-          <img src={chatbotImage} alt={assistantTitle + " Image"} />
-        </div>
-      )}
+          <div className="chatscreen-message-image">
+            <img src={chatbotImage} alt={assistantTitle + " Image"} />
+          </div>
+        )}
 
       <SuggestedPrompts onSelectPrompt={handleSelectPrompt} isSending={isSending} prompts={chatbotPrompts} />
           <div className="chatscreen-input-container">
@@ -268,6 +268,7 @@ const ChatScreen = () => {
         </button>
       </div>
     </div>
+    
   );
 }
 

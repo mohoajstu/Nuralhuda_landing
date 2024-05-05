@@ -817,10 +817,10 @@ padding: 10px;
 
 .chatscreen-home-button {
   padding: 10px;
-  font-size: 25px;
+  font-size: 22px;
   font-weight: bold;
   color: #144c4c;
-  border-radius: 20px;
+  border-radius: 10px;
   background-color: #dcca98;
   border: #6372ff;
   cursor: pointer;
@@ -910,6 +910,24 @@ padding: 10px;
     transition: background-color 0.3s ease;
     -webkit-transition: background-color 0.3s ease;  
   }
+.chatscreen-message-image {
+  margin: 100px 20px; /* Spacing around the image for better layout */
+  height: 50vh;
+  padding: 5px; /* Optional padding around the image */
+  text-align: center; /* Centers the image in the div */
+  background-color: transparent; /* Light background for the image area */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chatscreen-message-image img {
+  max-width: 100%; /* Makes the image scale horizontally */
+  max-height: 100%; /* Makes the image scale vertically */
+  object-fit: contain; /* Maintains aspect ratio and ensures the image fits within the container */
+  width: auto; /* Allows the image width to adjust automatically */
+  height: auto; /* Allows the image height to adjust automatically */
+ }
 
   /* Responsive settings for various devices */
 @media (min-width: 1200px) {
@@ -985,7 +1003,6 @@ padding: 10px;
   .chatscreen-messages-container,
   .chatscreen-input-container {
     padding: 0 15px; /* Add padding on smaller screens */
-    padding-bottom: 5vh; /* Add padding to ensure it's not cut off */
   }
 
   .chatscreen-input,
@@ -1004,20 +1021,31 @@ padding: 10px;
 }
 
 @media (max-width: 480px) {
-  .chatscreen-header-title {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    color: #dcca98; /* Ensure the color is appropriate for visibility */
-    font-size: 1.2em;
-    text-align: center; /* Center the text */
-    padding: 20px 0; /* Add padding to give some spacing */
+  .chatscreen-messages-container{
+    margin-top: 70px;
+    margin-bottom: 110px;
+    max-width: 90%;    
   }
 
-  .chatscreen-container {
-    padding-top: 5vh;
-    padding-bottom: 10vh; /* Add padding at the bottom to avoid URL overlap */
-    padding-bottom: env(safe-area-inset-bottom); /* Additional padding for iPhone X and later */
+  .chatscreen-header-title {
+    font-weight: 550;
+    text-align: center;
+    width: 50%;
+  }
+
+  .chatscreen-header-container {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    color: #dcca98; /* Ensure the color is appropriate for visibility */
+    text-align: center; /* Center the text */
+    padding: 10px 0 0 10px; /* Add padding to give some spacing */
+    z-index: 1000;
+  }
+  
+  .chatscreen-message-image {
+    position: fixed;
+    top: calc(50%-25vh);
   }
 
   .chatscreen-message-text {
@@ -1030,8 +1058,21 @@ padding: 10px;
     margin-right: 5px;
   }
   .chatscreen-input-container {
-    padding: 0 15px; /* Add padding on smaller screens */
-    padding-bottom: 5vh; /* Add padding to ensure it's not cut off */
+    position: fixed;
+    left: -20;
+    bottom: 0;
+    width: 100%;
+    z-index: 1000;
+  }
+  .chatscreen-input{
+    margin-left: 10px;
+  }
+  .chatscreen-prompts-container{
+    position: fixed;
+    bottom: 60px;
+    width: 100%;
+    z-index: 999;
+    padding-left: 5px;
   }
 }
 
@@ -1074,20 +1115,6 @@ input[type="button"] {
 .typing-indicator-dot:nth-child(3) {
   animation-delay: 0.4s;
 }
-
-.chatscreen-message-image {
-  margin: 10px 20px; /* Spacing around the image for better layout */
-  height: 70vh;
-  padding: 5px; /* Optional padding around the image */
-  text-align: center; /* Centers the image in the div */
-  background-color: transparent; /* Light background for the image area */
-}
-
-.chatscreen-message-image img {
-  width: 50vh; /* Makes the image fully occupy the container's width */
-  height: 50vh; /* Maintains the aspect ratio of the image */
- }
-
 
  /* Login.css */
  .login-container {
