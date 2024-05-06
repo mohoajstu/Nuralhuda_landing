@@ -1,86 +1,17 @@
+
 import React, { useState, useRef, useEffect, useCallback} from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import OpenAI from "openai";
+import { createThread, createMessage, createRun, titleToAssistantIDMap } from './openAIUtils';
+import { RenderMarkdown } from './RenderMarkdown';  // Assume RenderMarkdown is exported from another file
+import { SuggestedPrompts } from './SuggestedPrompts';  // Assume SuggestedPrompts is exported from another file
 // Helper images and prompts maps
 import nurAlHudaImg from '../img/about-nbg.png';
 import nurAlHudaForKidsImg from '../img/nuralhudaforkids.png';
 import islamicSocraticMethodImg from '../img/islamic_socratic_method.png';
 import iqraWithUsImg from '../img/Nuralhuda-applogo.png';
-import { marked } from 'marked';
-import parse from 'html-react-parser';
-import DOMPurify from 'dompurify';
 
-const parseMarkdown = (markdownText) => {
-  // Use marked to convert Markdown text to HTML
-  const html = marked(markdownText);
-  // Sanitize the HTML using DOMPurify
-  const cleanHtml = DOMPurify.sanitize(html);
-  // Return the sanitized HTML
-  return cleanHtml;
-};
+import OpenAI from "openai";
 
-const RenderMarkdown = ({ markdown }) => {
-  // Convert markdown to sanitized HTML then parse it to JSX
-  const html = parseMarkdown(markdown);
-  return <>{parse(html)}</>;
-};
-
-
-// Initialize OpenAI client with the default API key
-const openai = new OpenAI({apiKey: process.env.REACT_APP_OPENAI_API_KEY_NUR_ALHUDA, dangerouslyAllowBrowser: true});
-
-const SuggestedPrompts = ({ onSelectPrompt, isSending, prompts }) => (
-  <div className="chatscreen-prompts-container">
-    {prompts.map((prompt, index) => (
-      <button
-        key={index}
-        className="chatscreen-prompt-button"
-        onClick={() => onSelectPrompt(prompt)}
-        disabled={isSending}
-      >
-        {prompt}
-      </button>
-    ))}
-  </div>
-);
-
-// Function to create a thread
-async function createThread() {
-  try {
-    const thread = await openai.beta.threads.create();
-    return thread;
-  } catch (error) {
-    console.error("Error creating thread:", error);
-    throw error;
-  }
-}
-
-// Function to add a message to the thread and get a response
-async function createMessage(threadId, newMessage) {
-  try {
-    const response = await openai.beta.threads.messages.create(threadId, {
-      role: "user",
-      content: newMessage
-    });
-    return response;
-  } catch (error) {
-    console.error("Error sending message to thread:", error);
-    throw error;
-  }
-}
-
-// Function to initiate a run with the assistant
-async function createRun(threadId, assistantId) {
-  try {
-    const response = await openai.beta.threads.runs.createAndPoll(threadId, {
-      assistant_id: assistantId
-    });
-    return response;
-  } catch (error) {
-    console.error("Error initiating run with assistant:", error);
-    throw error;
-  }
-}
 
 const titleToChatbotTypeMap = {
   'Nur Al Huda': 'nurAlHuda',
@@ -106,13 +37,10 @@ const titleToPromptMap = {
   'Iqra With Us': ["Let's read a surah together", "Teach me about Tajweed", "What is Iqra?", "Quranic Arabic lesson"],
 };
 
-const titleToAssistantIDMap = {
-  'Nur Al Huda':"asst_0UOsgGXyWL19iwxrR1tqt56p",
-  'Nur Al Huda For Kids':"asst_2z9CBAnU88vgmSnZnNHZVaGz",
-  'Islamic Socratic Method':"asst_nUrppuSP9pPPjRPHDD3l13bH",
-  'Iqra With Us':"asst_NSjlngEyPNwU1PeAcmZZHC9K",
-  default: process.env.REACT_APP_NUR_ALHUDA_ASSISTANT_ID, // Use a default assistant if title is not matched
-};
+const openai = new OpenAI({
+  apiKey: process.env.REACT_APP_OPENAI_API_KEY_NUR_ALHUDA,
+  dangerouslyAllowBrowser: true,
+});
 
 const ChatScreen = () => {
   const { chatbotType } = useParams();
