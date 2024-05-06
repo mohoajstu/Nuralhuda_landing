@@ -989,6 +989,7 @@ padding: 10px;
     flex-wrap: nowrap; /* Keep prompts in a single line */
     -webkit-overflow-scrolling: touch; /* For smoother scrolling on iOS */
     align-items: center;
+    
     justify-content: flex-start; /* Align to the start to ensure all items are visible */
     gap: 10px; /* Spacing between prompts */
     padding: 10px 0; /* Padding around prompts */
@@ -1021,31 +1022,45 @@ padding: 10px;
 }
 
 @media (max-width: 480px) {
-  .chatscreen-messages-container{
-    margin-top: 70px;
+
+  .chatscreen-messages-container {
+    margin-top: 60px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
     margin-bottom: 110px;
     max-width: 90%;    
-  }
-
-  .chatscreen-header-title {
-    font-weight: 550;
-    text-align: center;
-    width: 50%;
   }
 
   .chatscreen-header-container {
     position: fixed;
     top: 0;
     width: 100%;
-    color: #dcca98; /* Ensure the color is appropriate for visibility */
-    text-align: center; /* Center the text */
-    padding: 10px 0 0 10px; /* Add padding to give some spacing */
+    height: 60px; 
     z-index: 1000;
+    background-color: #357d7c;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 15px 0 5px;
   }
-  
+  .chatscreen-header-title {
+    font-weight: 550;
+    text-align: center;
+    width: 50%;
+  }
+
   .chatscreen-message-image {
     position: fixed;
-    top: calc(50%-25vh);
+    top: calc(50% - 60vh);
+    left: 45%;
+    transform: translate(-50%);
+    width: 100%; 
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center; 
+    box-sizing: border-box;
   }
 
   .chatscreen-message-text {
@@ -1059,10 +1074,11 @@ padding: 10px;
   }
   .chatscreen-input-container {
     position: fixed;
-    left: -20;
     bottom: 0;
     width: 100%;
     z-index: 1000;
+    padding: 0;
+    overscroll-behavior: contain;
   }
   .chatscreen-input{
     margin-left: 10px;
