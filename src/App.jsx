@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from './config/firebase-config'; // Ensure path accuracy
 import { useLocation } from 'react-router-dom';
@@ -36,9 +36,7 @@ console.log(user);
       <Routes>
       <Route path="/" element={landingPageData ? <Home data={landingPageData} /> : <div>Loading...</div>} />
         <Route path="/login" element={<Login />} />
-        <Route path="/chat/:chatbotType" element={
-          user ? <ChatScreen /> : <Navigate to="/login" replace state={{ from: location.pathname }} />
-        } />
+        <Route path="/chat/:chatbotType" element={<ChatScreen />} />
       </Routes>
     </div>
   );

@@ -1,9 +1,13 @@
 
 import React, { useState, useRef, useEffect, useCallback} from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation} from 'react-router-dom';
 import { createThread, createMessage, createRun, titleToAssistantIDMap } from './openAIUtils';
 import { RenderMarkdown } from './RenderMarkdown';  // Assume RenderMarkdown is exported from another file
-import { SuggestedPrompts } from './SuggestedPrompts';  // Assume SuggestedPrompts is exported from another file
+import { SuggestedPrompts, getPromptsForType} from './SuggestedPrompts';  // Assume SuggestedPrompts is exported from another file
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { auth } from '../config/firebase-config'; // Adjust the path as necessary
+import Modal from './modal'; // Import the Modal component
+
 // Helper images and prompts maps
 import nurAlHudaImg from '../img/about-nbg.png';
 import nurAlHudaForKidsImg from '../img/nuralhudaforkids.png';
@@ -29,14 +33,6 @@ const titleToImageMap = {
   'Iqra With Us': iqraWithUsImg,
 };
 
-const titleToPromptMap = {
-  'Nur Al Huda': ["Who Are You?", "What are the 5 Pillars of Islam?", "What is Ramadan?", "New Random Fact!"],
-  'Nur Al Huda For Kids': ["Tell me a story", "Teach me a prayer", "What is Ramadan?", "New Random Fact!"],
-  'Islamic Socratic Method': ["Explain Tawhid", "What is Islamic Philosophy?", "Tell me about Ijtihad", "Socratic Method!"],
-  'AI for Islamic Research': ["Latest research on Islamic History", "AI and Quranic studies", "Islam and Science intersection", "Research Fact!"],
-  'Iqra With Us': ["Let's read a surah together", "Teach me about Tajweed", "What is Iqra?", "Quranic Arabic lesson"],
-};
-
 const openai = new OpenAI({
   apiKey: process.env.REACT_APP_OPENAI_API_KEY_NUR_ALHUDA,
   dangerouslyAllowBrowser: true,
@@ -52,10 +48,15 @@ const ChatScreen = () => {
   const [showImage, setShowImage] = useState(true);
   const scrollViewRef = useRef(null);
   const assistantTitle = Object.keys(titleToChatbotTypeMap).find(key => titleToChatbotTypeMap[key] === chatbotType);
-  const chatbotPrompts = titleToPromptMap[assistantTitle] || [];
   const chatbotImage = titleToImageMap[assistantTitle];
   const assistantId = titleToAssistantIDMap[assistantTitle];;
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const location = useLocation();
+const [user] = useAuthState(auth);
+const [isModalOpen, setIsModalOpen] = useState(false);
+const [currentPrompts, setCurrentPrompts] = useState([]);
+
+
 
   useEffect(() => {
     const handleResize = () => {
@@ -72,6 +73,11 @@ const ChatScreen = () => {
     scrollViewRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
+  useEffect(() => {
+    // Assuming `SuggestedPrompts` exports `getPromptsForType`
+    setCurrentPrompts(getPromptsForType(chatbotType));
+  }, [chatbotType]);
+  
   const handleSendMessage = async () => {
     if (isSending || !currentMessage.trim()) return;
     const userMessage = { sender: 'user', text: currentMessage.trim() };
@@ -79,6 +85,12 @@ const ChatScreen = () => {
       setCurrentMessage('');
     setShowImage(false); // Hide the image after sending a message
     setIsSending(true);
+
+    if (!currentPrompts.includes(currentMessage.trim()) && !user) {
+      setIsModalOpen(true);  // Show modal instead of redirecting
+      return;
+    }
+  
 
     let localThreadId = threadId; 
   
@@ -141,25 +153,31 @@ const ChatScreen = () => {
 
   return (
       <div className="chatscreen-container">
-      
+        <Modal 
+        isOpen={isModalOpen}
+        onClose={handleGoToHome}  // Redirect home on cancel
+        onConfirm={() => navigate('/login', { state: { from: location.pathname } })}  // Redirect to login on confirm
+        message="Please Login To Use This Premium Feature."
+      />
         <div className="chatscreen-header-container">
-        <button className="chatscreen-home-button" onClick={handleGoToHome}>
-          Home
-        </button>
-        <div className="chatscreen-header-title" style={{ fontSize: titleSize }}>
-          {assistantTitle}
+          <button className="chatscreen-home-button" onClick={handleGoToHome}>
+            Home
+          </button>
+          <div className="chatscreen-header-title" style={{ fontSize: titleSize }}>
+            {assistantTitle}
+          </div>
         </div>
-      </div>
 
         {/* Message container will also show loading dots when isSending is true */}
-        <div ref={scrollViewRef} className="chatscreen-messages-container">
-        {messages.map((message, index) => (
-  <div key={index} className={`chatscreen-message-container ${message.sender === 'user' ? 'chatscreen-user-message' : 'chatscreen-bot-message'}`}>
-    <RenderMarkdown markdown={message.text} />
-  </div>
-))}
 
-{isSending && (
+        <div ref={scrollViewRef} className="chatscreen-messages-container">
+          {messages.map((message, index) => (
+            <div key={index} className={`chatscreen-message-container ${message.sender === 'user' ? 'chatscreen-user-message' : 'chatscreen-bot-message'}`}>
+              <RenderMarkdown markdown={message.text} />
+            </div>
+          ))}
+
+          {isSending && (
             <div className="chatscreen-message-container chatscreen-bot-message">
               {/* Render your typing indicator here */}
               <div className="typing-indicator">
@@ -172,12 +190,13 @@ const ChatScreen = () => {
         </div>
         
         {showImage && chatbotImage && (
-        <div className="chatscreen-message-image">
-          <img src={chatbotImage} alt={assistantTitle + " Image"} />
-        </div>
-      )}
+          <div className="chatscreen-message-image">
+            <img src={chatbotImage} alt={assistantTitle + " Image"} />
+          </div>
+        )}
 
-      <SuggestedPrompts onSelectPrompt={handleSelectPrompt} isSending={isSending} prompts={chatbotPrompts} />
+        <SuggestedPrompts onSelectPrompt={handleSelectPrompt} isSending={isSending} chatbotType={chatbotType} />
+
           <div className="chatscreen-input-container">
         <input
           className="chatscreen-input"
@@ -196,8 +215,8 @@ const ChatScreen = () => {
         </button>
       </div>
     </div>
+    
   );
 }
 
 export default ChatScreen;
-

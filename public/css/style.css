@@ -1276,3 +1276,79 @@ input[type="button"] {
   margin-top: 1em; /* Space from the button */
   text-decoration: underline; /* Underline to indicate it's clickable */
 }
+
+
+/* Modal.css */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.modal-content {
+  padding: 2em;
+  background: #dcca98;
+  border-radius: 5px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  max-width: 600px;
+  width: 50%;
+  margin: auto;
+}
+
+.modal-message {
+  text-align: center;
+  margin-bottom: 1em;
+  color: #144c4c;
+}
+
+@media (max-width: 1024px) {
+  .modal-content {
+    width: 70%;
+  }
+}
+
+@media (max-width: 600px) {
+  .modal-content {
+    width: 90%;
+    padding: 1em;
+  }
+
+  .modal-message {
+    font-size: 1rem;
+  }
+}
+
+
+/* Modal.css */
+.modal-buttons-container {
+  display: flex;
+  gap: 10px;
+  justify-content: center; /* Centers the buttons horizontally in the container */
+  width: 100%; /* Ensures the container takes full width of its parent */
+}
+
+.modal-button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  color: #fff;
+  background-color: #114040; /* Default background */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  outline: none;
+}
+
+.modal-button.login {
+  background-color: #114040; /* Green color for positive action */
+}
+
+.modal-button.cancel {
+  background-color: #357d7c; /* Teal color, corrected from red for cancellation */
+}
