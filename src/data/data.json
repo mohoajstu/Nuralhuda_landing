@@ -39,6 +39,12 @@
       "largeImage": "img/Nuralhuda-applogo.png",
       "smallImage": "img/Nuralhuda-applogo.png",
       "type": "iqraWithUs"
+    },
+    {
+      "title": "Musilm Reference AI",
+      "largeImage": "img/muslimReferenceAI.png",
+      "smallImage": "img/muslimReferenceAI.png",
+      "type": "musilmReferenceAI"
     }
   ],
   "Features": [
@@ -108,6 +114,12 @@
       "iconImg": "img/Nuralhuda-applogo.png",
       "title": "Iqra With Us",
       "text": "As-salam-alaikum! I am Iqra With Us, your Quran Assistant. I'm here to help you understand the Quran by providing accurate Arabic texts, English translations, and concise explanations based on traditional tafseer. My aim is to offer practical insights that you can apply in your daily life.",
+      "description": ""
+    },
+    {
+      "iconImg": "img/muslimReferenceAI.png",
+      "title": "Muslim Reference AI",
+      "text": "We offer a variaty of languages English, Arabic, and more!",
       "description": ""
     }
   ]
