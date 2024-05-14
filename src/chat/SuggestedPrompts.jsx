@@ -6,9 +6,9 @@ const titleToPromptMap = {
   'nurAlHudaForKids': ["Tell me a story", "Teach me a prayer", "What is Ramadan?", "Give Me A Random Fact", "Story of a Prophet", "Learning to Fast", "Islamic Holidays", "Prayer Basics", "Good Deeds", "Allah's Creations"],
   'islamicSocraticMethod': ["Explain Tawhid", "What is Islamic Philosophy?", "Tell me about Ijtihad", "Socratic Method!", "Define Sharia", "Purpose of Zakat", "Ethics of War in Islam", "Women's Rights in Islam", "Evolution of Fiqh", "Concept of Ummah"],
   'aiForIslamicResearch': ["Latest research on Islamic History", "AI and Quranic studies", "Islam and Science intersection", "Research Fact!"],
-  'iqraWithUs': ["Let's read Surah Al-Fatiha", "Discuss Ayat Al-Kursi", "Explore Surah Al-Ikhlas", "Analyze Surah Al-Mulk", "Recite Surah Ar-Rahman", "Study Surah Al-Baqarah:255", "Learn Surah Yasin:9", "Memorize Surah Al-Muzzammil:1-4", "Understand Surah Al-Fil", "Reflect on Surah Al-Asr"]
+  'iqraWithUs': ["Let's read Surah Al-Fatiha", "Discuss Ayat Al-Kursi", "Explore Surah Al-Ikhlas", "Analyze Surah Al-Mulk", "Recite Surah Ar-Rahman", "Study Surah Al-Baqarah:255", "Learn Surah Yasin:9", "Memorize Surah Al-Muzzammil:1-4", "Understand Surah Al-Fil", "Reflect on Surah Al-Asr"],
+  'musilmReferenceAI': ["Find a Quranic verse about patience.", "Provide a Hadith on the importance of charity.", "Cite a classical Islamic text discussing Tawhid.", "What does the Quran say about justice?", "Locate a Hadith on the significance of fasting.", "Find a reference from Ghazzali on ethical behavior.", "Provide a Quranic verse about forgiveness.", "What does Sahih Bukhari say about prayer?", "Cite an Islamic scholar on the concept of Ummah.", "Find a Hadith from Sahih Muslim on kindness to neighbors."],
 };
-
 
 export const getPromptsForType = (chatbotType) => {
   return titleToPromptMap[chatbotType] || ["Fallback prompt if key is incorrect"];

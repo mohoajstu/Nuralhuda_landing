@@ -57,7 +57,7 @@ const Login = () => {
             <button className="login-home-button" onClick={handleGoToHome}>
                 Home
             </button>
-            <form className="login-form" onSubmit={showResetForm ? handlePasswordReset : handleLogin}>
+            <form validate={true} className="login-form" onSubmit={showResetForm ? handlePasswordReset : handleLogin}>
                 <h2>{showResetForm ? "Reset Password" : "Login"}</h2>
                 {error && <p className="error-message">{error}</p>}
                 

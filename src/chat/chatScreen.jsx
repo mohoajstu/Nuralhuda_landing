@@ -13,6 +13,7 @@ import nurAlHudaImg from '../img/about-nbg.png';
 import nurAlHudaForKidsImg from '../img/nuralhudaforkids.png';
 import islamicSocraticMethodImg from '../img/islamic_socratic_method.png';
 import iqraWithUsImg from '../img/Nuralhuda-applogo.png';
+import musilmReferenceAI from '../img/muslimReferenceAI.png';
 
 import OpenAI from "openai";
 
@@ -23,6 +24,7 @@ const titleToChatbotTypeMap = {
   'Islamic Socratic Method': 'islamicSocraticMethod',
   'AI for Islamic Research': 'aiForIslamicResearch',
   'Iqra With Us': 'iqraWithUs',
+  'Muslim Reference AI': 'musilmReferenceAI',
   default: 'default', 
 };
 
@@ -31,12 +33,18 @@ const titleToImageMap = {
   'Nur Al Huda For Kids': nurAlHudaForKidsImg,
   'Islamic Socratic Method': islamicSocraticMethodImg,
   'Iqra With Us': iqraWithUsImg,
+  'Muslim Reference AI': musilmReferenceAI,
 };
 
-const openai = new OpenAI({
-  apiKey: process.env.REACT_APP_OPENAI_API_KEY_NUR_ALHUDA,
-  dangerouslyAllowBrowser: true,
-});
+const assistantToApiKeyMap = {
+  'nurAlHuda': process.env.REACT_APP_OPENAI_API_KEY_NUR_ALHUDA,
+  'nurAlHudaForKids': process.env.REACT_APP_OPENAI_API_KEY_NUR_ALHUDA_FOR_KIDS,
+  'islamicSocraticMethod': process.env.REACT_APP_OPENAI_API_KEY_ISLAMIC_SOCRATIC_METHOD,
+  'aiForIslamicResearch': process.env.REACT_APP_OPENAI_API_KEY_AI_FOR_ISLAMIC_RESEARCH,
+  'iqraWithUs': process.env.REACT_APP_OPENAI_API_KEY_IQRA_WITH_US,
+  'musilmReferenceAI': process.env.REACT_APP_OPENAI_API_KEY_MUSLIM_REFERENCE_AI,
+};
+
 
 const ChatScreen = () => {
   const { chatbotType } = useParams();
@@ -56,6 +64,12 @@ const [user] = useAuthState(auth);
 const [isModalOpen, setIsModalOpen] = useState(false);
 const [currentPrompts, setCurrentPrompts] = useState([]);
 
+const apiKey = assistantToApiKeyMap[chatbotType];
+
+const openai = new OpenAI({
+  apiKey: apiKey,
+  dangerouslyAllowBrowser: true,
+});
 
 
   useEffect(() => {
@@ -91,7 +105,6 @@ const [currentPrompts, setCurrentPrompts] = useState([]);
       return;
     }
   
-
     let localThreadId = threadId; 
   
     if (!localThreadId) {
