@@ -7,6 +7,8 @@ import { SuggestedPrompts, getPromptsForType} from './SuggestedPrompts';  // Ass
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '../config/firebase-config'; // Adjust the path as necessary
 import Modal from './modal'; // Import the Modal component
+import { FaVolumeUp, FaVolumeMute } from 'react-icons/fa'; // This is the speaker icon from Font Awesome
+import '@fortawesome/fontawesome-free/css/all.min.css';
 
 // Helper images and prompts maps
 import nurAlHudaImg from '../img/about-nbg.png';
@@ -55,8 +57,11 @@ const ChatScreen = () => {
 const [user] = useAuthState(auth);
 const [isModalOpen, setIsModalOpen] = useState(false);
 const [currentPrompts, setCurrentPrompts] = useState([]);
-
-
+const [audioSrc, /*setAudioSrc*/] = useState('');
+const [isListening, setIsListening] = useState(false);
+//const [transcription, setTranscription] = useState("");
+const speechRecognitionRef = useRef(null);
+const [isSpeaking, setIsSpeaking] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
@@ -80,20 +85,21 @@ const [currentPrompts, setCurrentPrompts] = useState([]);
   
   const handleSendMessage = async () => {
     if (isSending || !currentMessage.trim()) return;
+
     const userMessage = { sender: 'user', text: currentMessage.trim() };
-      setMessages((prevMessages) => [...prevMessages, userMessage]);
-      setCurrentMessage('');
-    setShowImage(false); // Hide the image after sending a message
+    setMessages(prevMessages => [...prevMessages, userMessage]);
+    
+    // Clear the input after sending
+    setCurrentMessage('');
+    setShowImage(false);  // Optionally hide the image after sending a message
     setIsSending(true);
 
     if (!currentPrompts.includes(currentMessage.trim()) && !user) {
-      setIsModalOpen(true);  // Show modal instead of redirecting
+      setIsModalOpen(true);  // Show modal if the user is not authorized
       return;
     }
-  
 
     let localThreadId = threadId; 
-  
     if (!localThreadId) {
       try {
         const threadResponse = await createThread();
@@ -110,28 +116,25 @@ const [currentPrompts, setCurrentPrompts] = useState([]);
       }
     }
     try {
-      await createMessage(localThreadId, currentMessage);
-      //setMessages(prev => [...prev, { sender: 'user', text: currentMessage }]);
+      await createMessage(localThreadId, currentMessage.trim());
       
       const runResponse = await createRun(localThreadId, assistantId);
-    if (runResponse?.status === "completed") {
-      const newMessagesResponse = await openai.beta.threads.messages.list(localThreadId);
-      const formattedMessages = newMessagesResponse.data.map(message => ({
-        sender: message.role === 'system' ? 'assistant' : message.role,
-        text: message.content[0].text.value,
-      }));
-      // This will set the messages state to only the latest set of messages from the thread
-      setMessages(formattedMessages.reverse());
-    } else {
-      // The run has not completed yet, handle accordingly
-    }
+      if (runResponse?.status === "completed") {
+        const newMessagesResponse = await openai.beta.threads.messages.list(localThreadId);
+        const formattedMessages = newMessagesResponse.data.map(message => ({
+          sender: message.role === 'system' ? 'assistant' : message.role,
+          text: message.content[0].text.value,
+        }));
+        setMessages(formattedMessages.reverse());
+      }
     } catch (error) {
       console.error("Communication error:", error);
     } finally {
       setIsSending(false);
-      setCurrentMessage('');
     }
-  };
+};
+
+  
   
   const handleSelectPrompt = (prompt) => {
     setCurrentMessage(prompt);
@@ -150,6 +153,141 @@ const [currentPrompts, setCurrentPrompts] = useState([]);
   const handleGoToHome = () => {
     navigate('/');
   };
+/*
+  const fetchSpeechAudio = async (text) => {
+    try {
+      const response = await openai.audio.speech.create({
+        model: "tts-1",
+        voice: "onyx",
+        input: text,
+      });
+      const blob = new Blob([await response.arrayBuffer()], { type: 'audio/mp3' });
+      const url = URL.createObjectURL(blob);
+      setAudioSrc(url);
+    } catch (error) {
+      console.error('Error fetching speech audio:', error);
+    }
+  };
+*/
+  useEffect(() => {
+    if (audioSrc) {
+      const audio = new Audio(audioSrc);
+      audio.play().catch(error => console.error('Error playing audio:', error));
+    }
+  }, [audioSrc]);
+
+  const handleTextToSpeech = (text) => {
+    const synth = window.speechSynthesis;
+    if (isSpeaking) {
+        synth.cancel(); // This will stop the speech
+        setIsSpeaking(false);
+    } else {
+        if (synth.speaking) {
+            synth.cancel(); // Cancel any ongoing speech
+        }
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.onend = () => {
+            setIsSpeaking(false); // Update the state when speech ends
+        };
+        utterance.onerror = (event) => {
+            console.error("SpeechSynthesisUtterance error", event.error);
+            setIsSpeaking(false);
+        };
+        synth.speak(utterance);
+        setIsSpeaking(true);
+    }
+};
+
+  /*
+  const handleTextToSpeech = (text) => {
+    const synth = window.speechSynthesis;
+    if (isSpeaking) {
+      synth.cancel(); // This will stop the speech
+      setIsSpeaking(false);
+    } else {
+      if (synth.speaking) {
+        synth.cancel(); // Cancel any ongoing speech
+      }
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.onend = () => {
+        setIsSpeaking(false); // Update the state when speech ends
+      };
+      utterance.onerror = (event) => {
+        console.error("SpeechSynthesisUtterance error", event.error);
+        setIsSpeaking(false);
+      };
+      synth.speak(utterance);
+      setIsSpeaking(true);
+    }
+  };
+*/  
+
+useEffect(() => {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (SpeechRecognition) {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = 'en-US';
+      recognition.onstart = () => {
+        console.log('Speech recognition service has started');
+    };
+      recognition.onerror = (event) => {
+        if (event.error === 'no-speech') {
+            console.log('No speech detected');
+        } else if (event.error === 'audio-capture') {
+            console.log('Microphone not found');
+        } else if (event.error === 'not-allowed') {
+            console.log('Permission denied by user or browser');
+        }
+    };
+      recognition.onresult = (event) => {
+          for (let i = event.resultIndex; i < event.results.length; ++i) {
+              if (event.results[i].isFinal) {
+                  setCurrentMessage(event.results[i][0].transcript);
+              }
+          }
+      };
+      speechRecognitionRef.current = recognition;
+
+      return () => {
+          recognition.stop();  // Ensure the recognition stops when the component unmounts
+      };
+  } else {
+      alert("Speech recognition is not supported in this browser.");
+  }
+}, []);
+
+/*
+const handleStartListening = () => {
+  if (speechRecognitionRef.current) {
+      speechRecognitionRef.current.start();
+      setIsListening(true);
+  }
+};
+
+const handleStopListening = () => {
+  if (speechRecognitionRef.current) {
+      speechRecognitionRef.current.stop();
+      setIsListening(false);
+      //alert("Stopped listening");  // Optionally notify the user
+  }
+};
+*/
+
+const toggleListening = () => {
+  if (isListening) {
+      if (speechRecognitionRef.current) {
+          speechRecognitionRef.current.stop();
+          setIsListening(false);
+      }
+  } else {
+      if (speechRecognitionRef.current) {
+          speechRecognitionRef.current.start();
+          setIsListening(true);
+      }
+  }
+};
 
   return (
       <div className="chatscreen-container">
@@ -167,6 +305,34 @@ const [currentPrompts, setCurrentPrompts] = useState([]);
             {assistantTitle}
           </div>
         </div>
+
+        
+
+       {/* <button
+        className="speechButton"
+        onClick={() => messages.length && fetchSpeechAudio(messages[messages.length - 1].text)}
+        disabled={!messages.length}
+        aria-label="Read aloud the latest message"
+      >
+        <FaVolumeUp />
+        </button>*/}
+
+        <div className="buttonContainer">
+          <button 
+  className="speechButton"
+  onClick={() => messages.length && handleTextToSpeech(messages[messages.length - 1].text)}
+  disabled={!messages.length}
+  aria-label={isSpeaking ? "Stop reading aloud the latest message" : "Read aloud the latest message"}
+>
+  {isSpeaking ? <FaVolumeMute /> : <FaVolumeUp />} 
+</button>
+
+
+    <button className={`speechButton ${isListening ? 'listening' : ''}`} onClick={toggleListening}>
+        <i className={`fas ${isListening ? 'fa-microphone-slash' : 'fa-microphone'}`}></i>
+    </button>
+</div>
+
 
         {/* Message container will also show loading dots when isSending is true */}
 

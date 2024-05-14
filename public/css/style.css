@@ -1352,3 +1352,32 @@ input[type="button"] {
 .modal-button.cancel {
   background-color: #357d7c; /* Teal color, corrected from red for cancellation */
 }
+
+.speechButton {
+  background-color: #dcca98;
+  color: #144040;
+  border: none;
+  cursor: pointer;
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 1.5em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease;
+}
+
+.speechButton:hover {
+  background-color: #c4b18f;
+}
+
+.speechButton.listening {
+  color: red;  /* Change color to indicate active listening */
+}
+
+.buttonContainer {
+  display: flex;
+  justify-content: space-between; /* Aligns children with space between */
+  align-items: center; /* Centers the buttons vertically */
+  width: 100%; /* Ensure the container fills its parent's width */
+}
