@@ -800,10 +800,15 @@ padding: 10px;
 .chatscreen-container {
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  background-color: #357d7c;
+  justify-content: flex-end; /* This pushes the input area to the bottom */
+  height: 100vh; /* Full viewport height */
+  width: 100%; /* Full viewport width */
+  background-color: #357d7c; /* Confirming background color */
+  padding: 0; /* Remove padding to allow full use of height */
+  box-sizing: border-box; /* Include padding and border in the element's total width and height */
   -webkit-overflow-scrolling: touch; /* Enables smooth scrolling in iOS devices */  
 }
+
 
 .chatscreen-header-container {
   display: flex;
@@ -880,12 +885,12 @@ padding: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   margin-right: 10px;
 }
-
 .chatscreen-input-container {
   display: flex;
   align-items: center;
-  padding: 10px;
-  background-color: #114040;
+  padding: 20px;
+  background-color: #114040;  
+  
 }
 
 .chatscreen-input {
@@ -896,18 +901,24 @@ padding: 10px;
   padding: 0 10px;
   margin-right: 10px;
 }
-
 .chatscreen-send-button {
+  padding: 10px 20px;
+  border-radius: 20px;
+  border: none;
   background-color: #57a3e1;
   color: #fff;
   font-weight: bold;
-  padding: 10px;
-  border-radius: 20px;
-  border: none;
   cursor: pointer;
-    transition: background-color 0.3s ease;
-    -webkit-transition: background-color 0.3s ease;  
-  }
+  transition: background-color 0.3s ease;
+}
+
+.chatscreen-disclaimer {
+  color: #fff;  
+  font-size: 12px;
+  text-align: center;
+  margin-top: -20px;    
+}
+
 
   /* Responsive settings for various devices */
 @media (min-width: 1200px) {
@@ -1362,3 +1373,4 @@ font-size: 1.5rem;
 .modal-button.cancel {
   background-color: #357d7c; /* Teal color, corrected from red for cancellation */
 }
+

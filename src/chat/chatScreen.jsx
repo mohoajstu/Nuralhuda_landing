@@ -7,6 +7,8 @@ import { SuggestedPrompts, getPromptsForType} from './SuggestedPrompts';  // Ass
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '../config/firebase-config'; // Adjust the path as necessary
 import Modal from './modal'; // Import the Modal component
+import ChatInput from './ChatInput';  // Import the new ChatInput component
+
 
 // Helper images and prompts maps
 import nurAlHudaImg from '../img/about-nbg.png';
@@ -209,24 +211,8 @@ const openai = new OpenAI({
         )}
 
         <SuggestedPrompts onSelectPrompt={handleSelectPrompt} isSending={isSending} chatbotType={chatbotType} />
-
-          <div className="chatscreen-input-container">
-        <input
-          className="chatscreen-input"
-          value={currentMessage}
-          onChange={(e) => setCurrentMessage(e.target.value)}
-          placeholder="Type your message..."
-          onKeyDown={(e) => { if (e.key === 'Enter' && !isSending) handleSendMessage(); }}
-          disabled={isSending}
-        />
-        <button
-          className="chatscreen-send-button"
-          onClick={handleSendMessage}
-          disabled={isSending}
-        >
-          Send
-        </button>
-      </div>
+        <ChatInput isSending={isSending} onSendMessage={handleSendMessage} />
+        
     </div>
     
   );
