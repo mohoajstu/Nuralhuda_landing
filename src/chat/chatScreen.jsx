@@ -1,20 +1,14 @@
-
 import React, { useState, useRef, useEffect, useCallback} from 'react';
-import { useNavigate, useParams, useLocation} from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { createThread, createMessage, createRun, titleToAssistantIDMap } from './openAIUtils';
 import { RenderMarkdown } from './RenderMarkdown';  // Assume RenderMarkdown is exported from another file
-import { SuggestedPrompts, getPromptsForType} from './SuggestedPrompts';  // Assume SuggestedPrompts is exported from another file
-import { useAuthState } from 'react-firebase-hooks/auth';
-import { auth } from '../config/firebase-config'; // Adjust the path as necessary
-import Modal from './modal'; // Import the Modal component
-
+import { SuggestedPrompts } from './SuggestedPrompts';  // Assume SuggestedPrompts is exported from another file
 // Helper images and prompts maps
 import nurAlHudaImg from '../img/about-nbg.png';
 import nurAlHudaForKidsImg from '../img/nuralhudaforkids.png';
 import islamicSocraticMethodImg from '../img/islamic_socratic_method.png';
 import iqraWithUsImg from '../img/Nuralhuda-applogo.png';
 
-import OpenAI from "openai";
 
 
 const titleToChatbotTypeMap = {
@@ -33,10 +27,13 @@ const titleToImageMap = {
   'Iqra With Us': iqraWithUsImg,
 };
 
-const openai = new OpenAI({
-  apiKey: process.env.REACT_APP_OPENAI_API_KEY_NUR_ALHUDA,
-  dangerouslyAllowBrowser: true,
-});
+const titleToPromptMap = {
+  'Nur Al Huda': ["Who Are You?", "What are the 5 Pillars of Islam?", "What is Ramadan?", "New Random Fact!"],
+  'Nur Al Huda For Kids': ["Tell me a story", "Teach me a prayer", "What is Ramadan?", "New Random Fact!"],
+  'Islamic Socratic Method': ["Explain Tawhid", "What is Islamic Philosophy?", "Tell me about Ijtihad", "Socratic Method!"],
+  'AI for Islamic Research': ["Latest research on Islamic History", "AI and Quranic studies", "Islam and Science intersection", "Research Fact!"],
+  'Iqra With Us': ["Let's read a surah together", "Teach me about Tajweed", "What is Iqra?", "Quranic Arabic lesson"],
+};
 
 const ChatScreen = () => {
   const { chatbotType } = useParams();
@@ -48,15 +45,11 @@ const ChatScreen = () => {
   const [showImage, setShowImage] = useState(true);
   const scrollViewRef = useRef(null);
   const assistantTitle = Object.keys(titleToChatbotTypeMap).find(key => titleToChatbotTypeMap[key] === chatbotType);
+  const chatbotPrompts = titleToPromptMap[assistantTitle] || [];
   const chatbotImage = titleToImageMap[assistantTitle];
-  const assistantId = titleToAssistantIDMap[assistantTitle];;
+  const assistantId = titleToAssistantIDMap[assistantTitle];
+  const [streamActive, setStreamActive] = useState(false);  // New state to track stream activity
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-  const location = useLocation();
-const [user] = useAuthState(auth);
-const [isModalOpen, setIsModalOpen] = useState(false);
-const [currentPrompts, setCurrentPrompts] = useState([]);
-
-
 
   useEffect(() => {
     const handleResize = () => {
@@ -72,67 +65,83 @@ const [currentPrompts, setCurrentPrompts] = useState([]);
   useEffect(() => {
     scrollViewRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+  
 
   useEffect(() => {
-    // Assuming `SuggestedPrompts` exports `getPromptsForType`
-    setCurrentPrompts(getPromptsForType(chatbotType));
-  }, [chatbotType]);
-  
+    let stream;
+    if (threadId) {
+      stream = createRun(threadId, handleNewMessage, handleError);
+      setStreamActive(true);  // Set stream as active
+      return () => {
+        if (stream) {
+          setStreamActive(false);  // Clean up and mark stream as inactive
+        }
+      };
+    }
+  }, [threadId]);  // Dependency array
+
+  const handleNewMessage = (message) => {
+    setMessages(prevMessages => [...prevMessages, message]);
+  };
+
+  const handleError = (error) => {
+    console.error('Stream error:', error);
+    setStreamActive(false);  // Mark stream as inactive on error
+  };
+
   const handleSendMessage = async () => {
     if (isSending || !currentMessage.trim()) return;
-    const userMessage = { sender: 'user', text: currentMessage.trim() };
-      setMessages((prevMessages) => [...prevMessages, userMessage]);
-      setCurrentMessage('');
-    setShowImage(false); // Hide the image after sending a message
+
     setIsSending(true);
+    const userMessage = { sender: 'user', text: currentMessage.trim() };
+    setMessages(prevMessages => [...prevMessages, userMessage]);
+    setCurrentMessage('');
+    setShowImage(false);
 
-    if (!currentPrompts.includes(currentMessage.trim()) && !user) {
-      setIsModalOpen(true);  // Show modal instead of redirecting
-      return;
-    }
-  
+    let localThreadId = threadId;
 
-    let localThreadId = threadId; 
-  
     if (!localThreadId) {
-      try {
-        const threadResponse = await createThread();
-        if (threadResponse?.id) {
-          setThreadId(threadResponse.id);
-          localThreadId = threadResponse.id;
-        } else {
-          throw new Error('Thread creation failed: No ID returned');
+        try {
+            const threadResponse = await createThread();
+            if (threadResponse?.id) {
+                setThreadId(threadResponse.id);
+                localThreadId = threadResponse.id;
+            } else {
+                throw new Error('Thread creation failed: No ID returned');
+            }
+        } catch (error) {
+            console.error("Error creating thread:", error);
+            setIsSending(false);
+            return;
         }
-      } catch (error) {
-        console.error("Error creating thread:", error);
-        setIsSending(false);
-        return;
-      }
     }
+
+    try {
+        await createMessage(localThreadId, currentMessage);
+        createRun(localThreadId, assistantId, handleNewMessage, handleError);
+    } catch (error) {
+        console.error("Error sending message:", error);
+    } finally {
+        setIsSending(false);
+    }
+};
+
+/*  
     try {
       await createMessage(localThreadId, currentMessage);
-      //setMessages(prev => [...prev, { sender: 'user', text: currentMessage }]);
-      
-      const runResponse = await createRun(localThreadId, assistantId);
-    if (runResponse?.status === "completed") {
-      const newMessagesResponse = await openai.beta.threads.messages.list(localThreadId);
-      const formattedMessages = newMessagesResponse.data.map(message => ({
-        sender: message.role === 'system' ? 'assistant' : message.role,
-        text: message.content[0].text.value,
-      }));
-      // This will set the messages state to only the latest set of messages from the thread
-      setMessages(formattedMessages.reverse());
-    } else {
-      // The run has not completed yet, handle accordingly
-    }
+      createRun(localThreadId, assistantId, (eventType, data) => {
+        if (eventType === 'textDelta' || eventType === 'toolCallDelta') {
+          setMessages(prevMessages => [...prevMessages, { sender: 'assistant', text: data }]);
+        }
+      });
     } catch (error) {
       console.error("Communication error:", error);
     } finally {
       setIsSending(false);
-      setCurrentMessage('');
     }
   };
-  
+   */
+
   const handleSelectPrompt = (prompt) => {
     setCurrentMessage(prompt);
     handleSendMessage();
@@ -153,31 +162,25 @@ const [currentPrompts, setCurrentPrompts] = useState([]);
 
   return (
       <div className="chatscreen-container">
-        <Modal 
-        isOpen={isModalOpen}
-        onClose={handleGoToHome}  // Redirect home on cancel
-        onConfirm={() => navigate('/login', { state: { from: location.pathname } })}  // Redirect to login on confirm
-        message="Please Login To Use This Premium Feature."
-      />
+      
         <div className="chatscreen-header-container">
-          <button className="chatscreen-home-button" onClick={handleGoToHome}>
-            Home
-          </button>
-          <div className="chatscreen-header-title" style={{ fontSize: titleSize }}>
-            {assistantTitle}
-          </div>
+        <button className="chatscreen-home-button" onClick={handleGoToHome}>
+          Home
+        </button>
+        <div className="chatscreen-header-title" style={{ fontSize: titleSize }}>
+          {assistantTitle}
         </div>
+      </div>
 
         {/* Message container will also show loading dots when isSending is true */}
-
         <div ref={scrollViewRef} className="chatscreen-messages-container">
-          {messages.map((message, index) => (
-            <div key={index} className={`chatscreen-message-container ${message.sender === 'user' ? 'chatscreen-user-message' : 'chatscreen-bot-message'}`}>
-              <RenderMarkdown markdown={message.text} />
-            </div>
-          ))}
+        {messages.map((message, index) => (
+  <div key={index} className={`chatscreen-message-container ${message.sender === 'user' ? 'chatscreen-user-message' : 'chatscreen-bot-message'}`}>
+    {message.text ? <RenderMarkdown markdown={message.text} /> : null}
+  </div>
+))}
 
-          {isSending && (
+{isSending && (
             <div className="chatscreen-message-container chatscreen-bot-message">
               {/* Render your typing indicator here */}
               <div className="typing-indicator">
@@ -190,13 +193,12 @@ const [currentPrompts, setCurrentPrompts] = useState([]);
         </div>
         
         {showImage && chatbotImage && (
-          <div className="chatscreen-message-image">
-            <img src={chatbotImage} alt={assistantTitle + " Image"} />
-          </div>
-        )}
+        <div className="chatscreen-message-image">
+          <img src={chatbotImage} alt={assistantTitle + " Image"} />
+        </div>
+      )}
 
-        <SuggestedPrompts onSelectPrompt={handleSelectPrompt} isSending={isSending} chatbotType={chatbotType} />
-
+      <SuggestedPrompts onSelectPrompt={handleSelectPrompt} isSending={isSending} prompts={chatbotPrompts} />
           <div className="chatscreen-input-container">
         <input
           className="chatscreen-input"
@@ -215,7 +217,6 @@ const [currentPrompts, setCurrentPrompts] = useState([]);
         </button>
       </div>
     </div>
-    
   );
 }
 

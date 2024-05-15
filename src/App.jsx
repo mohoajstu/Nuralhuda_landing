@@ -29,7 +29,6 @@ const App = () => {
   if (loading) {
     return <div>Loading...</div>; // Render loading screen while checking auth state
   }
-console.log(user);
   return (
     <div className="App">
       {location.pathname === '/' && <Navigation />}

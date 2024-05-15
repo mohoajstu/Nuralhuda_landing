@@ -1,6 +1,5 @@
 import React from 'react';
 import { marked } from 'marked';
-import parse from 'html-react-parser';
 import DOMPurify from 'dompurify';
 
 const parseMarkdown = (markdownText) => {
@@ -10,6 +9,7 @@ const parseMarkdown = (markdownText) => {
 };
 
 export const RenderMarkdown = ({ markdown }) => {
-  const html = parseMarkdown(markdown); // Parse Markdown to HTML
-  return <>{parse(html)}</>; // Return as JSX
+  if (!markdown) return null;
+  const renderedHtml = parseMarkdown(markdown); // Use the sanitized HTML
+  return <div dangerouslySetInnerHTML={{ __html: renderedHtml }} />;
 };
