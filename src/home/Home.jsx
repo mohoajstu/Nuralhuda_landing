@@ -7,9 +7,11 @@ import { Assistants } from './assistants';
 import { Team } from './Team';
 import { Contact } from './contact';
 
+
+
 const Home = ({ data }) => {
   return (
-    <div>
+    <div className="home">
       <Header data={data?.Header} />
       <About data={data?.About} />
       <Meetyourassistants data={data?.Meetyourassistants} />

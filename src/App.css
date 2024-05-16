@@ -1364,3 +1364,195 @@ font-size: 1.5rem;
 .modal-button.cancel {
   background-color: #357d7c; /* Teal color, corrected from red for cancellation */
 }
+
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999; /* Ensure the popup is on top of other elements */
+}
+
+.popup-content {
+  background: #Dcca98; /* Background color updated to match website theme */
+  padding: 20px;
+  border-radius: 5px;
+  text-align: center;
+  z-index: 10000; /* Higher than the overlay to ensure content is above the overlay */
+  color: #144040; /* Text color updated to match website theme */
+}
+
+.popup-content h2 {
+  margin-bottom: 20px;
+  color: #144040; /* Heading color updated to match website theme */
+}
+
+.popup-content p {
+  margin-bottom: 20px;
+  color: #144040; /* Paragraph color updated to match website theme */
+}
+
+.popup-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 20px; /* Add space between the buttons */
+}
+
+.popup-content button {
+  padding: 10px 20px;
+  background: #144040; /* Button background color updated to match website theme */
+  color: #Dcca98; /* Button text color updated to match website theme */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.popup-content button:hover {
+  background: #0F3030; /* Darker shade for hover effect */
+}
+.register-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Full height to center vertically */
+  background-color: #114040; /* Background color to match the login screen */
+}
+
+.home-button {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  padding: 10px 20px;
+  background-color: #dcca98; /* Button background color updated to match website theme */
+  color: #144c4c; /* Button text color updated to match website theme */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: background-color 0.3s; /* Smooth transition for hover effect */
+}
+
+.home-button:hover {
+  background-color: #bbaa88; /* Darker shade on hover */
+}
+
+.register-form {
+  padding: 2em;
+  background: #dcca98; /* Light background for form */
+  border-radius: 5px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Slightly stronger shadow */
+  max-width: 600px; /* Larger max-width for larger screens */
+  width: 50%; /* Set to 50% for larger screens */
+  margin: auto; /* Center the form in the available space */
+}
+
+.register-form h2 {
+  text-align: center;
+  margin-bottom: 1em;
+  color: #144c4c; /* Header color */
+}
+
+.register-form .event-description {
+  font-size: 1em;
+  color: #144c4c; /* Description color */
+  margin-bottom: 1.5em; /* Space below the description */
+  line-height: 1.5; /* Line height for better readability */
+}
+
+@media (max-width: 1024px) {
+  .register-form {
+    width: 70%; /* Set to 70% for medium screens */
+  }
+}
+
+@media (max-width: 600px) {
+  .register-form {
+    width: 90%; /* Set to 90% for small screens */
+    padding: 1em;
+  }
+
+  .input-group input,
+  .register-button {
+    padding: 0.5em;
+  }
+}
+
+.input-group {
+  margin-bottom: 1.5em; /* Increased margin for better spacing */
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 0.5em;
+  color: #144c4c; /* Label color */
+}
+
+.input-group input,
+.input-group textarea {
+  width: 100%;
+  padding: 0.75em;
+  border: 1px solid #114040; /* Border color */
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.input-group input:focus,
+.input-group textarea:focus {
+  border-color: #144c4c; /* Focus border color */
+  outline: none;
+  box-shadow: 0 0 5px rgba(20, 64, 64, 0.5); /* Add a subtle focus shadow */
+}
+
+.register-button {
+  width: 100%;
+  padding: 1em;
+  background-color: #144c4c; /* Primary button color */
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background-color 0.3s; /* Smooth transition for hover effect */
+}
+
+.register-button:hover {
+  background-color: #114040; /* Darker shade on hover */
+}
+
+.thankyou-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #Dcca98; /* Background color updated to match website theme */
+  color: #144040; /* Text color updated to match website theme */
+  text-align: center;
+}
+
+.thankyou-container h2 {
+  font-size: 36px;
+  margin-bottom: 20px;
+  color: #144040; /* Heading color updated to match website theme */
+}
+
+.thankyou-container p {
+  font-size: 18px;
+  margin-bottom: 20px;
+  color: #144040; /* Paragraph color updated to match website theme */
+}
+
+.thankyou-home-button {
+  padding: 10px 20px;
+  background: #144040; /* Button background color updated to match website theme */
+  color: #Dcca98; /* Button text color updated to match website theme */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
