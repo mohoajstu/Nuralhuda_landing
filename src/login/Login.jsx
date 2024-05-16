@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { signInWithEmailAndPassword, signOut, sendPasswordResetEmail } from "firebase/auth";
 import { auth } from '../config/firebase-config';
 import { useNavigate } from 'react-router-dom';
@@ -6,45 +6,76 @@ import { useNavigate } from 'react-router-dom';
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [resetEmail, setResetEmail] = useState('');  // Use separate state for reset email
+    const [resetEmail, setResetEmail] = useState('');
     const [error, setError] = useState('');
-    const [showResetForm, setShowResetForm] = useState(false); // To toggle reset form visibility
+    const [showResetForm, setShowResetForm] = useState(false);
     const navigate = useNavigate();
 
+    useEffect(() => {
+        // Sign out user on component mount to enforce login at the start of each session
+        const signOutUser = async () => {
+            await signOut(auth);
+        };
+        signOutUser();
+    }, []);
+
+    useEffect(() => {
+        let timeout;
+        const handleActivity = () => {
+            clearTimeout(timeout);
+            timeout = setTimeout(async () => {
+                await signOut(auth);
+                navigate('/login');
+            }, 900000); // 15 minutes in milliseconds
+        };
+
+        window.addEventListener('mousemove', handleActivity);
+        window.addEventListener('keypress', handleActivity);
+
+        // Clean up event listeners on unmount
+        return () => {
+            window.removeEventListener('mousemove', handleActivity);
+            window.removeEventListener('keypress', handleActivity);
+            clearTimeout(timeout);
+        };
+    }, [navigate]);
+
     const handlePasswordReset = async (event) => {
-      event.preventDefault(); // Prevent form submission on reset
-      if (!resetEmail) {
-          setError("Please enter your email address for password reset.");
-          return;
-      }
-      try {
-          await sendPasswordResetEmail(auth, resetEmail);
-          setError("Password reset email sent. Please check your inbox.");
-          setResetEmail('');
-          setShowResetForm(false); // Hide reset form on successful request
-      } catch (error) {
-          console.error(error);
-          setError("Failed to send password reset email.");
-      }
-  };
+        event.preventDefault();
+        if (!resetEmail) {
+            setError("Please enter your email address for password reset.");
+            return;
+        }
+        try {
+            await sendPasswordResetEmail(auth, resetEmail);
+            setError("Password reset email sent. Please check your inbox.");
+            setResetEmail('');
+            setShowResetForm(false);
+        } catch (error) {
+            console.error(error);
+            setError("Failed to send password reset email.");
+        }
+    };
 
     const handleLogout = async () => {
-      try {
-          await signOut(auth);
-          navigate('/');  // Optionally redirect to home/login
-      } catch (error) {
-          console.error("Logout failed: ", error);
-      }
-  };
+        try {
+            await signOut(auth);
+            navigate('/login');
+        } catch (error) {
+            console.error("Logout failed: ", error);
+        }
+    };
 
     const handleGoToHome = () => {
-      navigate('/');
+        navigate('/');
     };
 
     const handleLogin = async (event) => {
-        event.preventDefault(); // Prevent form submission
+        event.preventDefault();
         try {
             await signInWithEmailAndPassword(auth, email, password);
+            setEmail('');  // Clear email field
+            setPassword('');  // Clear password field
             navigate('/');
         } catch (error) {
             console.error(error);
