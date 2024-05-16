@@ -44,7 +44,10 @@ export function createRun(threadId, assistantId, handleMessage, handleError) {
         handleMessage({ sender: 'assistant', text: textDelta.value });
       }
     })
-  
+    .on('end', () => {
+      // Handle the end of the stream
+      handleMessage({ sender: 'assistant', text: 'END_TOKEN' });
+    })
     .on('error', (error) => {
       console.error("Stream error:", error);
       if (handleError) {

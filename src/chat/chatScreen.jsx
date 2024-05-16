@@ -50,6 +50,8 @@ const ChatScreen = () => {
   const assistantId = titleToAssistantIDMap[assistantTitle];
   const [streamActive, setStreamActive] = useState(false);  // New state to track stream activity
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const [accumulatedMessage, setAccumulatedMessage] = useState('');
+  const [isTokenHigh, setIsToken] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
@@ -74,6 +76,7 @@ const ChatScreen = () => {
       setStreamActive(true);  // Set stream as active
       return () => {
         if (stream) {
+          stream.unsubscribe();
           setStreamActive(false);  // Clean up and mark stream as inactive
         }
       };
@@ -81,8 +84,29 @@ const ChatScreen = () => {
   }, [threadId]);  // Dependency array
 
   const handleNewMessage = (message) => {
-    setMessages(prevMessages => [...prevMessages, message]);
-  };
+    //sends bot tokens/words one by one as an object [sender: bot, text: salam] to messages array
+    //we need to add code here to make it only send to messages (setMesssage) after concatenated.
+    //try finally block to determine end of stream of messages
+    //add end token we can detect?
+    let botMessage;
+
+    setAccumulatedMessage(prevAccumelated => {
+      if(message.text === 'END_TOKEN'){
+        setIsToken(true);
+        botMessage = { sender: 'assistant', text: prevAccumelated };
+        setMessages(prevMessages => [...prevMessages, botMessage]);
+        setAccumulatedMessage('');
+      } else{
+        setIsSending(true);
+        const newAccumulated = prevAccumelated + message.text;
+        console.log("accum", newAccumulated);  // Logs the actual updated value
+        //const partialMessage = { sender: 'assistant', text: message.text };
+        return newAccumulated;
+      }
+      setIsToken(false);
+      setIsSending(false);
+    });
+ };
 
   const handleError = (error) => {
     console.error('Stream error:', error);
@@ -125,7 +149,7 @@ const ChatScreen = () => {
         setIsSending(false);
     }
 };
-
+console.log(messages);
 /*  
     try {
       await createMessage(localThreadId, currentMessage);
@@ -172,31 +196,34 @@ const ChatScreen = () => {
         </div>
       </div>
 
-        {/* Message container will also show loading dots when isSending is true */}
-        <div ref={scrollViewRef} className="chatscreen-messages-container">
-        {messages.map((message, index) => (
-  <div key={index} className={`chatscreen-message-container ${message.sender === 'user' ? 'chatscreen-user-message' : 'chatscreen-bot-message'}`}>
-    {message.text ? <RenderMarkdown markdown={message.text} /> : null}
-  </div>
-))}
+          {/* Message container will also show loading dots when isSending is true */}
+          <div ref={scrollViewRef} className="chatscreen-messages-container">
+            {messages.map((message, index) => {
+              // Only render the divs if message.text has a truthy value
+              if (message.text) {
+                return (
+                  <React.Fragment key={index}>
+                    <div className={`chatscreen-message-container ${message.sender === 'user' ? 'chatscreen-user-message' : 'chatscreen-bot-message'}`}>
+                      <RenderMarkdown markdown={message.text}/>
+                    </div>
+                    {isSending && index === messages.length - 1 && (
+                      <div className="chatscreen-message-container chatscreen-bot-message">
+                        <RenderMarkdown markdown={accumulatedMessage}/>
+                      </div>
+                    )}
+                  </React.Fragment>
+                );
+              }
+              // Return null for falsy message.text values to skip rendering
+              return null;
+            })}
+          </div>
 
-{isSending && (
-            <div className="chatscreen-message-container chatscreen-bot-message">
-              {/* Render your typing indicator here */}
-              <div className="typing-indicator">
-                <div className="typing-indicator-dot"></div>
-                <div className="typing-indicator-dot"></div>
-                <div className="typing-indicator-dot"></div>
-              </div>
-            </div>
-          )}
-        </div>
-        
         {showImage && chatbotImage && (
         <div className="chatscreen-message-image">
           <img src={chatbotImage} alt={assistantTitle + " Image"} />
         </div>
-      )}
+        )}
 
       <SuggestedPrompts onSelectPrompt={handleSelectPrompt} isSending={isSending} prompts={chatbotPrompts} />
           <div className="chatscreen-input-container">

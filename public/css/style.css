@@ -842,7 +842,6 @@ padding: 10px;
   margin: auto; /* This will help center it horizontally within its parent */
   box-sizing: border-box; /* Includes padding in width calculation */
 }
-
 .chatscreen-user-message, .chatscreen-bot-message {
   max-width: 80%;
   border-radius: 15px;
