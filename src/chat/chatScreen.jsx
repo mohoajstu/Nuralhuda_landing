@@ -75,7 +75,6 @@ const ChatScreen = () => {
       setStreamActive(true);  // Set stream as active
       return () => {
         if (stream) {
-          stream.unsubscribe();
           setStreamActive(false);  // Clean up and mark stream as inactive
         }
       };
