@@ -51,7 +51,6 @@ const ChatScreen = () => {
   const [streamActive, setStreamActive] = useState(false);  // New state to track stream activity
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [accumulatedMessage, setAccumulatedMessage] = useState('');
-  const [isTokenHigh, setIsToken] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
@@ -85,25 +84,18 @@ const ChatScreen = () => {
 
   const handleNewMessage = (message) => {
     //sends bot tokens/words one by one as an object [sender: bot, text: salam] to messages array
-    //we need to add code here to make it only send to messages (setMesssage) after concatenated.
-    //try finally block to determine end of stream of messages
-    //add end token we can detect?
     let botMessage;
 
     setAccumulatedMessage(prevAccumelated => {
       if(message.text === 'END_TOKEN'){
-        setIsToken(true);
         botMessage = { sender: 'assistant', text: prevAccumelated };
         setMessages(prevMessages => [...prevMessages, botMessage]);
         setAccumulatedMessage('');
       } else{
         setIsSending(true);
         const newAccumulated = prevAccumelated + message.text;
-        console.log("accum", newAccumulated);  // Logs the actual updated value
-        //const partialMessage = { sender: 'assistant', text: message.text };
         return newAccumulated;
       }
-      setIsToken(false);
       setIsSending(false);
     });
  };
@@ -206,7 +198,17 @@ console.log(messages);
                     <div className={`chatscreen-message-container ${message.sender === 'user' ? 'chatscreen-user-message' : 'chatscreen-bot-message'}`}>
                       <RenderMarkdown markdown={message.text}/>
                     </div>
-                    {isSending && index === messages.length - 1 && (
+                    {isSending && index === messages.length - 1 && !accumulatedMessage && (
+                      <div className="chatscreen-message-container chatscreen-bot-message">
+                        <div className="typing-indicator">
+                          <div className="typing-indicator-dot"></div>
+                          <div className="typing-indicator-dot"></div>
+                          <div className="typing-indicator-dot"></div>
+                        </div>
+                      </div>
+                    )}
+
+                    {isSending && index === messages.length - 1 && accumulatedMessage && (
                       <div className="chatscreen-message-container chatscreen-bot-message">
                         <RenderMarkdown markdown={accumulatedMessage}/>
                       </div>
