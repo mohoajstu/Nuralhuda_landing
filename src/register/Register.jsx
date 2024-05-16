@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import emailjs from 'emailjs-com';
 import { useNavigate } from 'react-router-dom';
+import { db } from '../config/firebase-config'; // Ensure the path is correct
+import { collection, addDoc } from 'firebase/firestore'; // Import Firestore functions
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -17,7 +19,7 @@ const Register = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const templateParams = {
@@ -25,15 +27,26 @@ const Register = () => {
       email: formData.email
     };
 
-    emailjs.send('service_rpg9tsq', 'template_uwvkykl', templateParams, '2c0CoID2ucNYaKVFe')
-      .then((result) => {
-        console.log('Email sent successfully:', result.text);
-        alert('Registration successful! Check your email for confirmation.');
-        navigate('/thank-you');
-      }, (error) => {
-        console.error('Error sending email:', error);
-        alert('Registration failed, please try again.');
+    try {
+      // Send email using EmailJS
+      await emailjs.send('service_rpg9tsq', 'template_uwvkykl', templateParams, '2c0CoID2ucNYaKVFe');
+      console.log('Email sent successfully');
+
+      // Save data to Firestore
+      await addDoc(collection(db, 'registrations'), {
+        name: formData.name,
+        email: formData.email,
+        position: formData.position,
+        comments: formData.comments,
+        timestamp: new Date() // Optional: Add a timestamp
       });
+
+      alert('Registration successful! Check your email for confirmation.');
+      navigate('/thank-you');
+    } catch (error) {
+      console.error('Error during registration:', error);
+      alert('Registration failed, please try again.');
+    }
   };
 
   const handleHome = () => {
@@ -46,7 +59,8 @@ const Register = () => {
       <form className="register-form" onSubmit={handleSubmit}>
         <h2>Webinar Registration</h2>
         <p className="event-description">
-        We are Nur Al Huda, an organization focused on developing AI for Research education. Our upcoming webinar explores AI's potential in education and its practical applications for teachers. We aim to address challenges faced by educators in integrating Islamic components into daily lessons, particularly with the rise of AI and students misusing public tools for Islamic needs.        </p>
+          We are Nur Al Huda, an organization focused on developing AI for Research education. Our upcoming webinar explores AI's potential in education and its practical applications for teachers. We aim to address challenges faced by educators in integrating Islamic components into daily lessons, particularly with the rise of AI and students misusing public tools for Islamic needs.
+        </p>
         <div className="input-group">
           <label>Name</label>
           <input type="text" name="name" value={formData.name} onChange={handleChange} required />
