@@ -12,7 +12,6 @@ import nurAlHudaForKidsImg from '../img/nuralhudaforkids.png';
 import islamicSocraticMethodImg from '../img/islamic_socratic_method.png';
 import iqraWithUsImg from '../img/Nuralhuda-applogo.png';
 
-import OpenAI from "openai";
 
 const titleToChatbotTypeMap = {
   'Nur Al Huda': 'nurAlHuda',
@@ -30,10 +29,6 @@ const titleToImageMap = {
   'Iqra With Us': iqraWithUsImg,
 };
 
-const openai = new OpenAI({
-  apiKey: process.env.REACT_APP_OPENAI_API_KEY_NUR_ALHUDA,
-  dangerouslyAllowBrowser: true,
-});
 
 const ChatScreen = () => {
   const { chatbotType } = useParams();
@@ -100,7 +95,11 @@ const ChatScreen = () => {
     setMessages((prevMessages) => [...prevMessages, userMessage]);
     setCurrentMessage('');
     setShowImage(false);
-
+    
+    if (!currentPrompts.includes(currentMessage.trim()) && !user) {
+      setIsModalOpen(true);  
+      return;
+    }
     let localThreadId = threadId;
 
     if (!localThreadId) {
