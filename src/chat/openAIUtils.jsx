@@ -6,7 +6,8 @@ const openai = new OpenAI({
   dangerouslyAllowBrowser: true,
 });
 
-// Function to create a thread
+let currentStream = null;
+
 export async function createThread() {
   try {
     const thread = await openai.beta.threads.create();
@@ -17,7 +18,6 @@ export async function createThread() {
   }
 }
 
-// Function to add a message to the thread and get a response
 export async function createMessage(threadId, newMessage) {
   try {
     const response = await openai.beta.threads.messages.create(threadId, {
@@ -31,33 +31,38 @@ export async function createMessage(threadId, newMessage) {
   }
 }
 
-// Function to initiate a run with the assistant
 export function createRun(threadId, assistantId, handleMessage, handleError) {
-  try {
-    const stream = openai.beta.threads.runs.stream(threadId, {
-      assistant_id: assistantId
-    })
-    .on('textDelta', (textDelta) => {
-      if (textDelta.value) {
-        // Handle new message text here
-        handleMessage({ sender: 'assistant', text: textDelta.value });
-      }
-    })
-    .on('end', () => {
-      // Handle the end of the stream
-      handleMessage({ sender: 'assistant', text: 'END_TOKEN' });
-    })
-    .on('error', (error) => {
-      console.error("Stream error:", error);
-      if (handleError) {
-        handleError(error);
-      }
-    });
+  if (currentStream) {
+    console.warn("A stream is already active, aborting new run initiation.");
+    return;
+  }
 
-    return stream;
+  try {
+    currentStream = openai.beta.threads.runs.stream(threadId, {
+      assistant_id: assistantId,
+    })
+      .on('textDelta', (textDelta) => {
+        if (textDelta.value) {
+          handleMessage({ sender: 'assistant', text: textDelta.value });
+        }
+      })
+      .on('end', () => {
+        handleMessage({ sender: 'assistant', text: 'END_TOKEN' });
+        currentStream = null; // Reset current stream on end
+      })
+      .on('error', (error) => {
+        console.error("Stream error:", error);
+        currentStream = null; // Reset current stream on error
+        if (handleError) {
+          handleError(error);
+        }
+      });
+
+    return currentStream;
 
   } catch (error) {
     console.error("Error initiating run with assistant:", error);
+    currentStream = null; // Reset current stream on catch
     throw error;
   }
 }
