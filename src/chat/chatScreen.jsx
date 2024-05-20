@@ -55,7 +55,8 @@ const ChatScreen = () => {
 const [user] = useAuthState(auth);
 const [isModalOpen, setIsModalOpen] = useState(false);
 const [currentPrompts, setCurrentPrompts] = useState([]);
-
+const [streamActive, setStreamActive] = useState(false);  // New state to track stream activity
+const [accumulatedMessage, setAccumulatedMessage] = useState('');
 
 
   useEffect(() => {
@@ -77,20 +78,51 @@ const [currentPrompts, setCurrentPrompts] = useState([]);
     // Assuming `SuggestedPrompts` exports `getPromptsForType`
     setCurrentPrompts(getPromptsForType(chatbotType));
   }, [chatbotType]);
+
+  useEffect(() => {
+  let stream;
+    if (threadId) {
+      stream = createRun(threadId, handleNewMessage, handleError);
+      setStreamActive(true);  // Set stream as active
+      return () => {
+        if (stream) {
+          setStreamActive(false);  // Clean up and mark stream as inactive
+        }
+      };
+    }
+  }, [threadId]);  // Dependency array
+
+  const handleNewMessage = (message) => {
+    //sends bot tokens/words one by one as an object [sender: bot, text: salam] to messages array
+    let botMessage;
+
+    setAccumulatedMessage(prevAccumelated => {
+      if(message.text === 'END_TOKEN'){
+        botMessage = { sender: 'assistant', text: prevAccumelated };
+        setMessages(prevMessages => [...prevMessages, botMessage]);
+        setAccumulatedMessage('');
+      } else{
+        setIsSending(true);
+        const newAccumulated = prevAccumelated + message.text;
+        return newAccumulated;
+      }
+      setIsSending(false);
+    });
+ };
+
+  const handleError = (error) => {
+    console.error('Stream error:', error);
+    setStreamActive(false);  // Mark stream as inactive on error
+  };
   
   const handleSendMessage = async () => {
     if (isSending || !currentMessage.trim()) return;
-    const userMessage = { sender: 'user', text: currentMessage.trim() };
-      setMessages((prevMessages) => [...prevMessages, userMessage]);
-      setCurrentMessage('');
-    setShowImage(false); // Hide the image after sending a message
-    setIsSending(true);
 
-    if (!currentPrompts.includes(currentMessage.trim()) && !user) {
-      setIsModalOpen(true);  // Show modal instead of redirecting
-      return;
-    }
-  
+    setIsSending(true);
+    const userMessage = { sender: 'user', text: currentMessage.trim() };
+    setMessages((prevMessages) => [...prevMessages, userMessage]);
+    setCurrentMessage('');
+    setShowImage(false); // Hide the image after sending a message  
 
     let localThreadId = threadId; 
   
@@ -112,24 +144,12 @@ const [currentPrompts, setCurrentPrompts] = useState([]);
     try {
       await createMessage(localThreadId, currentMessage);
       //setMessages(prev => [...prev, { sender: 'user', text: currentMessage }]);
-      
-      const runResponse = await createRun(localThreadId, assistantId);
-    if (runResponse?.status === "completed") {
-      const newMessagesResponse = await openai.beta.threads.messages.list(localThreadId);
-      const formattedMessages = newMessagesResponse.data.map(message => ({
-        sender: message.role === 'system' ? 'assistant' : message.role,
-        text: message.content[0].text.value,
-      }));
-      // This will set the messages state to only the latest set of messages from the thread
-      setMessages(formattedMessages.reverse());
-    } else {
-      // The run has not completed yet, handle accordingly
-    }
+      createRun(localThreadId, assistantId, handleNewMessage, handleError);
+
     } catch (error) {
       console.error("Communication error:", error);
     } finally {
       setIsSending(false);
-      setCurrentMessage('');
     }
   };
   
@@ -171,22 +191,35 @@ const [currentPrompts, setCurrentPrompts] = useState([]);
         {/* Message container will also show loading dots when isSending is true */}
 
         <div ref={scrollViewRef} className="chatscreen-messages-container">
-          {messages.map((message, index) => (
-            <div key={index} className={`chatscreen-message-container ${message.sender === 'user' ? 'chatscreen-user-message' : 'chatscreen-bot-message'}`}>
-              <RenderMarkdown markdown={message.text} />
-            </div>
-          ))}
+          {messages.map((message, index) => {
+            // Only render the divs if message.text has a truthy value
+            if (message.text) {
+              return (
+                <React.Fragment key={index}>
+                  <div className={`chatscreen-message-container ${message.sender === 'user' ? 'chatscreen-user-message' : 'chatscreen-bot-message'}`}>
+                    <RenderMarkdown markdown={message.text}/>
+                  </div>
+                  {isSending && index === messages.length - 1 && !accumulatedMessage && (
+                    <div className="chatscreen-message-container chatscreen-bot-message">
+                      <div className="typing-indicator">
+                        <div className="typing-indicator-dot"></div>
+                        <div className="typing-indicator-dot"></div>
+                        <div className="typing-indicator-dot"></div>
+                      </div>
+                    </div>
+                  )}
 
-          {isSending && (
-            <div className="chatscreen-message-container chatscreen-bot-message">
-              {/* Render your typing indicator here */}
-              <div className="typing-indicator">
-                <div className="typing-indicator-dot"></div>
-                <div className="typing-indicator-dot"></div>
-                <div className="typing-indicator-dot"></div>
-              </div>
-            </div>
-          )}
+                  {isSending && index === messages.length - 1 && accumulatedMessage && (
+                    <div className="chatscreen-message-container chatscreen-bot-message">
+                      <RenderMarkdown markdown={accumulatedMessage}/>
+                    </div>
+                  )}
+                </React.Fragment>
+              );
+            }
+            // Return null for falsy message.text values to skip rendering
+            return null;
+          })}
         </div>
         
         {showImage && chatbotImage && (
