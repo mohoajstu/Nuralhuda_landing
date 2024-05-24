@@ -55,6 +55,7 @@ export const Navigation = (props) => {
                 Contact
               </a>
             </li>
+            <li><Link to="/threads">Threads</Link></li>
             <li>
               <Link to="/login">Login</Link>  
             </li>

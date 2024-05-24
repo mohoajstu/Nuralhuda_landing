@@ -7,8 +7,6 @@ import { Assistants } from './assistants';
 import { Team } from './Team';
 import { Contact } from './contact';
 
-
-
 const Home = ({ data }) => {
   return (
     <div className="home">

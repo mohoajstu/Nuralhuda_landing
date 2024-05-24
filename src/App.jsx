@@ -12,6 +12,7 @@ import JsonData from './data/data.json';
 import SmoothScroll from 'smooth-scroll';
 import Popup from './home/Popup'; // Import the Popup component
 import ThankYou from './register/ThankYou'; 
+import ThreadManager from './threads/ThreadManager';
 
 import './App.css';
 
@@ -32,10 +33,10 @@ const App = () => {
   if (loading) {
     return <div>Loading...</div>; // Render loading screen while checking auth state
   }
-console.log(user);
+
   return (
     <div className="App">
-      {location.pathname === '/' && <Navigation/>}
+      {location.pathname === '/' && <Navigation />}
       {location.pathname === '/' && <Popup />} {/* Display Popup only on Home page */}
       <Routes>
         <Route path="/" element={landingPageData ? <Home data={landingPageData} /> : <div>Loading...</div>} />
@@ -43,6 +44,7 @@ console.log(user);
         <Route path="/chat/:chatbotType" element={<ChatScreen />} />
         <Route path="/register" element={<Register />} /> {/* Add the Register route */}
         <Route path="/thank-you" element={<ThankYou />} /> {/* Add the Thank You route */}
+        <Route path="/threads" element={<ThreadManager />} /> {/* Corrected the route */}
         <Route path="*" element={<div>404 Not Found</div>} />
       </Routes>
     </div>
