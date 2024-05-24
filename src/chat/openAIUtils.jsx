@@ -6,7 +6,8 @@ const openai = new OpenAI({
   dangerouslyAllowBrowser: true,
 });
 
-// Function to create a thread
+let currentStream = null;
+
 export async function createThread() {
   try {
     const thread = await openai.beta.threads.create();
@@ -17,7 +18,6 @@ export async function createThread() {
   }
 }
 
-// Function to add a message to the thread and get a response
 export async function createMessage(threadId, newMessage) {
   try {
     const response = await openai.beta.threads.messages.create(threadId, {
@@ -31,15 +31,38 @@ export async function createMessage(threadId, newMessage) {
   }
 }
 
-// Function to initiate a run with the assistant
-export async function createRun(threadId, assistantId) {
+export function createRun(threadId, assistantId, handleMessage, handleError) {
+  if (currentStream) {
+    console.warn("A stream is already active, aborting new run initiation.");
+    return;
+  }
+
   try {
-    const response = await openai.beta.threads.runs.createAndPoll(threadId, {
+    currentStream = openai.beta.threads.runs.stream(threadId, {
       assistant_id: assistantId,
-    });
-    return response;
+    })
+      .on('textDelta', (textDelta) => {
+        if (textDelta.value) {
+          handleMessage({ sender: 'assistant', text: textDelta.value });
+        }
+      })
+      .on('end', () => {
+        handleMessage({ sender: 'assistant', text: 'END_TOKEN' });
+        currentStream = null; // Reset current stream on end
+      })
+      .on('error', (error) => {
+        console.error("Stream error:", error);
+        currentStream = null; // Reset current stream on error
+        if (handleError) {
+          handleError(error);
+        }
+      });
+
+    return currentStream;
+
   } catch (error) {
     console.error("Error initiating run with assistant:", error);
+    currentStream = null; // Reset current stream on catch
     throw error;
   }
 }
