@@ -163,30 +163,42 @@ const ChatScreen = () => {
           {assistantTitle}
         </div>
       </div>
-
       <div ref={scrollViewRef} className="chatscreen-messages-container">
         {messages.map((message, index) => (
           <React.Fragment key={index}>
-            <div className={`chatscreen-message-container ${message.sender === 'user' ? 'chatscreen-user-message' : 'chatscreen-bot-message'}`}>
-              <RenderMarkdown markdown={message.text} />
+            <div className={`chatscreen-message-wrapper ${message.sender === 'user' ? 'user-message-wrapper' : 'bot-message-wrapper'}`}>
+              {message.sender !== 'user' && (
+                <img src={chatbotImage} alt="Bot" className="chatbot-profile-image" />
+              )}
+              <div className={`chatscreen-message-container ${message.sender === 'user' ? 'chatscreen-user-message' : 'chatscreen-bot-message'}`}>
+                <RenderMarkdown markdown={message.text} />
+              </div>
             </div>
             {isSending && index === messages.length - 1 && !accumulatedMessage && (
-              <div className="chatscreen-message-container chatscreen-bot-message">
-                <div className="typing-indicator">
-                  <div className="typing-indicator-dot"></div>
-                  <div className="typing-indicator-dot"></div>
-                  <div className="typing-indicator-dot"></div>
+              <div className="chatscreen-message-wrapper bot-message-wrapper">
+                <img src={chatbotImage} alt="Bot" className="chatbot-profile-image" />
+                <div className="chatscreen-message-container chatscreen-bot-message">
+                  <div className="typing-indicator">
+                    <div className="typing-indicator-dot"></div>
+                    <div className="typing-indicator-dot"></div>
+                    <div className="typing-indicator-dot"></div>
+                  </div>
                 </div>
               </div>
             )}
             {isSending && index === messages.length - 1 && accumulatedMessage && (
-              <div className="chatscreen-message-container chatscreen-bot-message">
-                <RenderMarkdown markdown={accumulatedMessage} />
+              <div className="chatscreen-message-wrapper bot-message-wrapper">
+                <img src={chatbotImage} alt="Bot" className="chatbot-profile-image" />
+                <div className="chatscreen-message-container chatscreen-bot-message">
+                  <RenderMarkdown markdown={accumulatedMessage} />
+                </div>
               </div>
             )}
           </React.Fragment>
         ))}
       </div>
+
+
 
       {showImage && chatbotImage && (
         <div className="chatscreen-message-image">
