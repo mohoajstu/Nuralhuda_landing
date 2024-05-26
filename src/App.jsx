@@ -10,8 +10,11 @@ import ChatScreen from './chat/chatScreen';
 import Register from './register/Register'; // Import the Register component
 import JsonData from './data/data.json';
 import SmoothScroll from 'smooth-scroll';
+import Pricing from './Pricing/pricing';
 import Popup from './home/Popup'; // Import the Popup component
-import ThankYou from './register/ThankYou'; 
+import ThankYou from './register/ThankYou.jsx';
+
+
 
 import './App.css';
 
@@ -41,6 +44,7 @@ console.log(user);
         <Route path="/" element={landingPageData ? <Home data={landingPageData} /> : <div>Loading...</div>} />
         <Route path="/login" element={<Login />} />
         <Route path="/chat/:chatbotType" element={<ChatScreen />} />
+        <Route path="/pricing" element={<Pricing />} />
         <Route path="/register" element={<Register />} /> {/* Add the Register route */}
         <Route path="/thank-you" element={<ThankYou />} /> {/* Add the Thank You route */}
         <Route path="*" element={<div>404 Not Found</div>} />

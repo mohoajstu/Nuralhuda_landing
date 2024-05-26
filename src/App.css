@@ -1556,3 +1556,202 @@ font-size: 1.5rem;
   border-radius: 5px;
   cursor: pointer;
 }
+/* /mnt/data/Pricing.css */
+.pricing-page {
+  padding: 20px;
+  text-align: center;
+}
+
+/* /mnt/data/Pricing.css */
+.pricing-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 20px;
+}
+
+.container {
+  max-width: 1200px;
+  width: 100%;
+  text-align: center;
+}
+
+.pricing-table {
+  width: 100%;
+  margin: 50px 0;
+  border-collapse: collapse;
+  font-size: 18px;
+  text-align: left;
+}
+
+.pricing-table th, .pricing-table td {
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+}
+
+.pricing-table th {
+  background-color: #f4f4f4;
+}
+
+.logo {
+  max-width: 50px;
+  height: auto;
+}
+
+.slideshow {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: center;
+  background-color: #f4f4f4;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.slide {
+  transition: opacity 0.5s ease-in-out;
+}
+
+.slide-image {
+  max-width: 100px;
+  height: auto;
+  margin-bottom: 20px;
+}
+
+.arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.arrow.left {
+  left: 10px;
+}
+
+.arrow.right {
+  right: 10px;
+}
+.pricing-page {
+  background-color: #f9f9f9;
+  padding: 20px;
+  font-family: 'Arial, sans-serif';
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.toggle-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.toggle-switch {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px;
+  border-radius: 9999px;
+  background-color: #ccc;
+  cursor: pointer;
+  position: relative;
+}
+
+.toggle-circle {
+  width: 20px;
+  height: 20px;
+  background-color: #fff;
+  border-radius: 50%;
+  transition: transform 0.3s;
+  position: absolute;
+  left: 2px;
+}
+
+.toggle-circle.transform {
+  transform: translateX(24px);
+}
+
+.pricing-card {
+  background-color: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
+  transition: transform 0.3s;
+}
+
+.pricing-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.plan-title {
+  color: #010851;
+}
+
+.plan-description {
+  color: #666;
+}
+
+.plan-price {
+  color: #333;
+}
+
+.plan-features {
+  list-style-type: none;
+  padding: 0;
+}
+
+.plan-features li {
+  display: flex;
+  align-items: center;
+  color: #444;
+}
+
+.support-logo {
+  width: 20px;
+  height: 20px;
+  margin-left: 8px;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.get-started-button {
+  background-color: #010851;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.get-started-button:hover {
+  background-color: #0056b3;
+  color: #fff;
+}
+
+.text-center h2 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: #010851;
+}
+
+.text-center p {
+  font-size: 1.125rem;
+  color: #666;
+  margin-bottom: 1.5rem;
+}
