@@ -983,6 +983,11 @@ padding: 10px;
     text-align: center; /* Center the text */
     padding: 20px 0; /* Add padding to give some spacing */
   }
+  .chatscreen-user-message, .chatscreen-bot-message {
+    padding-bottom: 0px;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
 }
 
 @media (min-width: 992px) and (max-width: 1199px) {
@@ -1093,6 +1098,14 @@ padding: 10px;
   .chatscreen-input-container {
     padding: 0 15px; /* Add padding on smaller screens */
     padding-bottom: 5vh; /* Add padding to ensure it's not cut off */
+  }
+  .chatscreen-messages-container{
+    max-width: 90%;
+  }
+  .chatbot-profile-image {
+    width: 40px; 
+    height: 40px; 
+    margin-right: 0px; 
   }
 }
 
