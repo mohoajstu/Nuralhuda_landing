@@ -868,8 +868,11 @@ padding: 10px;
 .chatscreen-user-message, .chatscreen-bot-message {
   max-width: 80%;
   border-radius: 20px;
-  padding: 0px 10px 0px 10px; /* Reduced padding, adjust as needed */
-  margin-bottom: 10px; /* Adds space between messages */
+  /*padding: 10px; /* Reduced padding, adjust as needed */
+  padding-bottom: 0px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin-bottom: 5px; /* Adds space between messages */
   border-style: solid;
   border-color: #144c4c;
   border-width: 1px;
@@ -910,6 +913,8 @@ padding: 10px;
 
 .chatscreen-message-text {
   font-size: 16px;
+  align-items: center; /* Center the content vertically */
+  justify-content: center; /* Center the content horizontally if needed */
 }
 
 .chatscreen-prompts-container {
