@@ -867,8 +867,8 @@ padding: 10px;
 
 .chatscreen-user-message, .chatscreen-bot-message {
   max-width: 80%;
-  border-radius: 30px;
-  padding: 5px 15px 5px 15px; /* Reduced padding, adjust as needed */
+  border-radius: 20px;
+  padding: 0px 10px 0px 10px; /* Reduced padding, adjust as needed */
   margin-bottom: 10px; /* Adds space between messages */
   border-style: solid;
   border-color: #144c4c;
