@@ -1,13 +1,6 @@
-// /mnt/data/Slideshow.jsx
 import React, { useState, useEffect } from 'react';
 
-
 const slides = [
-    {
-        title: "Free Plan",
-        description: "What is available now for free.",
-        image: "/path/to/free-plan-logo.png",
-    },
     {
         title: "Basic Plan",
         description: "Just Nur Al Huda for $15 USD per month.",
@@ -31,7 +24,7 @@ const Slideshow = () => {
     useEffect(() => {
         const interval = setInterval(() => {
             setCurrentSlide((prevSlide) => (prevSlide + 1) % slides.length);
-        }, 5000);
+        }, 7000);
 
         return () => clearInterval(interval);
     }, []);

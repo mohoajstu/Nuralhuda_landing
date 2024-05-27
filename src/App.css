@@ -1556,56 +1556,16 @@ font-size: 1.5rem;
   border-radius: 5px;
   cursor: pointer;
 }
-/* /mnt/data/Pricing.css */
-.pricing-page {
-  padding: 20px;
-  text-align: center;
-}
 
-/* /mnt/data/Pricing.css */
-.pricing-page {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  padding: 20px;
-}
-
-.container {
-  max-width: 1200px;
-  width: 100%;
-  text-align: center;
-}
-
-.pricing-table {
-  width: 100%;
-  margin: 50px 0;
-  border-collapse: collapse;
-  font-size: 18px;
-  text-align: left;
-}
-
-.pricing-table th, .pricing-table td {
-  padding: 12px 15px;
-  border: 1px solid #ddd;
-}
-
-.pricing-table th {
-  background-color: #f4f4f4;
-}
-
-.logo {
-  max-width: 50px;
-  height: auto;
-}
-
+/* Slideshow */
 .slideshow {
+  justify-content: center;
   position: relative;
   width: 100%;
   max-width: 600px;
-  margin: 0 auto;
+  margin: auto;
   text-align: center;
-  background-color: #f4f4f4;
+  background-color: #dcca98;
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);
@@ -1630,6 +1590,7 @@ font-size: 1.5rem;
   font-size: 2rem;
   cursor: pointer;
   user-select: none;
+  color: #144040;
 }
 
 .arrow.left {
@@ -1639,8 +1600,10 @@ font-size: 1.5rem;
 .arrow.right {
   right: 10px;
 }
+
+/* Pricing Page */
 .pricing-page {
-  background-color: #f9f9f9;
+  background-color: #144040;
   padding: 20px;
   font-family: 'Arial, sans-serif';
 }
@@ -1648,10 +1611,47 @@ font-size: 1.5rem;
 .container {
   max-width: 1200px;
   margin: 0 auto;
+  gap: 16px; /* Adjust the gap between items as needed */
+}
+
+.chatscreen-header-container {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px; /* Adjust the gap between items as needed */
+  margin-bottom: 20px; /* Add margin to separate from the rest of the content */
+}
+
+.middle-section-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center align text */
+  justify-content: center; /* Center the content horizontally */
+  gap: 16px; /* Adjust the gap between items as needed */
+  margin-bottom: 20px; /* Add margin to separate from the rest of the content */
+}
+
+.text-container {
+  text-align: center; /* Center align text */
+}
+
+.chatscreen-home-button {
+  background-color: #dcca98;
+  color: #144040;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.chatscreen-home-button:hover {
+  background-color: #bba97a;
+  color: #fff;
 }
 
 .toggle-container {
   display: flex;
+  align-items: center;
   justify-content: center;
   margin-bottom: 20px;
 }
@@ -1659,17 +1659,20 @@ font-size: 1.5rem;
 .toggle-switch {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   padding: 5px;
   border-radius: 9999px;
-  background-color: #ccc;
+  background-color: #63cfa2;
   cursor: pointer;
   position: relative;
+  width: 60px;
+  height: 30px;
+  margin: 0 8px; /* Adjust the margin to add space around the toggle switch */
 }
 
 .toggle-circle {
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   background-color: #fff;
   border-radius: 50%;
   transition: transform 0.3s;
@@ -1678,12 +1681,12 @@ font-size: 1.5rem;
 }
 
 .toggle-circle.transform {
-  transform: translateX(24px);
+  transform: translateX(30px);
 }
 
 .pricing-card {
-  background-color: #fff;
-  border: 1px solid #e0e0e0;
+  background-color: #dcca98;
+  margin: 15px;
   border-radius: 8px;
   padding: 20px;
   transition: transform 0.3s;
@@ -1691,11 +1694,12 @@ font-size: 1.5rem;
 
 .pricing-card:hover {
   transform: translateY(-10px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  /*box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);*/
+  background-color: #bba97a;
 }
 
 .plan-title {
-  color: #010851;
+  color: #144040;
 }
 
 .plan-description {
@@ -1730,8 +1734,8 @@ font-size: 1.5rem;
 }
 
 .get-started-button {
-  background-color: #010851;
-  color: #fff;
+  background-color: #144040;
+  color: #DCCA98;
   padding: 10px 20px;
   border-radius: 8px;
   border: none;
@@ -1740,18 +1744,17 @@ font-size: 1.5rem;
 }
 
 .get-started-button:hover {
-  background-color: #0056b3;
+  background-color: #0d2c2c;
   color: #fff;
 }
 
-.text-center h2 {
-  font-size: 2.5rem;
-  margin-bottom: 1rem;
-  color: #010851;
+/* If there are any hover effects causing borders, adjust them here */
+.pricing-card:hover {
+  border: none; /* This removes borders on hover */
+  box-shadow: none; /* This removes box shadows on hover, if any */
 }
 
-.text-center p {
-  font-size: 1.125rem;
-  color: #666;
-  margin-bottom: 1.5rem;
+/* Additional hover style adjustments */
+.pricing-card:hover {
+  background-color: #bba97a; /* Keeps background color consistent on hover */
 }
