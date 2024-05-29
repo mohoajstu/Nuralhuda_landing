@@ -1555,9 +1555,7 @@ font-size: 1.5rem;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-}
-
-/* Slideshow */
+}/* Slideshow */
 .slideshow {
   justify-content: center;
   position: relative;
@@ -1605,6 +1603,7 @@ font-size: 1.5rem;
 .pricing-page {
   background-color: #144040;
   padding: 20px;
+  padding-top: 100px; /* Adjust this value based on your navigation bar height */
   font-family: 'Arial, sans-serif';
 }
 
@@ -1614,147 +1613,207 @@ font-size: 1.5rem;
   gap: 16px; /* Adjust the gap between items as needed */
 }
 
-.chatscreen-header-container {
-  display: flex;
-  align-items: flex-start;
-  gap: 16px; /* Adjust the gap between items as needed */
-  margin-bottom: 20px; /* Add margin to separate from the rest of the content */
-}
-
-.middle-section-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center; /* Center align text */
-  justify-content: center; /* Center the content horizontally */
-  gap: 16px; /* Adjust the gap between items as needed */
-  margin-bottom: 20px; /* Add margin to separate from the rest of the content */
-}
-
 .text-container {
   text-align: center; /* Center align text */
 }
 
-.chatscreen-home-button {
-  background-color: #dcca98;
-  color: #144040;
-  padding: 10px 20px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.chatscreen-home-button:hover {
-  background-color: #bba97a;
-  color: #fff;
-}
-
-.toggle-container {
+.stripe-pricing-table-container {
   display: flex;
-  align-items: center;
   justify-content: center;
-  margin-bottom: 20px;
+  align-items: center;
+  width: 100%; /* Ensure the container is full width */
+  max-width: 1200px; /* Optional: limit max width for large screens */
+  margin: 0 auto; /* Center the container */
+  padding: 20px; /* Add some padding if needed */
+  box-sizing: border-box; /* Ensure padding is included in the width */
 }
 
-.toggle-switch {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 5px;
-  border-radius: 9999px;
-  background-color: #63cfa2;
-  cursor: pointer;
-  position: relative;
-  width: 60px;
-  height: 30px;
-  margin: 0 8px; /* Adjust the margin to add space around the toggle switch */
+/* Add responsive styles to ensure the table scales correctly */
+@media (min-width: 768px) {
+  .stripe-pricing-table-container {
+    padding: 40px;
+  }
 }
 
-.toggle-circle {
-  width: 24px;
-  height: 24px;
-  background-color: #fff;
-  border-radius: 50%;
-  transition: transform 0.3s;
+.pricing-overlay {
   position: absolute;
-  left: 2px;
+  top: 800px; /* Adjust this value based on the actual height needed */
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: calc(100% - 600px); /* Adjust this value based on the actual height needed */
+  cursor: pointer;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.5); /* Optional: to make the overlay visible for testing */
 }
 
-.toggle-circle.transform {
-  transform: translateX(30px);
+
+/* Company Colors */
+:root {
+  --primary-color: #144040;
+  --secondary-color: #DCCA98;
+  --text-color: #ffffff;
 }
 
-.pricing-card {
+.account-setup-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: var(--primary-color);
+}
+
+.account-setup-form {
+  background-color: var(--secondary-color);
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  width: 100%;
+}
+
+.account-setup-form h2 {
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.account-setup-form input,
+.account-setup-form select,
+.account-setup-form button {
+  width: 100%;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  border: none;
+  border-radius: 5px;
+}
+
+.account-setup-form input,
+.account-setup-form select {
+  background-color: #ffffff;
+  color: var(--primary-color);
+}
+
+.account-setup-form button {
+  background-color: var(--primary-color);
+  color: var(--text-color);
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.account-setup-form button:hover {
+  background-color: darken(var(--primary-color), 10%);
+}
+
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 20;
+}
+
+.modal-content {
+  background-color: var(--secondary-color);
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+}
+
+.modal-message {
+  color: var(--primary-color);
+  margin-bottom: 1.5rem;
+}
+
+.modal-buttons-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.modal-button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.modal-button.login {
+  background-color: var(--primary-color);
+  color: var(--text-color);
+}
+
+.modal-button.cancel {
+  background-color: #ccc;
+  color: var(--primary-color);
+}
+
+.modal-button.login:hover {
+  background-color: darken(var(--primary-color), 10%);
+}
+
+.modal-button.cancel:hover {
+  background-color: #aaa;
+}
+
+.text-container h4 {
+  text-align: center;
+}
+
+.enterprise-card-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 2rem;
+}
+
+.enterprise-card {
   background-color: #dcca98;
-  margin: 15px;
-  border-radius: 8px;
-  padding: 20px;
-  transition: transform 0.3s;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 800px;
+  width: 100%;
+  text-align: center;
+  margin: 0 auto;
 }
 
-.pricing-card:hover {
-  transform: translateY(-10px);
-  /*box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);*/
-  background-color: #bba97a;
-}
-
-.plan-title {
+.enterprise-title {
+  font-size: 4rem;
+  margin-bottom: 1rem;
   color: #144040;
 }
 
-.plan-description {
-  color: #666;
+.enterprise-description {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  color: #144040;
 }
 
-.plan-price {
-  color: #333;
-}
-
-.plan-features {
-  list-style-type: none;
-  padding: 0;
-}
-
-.plan-features li {
-  display: flex;
-  align-items: center;
-  color: #444;
-}
-
-.support-logo {
-  width: 20px;
-  height: 20px;
-  margin-left: 8px;
-}
-
-.button-container {
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-}
-
-.get-started-button {
+.enterprise-button {
   background-color: #144040;
-  color: #DCCA98;
-  padding: 10px 20px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.get-started-button:hover {
-  background-color: #0d2c2c;
   color: #fff;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1.25rem;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
 }
 
-/* If there are any hover effects causing borders, adjust them here */
-.pricing-card:hover {
-  border: none; /* This removes borders on hover */
-  box-shadow: none; /* This removes box shadows on hover, if any */
-}
-
-/* Additional hover style adjustments */
-.pricing-card:hover {
-  background-color: #bba97a; /* Keeps background color consistent on hover */
+.enterprise-button:hover {
+  background-color: #0f3030;
 }
