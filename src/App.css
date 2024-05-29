@@ -1644,7 +1644,7 @@ font-size: 1.5rem;
   height: calc(100% - 600px); /* Adjust this value based on the actual height needed */
   cursor: pointer;
   z-index: 10;
-  background: rgba(255, 255, 255, 0.5); /* Optional: to make the overlay visible for testing */
+  background: transparent; /* Optional: to make the overlay visible for testing */
 }
 
 

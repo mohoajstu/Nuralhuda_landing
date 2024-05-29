@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getAuth } from 'firebase/auth';
+import { getFirestore, doc, getDoc } from 'firebase/firestore';
 import Modal from './Modal'; // Import the Modal component
+
+const db = getFirestore();
+const auth = getAuth();
 
 const OverlayComponent = () => {
   const navigate = useNavigate();
@@ -8,12 +13,19 @@ const OverlayComponent = () => {
   const [overlayStyles, setOverlayStyles] = useState({});
 
   useEffect(() => {
-    const handleOverlayClick = (e) => {
+    const handleOverlayClick = async (e) => {
       e.preventDefault();
       e.stopPropagation();
 
-      const accountSetupComplete = sessionStorage.getItem('accountSetupComplete');
-      if (!accountSetupComplete) {
+      const user = auth.currentUser;
+      if (user) {
+        const userDoc = await getDoc(doc(db, 'users', user.uid));
+        if (userDoc.exists() && userDoc.data().paymentStatus === 'paid') {
+          return;
+        } else {
+          setModalOpen(true);
+        }
+      } else {
         setModalOpen(true);
       }
     };
@@ -71,7 +83,7 @@ const OverlayComponent = () => {
         isOpen={isModalOpen}
         onClose={handleModalClose}
         onConfirm={handleModalConfirm}
-        message="You need to setup an account before proceeding."
+        message="You need to setup an account before you can complete the payment process. Click Setup Account to proceed!"
       />
     </>
   );

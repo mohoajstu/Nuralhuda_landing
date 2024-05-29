@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
+import { getFirestore, doc, setDoc } from 'firebase/firestore';
 import { auth } from '../config/firebase-config'; // Adjust the path as necessary
+
+const db = getFirestore();
 
 const AccountSetup = () => {
   const [email, setEmail] = useState('');
@@ -17,10 +20,17 @@ const AccountSetup = () => {
     }
 
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      // Store user payment status in Firestore
+      await setDoc(doc(db, 'users', user.uid), {
+        email: email,
+        paymentStatus: 'unpaid',
+      });
+
       sessionStorage.setItem('accountSetupComplete', 'true');
       sessionStorage.setItem('userEmail', email);
-      sessionStorage.setItem('userPassword', password);
       navigate('/pricing', { state: { email } });
     } catch (error) {
       console.error("Error creating account:", error);

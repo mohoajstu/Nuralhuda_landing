@@ -12,9 +12,9 @@ import JsonData from './data/data.json';
 import SmoothScroll from 'smooth-scroll';
 import Pricing from './Pricing/pricing';
 import Popup from './home/Popup'; // Import the Popup component
-import ThankYou from './register/ThankYou.jsx';
-import AccountSetup from './Pricing/AccountSetup.jsx';
-import PaymentSuccess from './Pricing/thankyou.jsx'
+import ThankYou from './register/ThankYou';
+import AccountSetup from './Pricing/AccountSetup';
+import PaymentSuccess from './Pricing/PaymentSuccess'
 
 import './App.css';
 
@@ -57,7 +57,7 @@ const App = () => {
         <Route path="/register" element={<Register />} /> {/* Add the Register route */}
         <Route path="/account-setup" element={<AccountSetup />} />
         <Route path="/thank-you" element={<ThankYou />} /> {/* Add the Thank You route */}
-        <Route path="/thankyou" element={<PaymentSuccess />} />
+        <Route path="/payment-success" element={<PaymentSuccess />} />
         <Route path="*" element={<div>404 Not Found</div>} />
       </Routes>
     </div>
