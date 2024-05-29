@@ -27,6 +27,11 @@ h3 {
 }
 h4 {
   font-size: 18px;
+  font-weight: 600;
+  color: #114040;
+}
+.h4-text {
+  font-size: 18px;
   color: #dcca98;
   font-weight: 600;
 }
@@ -878,13 +883,36 @@ padding: 10px;
   border-width: 1px;
 }
 
-/* Assistant profile image beside message -> */
+/* Assistant profile image beside message + thumbs up n down -> */
 .chatbot-profile-image {
   width: 50px; 
   height: 50px; 
   border-radius: 50%;
   margin-right: 10px;
   margin-top: -10px; /* Adjust this value to align vertically */
+}
+
+.bot-profile-and-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.bot-actions {
+  display: flex;
+}
+
+.thumb-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px; 
+  padding: 0;
+  margin-right: 3px;
+}
+
+.thumb-button:active {
+  transform: translateY(-4px);
 }
 
 .chatscreen-message-wrapper {
@@ -983,6 +1011,11 @@ padding: 10px;
     text-align: center; /* Center the text */
     padding: 20px 0; /* Add padding to give some spacing */
   }
+  .chatscreen-user-message, .chatscreen-bot-message {
+    padding-bottom: 0px;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
 }
 
 @media (min-width: 992px) and (max-width: 1199px) {
@@ -1049,6 +1082,10 @@ padding: 10px;
     padding-bottom: 5vh; /* Add padding to ensure it's not cut off */
   }
 
+  .chatscreen-messages-container{
+    max-width: 90%;
+  }
+
   .chatscreen-input,
   .chatscreen-send-button {
     margin-top: 10px;
@@ -1093,6 +1130,14 @@ padding: 10px;
   .chatscreen-input-container {
     padding: 0 15px; /* Add padding on smaller screens */
     padding-bottom: 5vh; /* Add padding to ensure it's not cut off */
+  }
+  .chatscreen-messages-container{
+    max-width: 94%;
+  }
+  .chatbot-profile-image {
+    width: 40px; 
+    height: 40px; 
+    margin-right: 0px; 
   }
 }
 
@@ -1361,14 +1406,38 @@ input[type="button"] {
   max-width: 600px;
   width: 50%;
   margin: auto;
+  text-align: center;
 }
 
 .modal-message {
   text-align: center;
   margin-bottom: 1em;
-font-size: 1.5rem;
+  font-size: 1.5rem;
   font-weight: bold;
   color: #144c4c;
+}
+
+.modal-submessage-container {
+  max-height: 100px; /* Adjust height as needed */
+  overflow-y: auto;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #DCF8C6;
+  width: calc(100% - 20px); /* Full width minus padding */
+  max-height: 7em;
+  margin: -10px 10px 0px 10px;
+  font-size: small;
+}
+
+.modal-textarea {
+  width: calc(100% - 20px); /* Full width minus padding */
+  padding: 10px;
+  margin: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  resize: none;
+  height: 6em;
 }
 
 @media (min-width: 600px) {
@@ -1387,6 +1456,9 @@ font-size: 1.5rem;
     font-size: 1rem;
   }
 
+  .modal-submessage {
+    font-size: 0.8rem;
+  }
 
 .modal-button.login {
   font-size: 1rem;

@@ -34,7 +34,7 @@ export const Assistants = (props) => {
                   className="assistant-title-button"
                   onClick={() => navigateToChat(titleToChatbotTypeMap[d.title] || 'default')}
                 >
-                  <h4>{d.title}</h4>
+                  <h4 className="h4-text">{d.title}</h4>
                 </button>
 
                 <div
@@ -50,7 +50,7 @@ export const Assistants = (props) => {
                       style={d.title === 'Nur Al Huda For Kids' ? { width: 'auto', maxWidth: '250px', height: 'auto' } : {}}
                     />
                     <div className="hover-text">
-                      <h4>{d.title}</h4>
+                      <h4 className="h4-text">{d.title}</h4>
                     </div>
                   </div>
                 </div>
