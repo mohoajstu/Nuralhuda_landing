@@ -46,8 +46,11 @@ const ChatScreen = () => {
   const location = useLocation();
   const [user] = useAuthState(auth);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpenReport, setIsModalOpenReport] = useState(false);
   const [currentPrompts, setCurrentPrompts] = useState([]);
   const [accumulatedMessage, setAccumulatedMessage] = useState('');
+  const [reportFeedbackMessage, setReportFeedbackMessage] = useState('');
+  const [reportedMessage, setReportedMessage] = useState('');
 
   useEffect(() => {
     const handleResize = () => {
@@ -147,14 +150,56 @@ const ChatScreen = () => {
     navigate('/');
   };
 
+  const sendNegativeReport = (msgReported) => {
+    console.log("Negative Report Clicked", msgReported);
+    setReportedMessage(msgReported);
+    //reportFeedbackMessage (the feedback). reportedMessage{global} or msgReported{local} is the message itself
+    setIsModalOpenReport(true);
+  };
+
+  const sendPositiveReport = (reportedMessage) => {
+    console.log("Positive Report Clicked", reportedMessage);
+  };
+
+  const handleReportSubmit = () => {
+    console.log("Message reported\n", reportedMessage, reportFeedbackMessage);
+    setIsModalOpenReport(false);
+  };
+
   return (
     <div className="chatscreen-container">
-      <Modal
+      <Modal 
         isOpen={isModalOpen}
         onClose={handleGoToHome}
         onConfirm={() => navigate('/login', { state: { from: location.pathname } })}
-        message="Please Login To Use This Premium Feature."
+        confirmLabel="Login"
+        closeLabel="Cancel"
+        message={<p className="modal-message">Please Login To Use This Premium Feature.</p>}
       />
+
+      <Modal
+        isOpen={isModalOpenReport}
+        onClose={() => setIsModalOpenReport(false)}
+        onConfirm={handleReportSubmit}
+        confirmLabel="Submit"
+        closeLabel="Cancel"
+        message={(
+          <>
+            <p className="modal-message">Report this message:</p>
+            <div className="modal-submessage-container">
+              {reportedMessage}
+            </div>
+            <textarea
+              className="modal-textarea"
+              onChange={(e) => setReportFeedbackMessage(e.target.value)}
+              placeholder="Describe the issue..."
+              rows="4"
+              cols="50"
+            />
+          </>
+        )}
+      />
+
       <div className="chatscreen-header-container">
         <button className="chatscreen-home-button" onClick={handleGoToHome}>
           Home
@@ -163,39 +208,56 @@ const ChatScreen = () => {
           {assistantTitle}
         </div>
       </div>
-
       <div ref={scrollViewRef} className="chatscreen-messages-container">
         {messages.map((message, index) => (
           <React.Fragment key={index}>
-            <div className={`chatscreen-message-container ${message.sender === 'user' ? 'chatscreen-user-message' : 'chatscreen-bot-message'}`}>
-              <RenderMarkdown markdown={message.text} />
+            <div className={`chatscreen-message-wrapper ${message.sender === 'user' ? 'user-message-wrapper' : 'bot-message-wrapper'}`}>
+              {message.sender !== 'user' && (
+                <div className="bot-profile-and-actions">
+                  <img src={chatbotImage} alt="Bot" className="chatbot-profile-image" />
+                  <div className="bot-actions">
+                    <button className="thumb-button" onClick={() => sendPositiveReport(message.text)}>👍</button>
+                    <button className="thumb-button" onClick={() => sendNegativeReport(message.text)}>👎</button>
+                  </div>
+                </div>
+              )}
+              <div className={`chatscreen-message-container ${message.sender === 'user' ? 'chatscreen-user-message' : 'chatscreen-bot-message'}`}>
+                <RenderMarkdown markdown={message.text} />
+              </div>
             </div>
             {isSending && index === messages.length - 1 && !accumulatedMessage && (
-              <div className="chatscreen-message-container chatscreen-bot-message">
-                <div className="typing-indicator">
-                  <div className="typing-indicator-dot"></div>
-                  <div className="typing-indicator-dot"></div>
-                  <div className="typing-indicator-dot"></div>
+              <div className="chatscreen-message-wrapper bot-message-wrapper">
+                <div className="chatscreen-message-container chatscreen-bot-message">
+                  <div className="typing-indicator">
+                    <div className="typing-indicator-dot"></div>
+                    <div className="typing-indicator-dot"></div>
+                    <div className="typing-indicator-dot"></div>
+                  </div>
                 </div>
               </div>
             )}
             {isSending && index === messages.length - 1 && accumulatedMessage && (
-              <div className="chatscreen-message-container chatscreen-bot-message">
-                <RenderMarkdown markdown={accumulatedMessage} />
+              <div className="chatscreen-message-wrapper bot-message-wrapper">
+                <div className="bot-profile-and-actions">
+                  <img src={chatbotImage} alt="Bot" className="chatbot-profile-image" />
+                </div>
+                <div className="chatscreen-message-container chatscreen-bot-message">
+                  <RenderMarkdown markdown={accumulatedMessage} />
+                </div>
               </div>
             )}
           </React.Fragment>
         ))}
       </div>
-
+  
       {showImage && chatbotImage && (
         <div className="chatscreen-message-image">
           <img src={chatbotImage} alt={assistantTitle + " Image"} />
         </div>
       )}
-
+  
       <SuggestedPrompts onSelectPrompt={handleSelectPrompt} isSending={isSending} chatbotType={chatbotType} />
-
+  
       <div className="chatscreen-input-container">
         <input
           className="chatscreen-input"
@@ -214,7 +276,7 @@ const ChatScreen = () => {
         </button>
       </div>
     </div>
-  );
+  );  
 };
 
 export default ChatScreen;
