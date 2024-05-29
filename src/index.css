@@ -5,12 +5,15 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  line-height: 1.5; /* Ensures good readability */
+  text-align: left; /* Default text alignment */
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
 img {
   max-width: 100%;
   height: auto;
@@ -19,3 +22,10 @@ img {
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Box-sizing rule for all elements */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
