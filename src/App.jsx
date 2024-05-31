@@ -7,11 +7,8 @@ import { Navigation } from './home/navigation'; // Adjust according to your stru
 import Home from './home/Home';
 import Login from './login/Login';
 import ChatScreen from './chat/chatScreen';
-import Register from './register/Register'; // Import the Register component
 import JsonData from './data/data.json';
 import SmoothScroll from 'smooth-scroll';
-import Popup from './home/Popup'; // Import the Popup component
-import ThankYou from './register/ThankYou'; 
 
 import './App.css';
 
@@ -29,20 +26,27 @@ const App = () => {
     setLandingPageData(JsonData); // Assuming JsonData is immediately available or simulated as such
   }, []);
 
+  useEffect(() => {
+    if (location.hash) {
+      const element = document.getElementById(location.hash.substring(1));
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  }, [location]);
+
   if (loading) {
     return <div>Loading...</div>; // Render loading screen while checking auth state
   }
-console.log(user);
+
   return (
     <div className="App">
-      {location.pathname === '/' && <Navigation/>}
-      {location.pathname === '/' && <Popup />} {/* Display Popup only on Home page */}
+      {(location.pathname === '/' || location.pathname === '/login' || location.pathname === '/pricing') && <Navigation />} {/* Display Navigation only on Home, Login, Pricing, and Chat pages */}
+      
       <Routes>
         <Route path="/" element={landingPageData ? <Home data={landingPageData} /> : <div>Loading...</div>} />
         <Route path="/login" element={<Login />} />
         <Route path="/chat/:chatbotType" element={<ChatScreen />} />
-        <Route path="/register" element={<Register />} /> {/* Add the Register route */}
-        <Route path="/thank-you" element={<ThankYou />} /> {/* Add the Thank You route */}
         <Route path="*" element={<div>404 Not Found</div>} />
       </Routes>
     </div>

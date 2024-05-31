@@ -1,104 +1,75 @@
 {
   "Header": {
-    "title": "Engage With Islamic Knowledge Like Never Before" ,
-    "paragraph": "Explore Nur Al Huda Today" 
+    "title": "Engage With Islamic Knowledge Like Never Before",
+    "paragraph": "Explore Nur Al Huda Today"
   },
   "About": {
-    "paragraph": "Nur Al Huda is dedicated to bridging the gap between traditional Islamic education and the fast-paced modern world. By providing innovative assistants that offer reliable, on-demand answers to Islamic questions, we aim to make Islamic knowledge more accessible and engaging for people of all ages. Our goal is to ensure that Islamic education remains relevant and available to all, especially the younger generation. Through our technology-driven approach, we hope to inspire a deeper understanding of Islam and help keep people connected to their faith. ",
-    "mission": "At Nur Al Huda, our mission is to make the profound wisdom of the Quran and Hadith accessible to all, combining the best of traditional Islamic scholarship and modern technology. We aspire to provide a reliable and user-friendly platform for exploring and understanding Islamic teachings.",    
+    "paragraph": "Nur Al Huda is dedicated to bridging the gap between traditional Islamic education and the fast-paced modern world. By providing innovative assistants that offer reliable, on-demand answers to Islamic questions, we aim to make Islamic knowledge more accessible and engaging for people of all ages. Our goal is to ensure that Islamic education remains relevant and available to all, especially the younger generation. Through our technology-driven approach, we hope to inspire a deeper understanding of Islam and help keep people connected to their faith.",
+    "mission": "At Nur Al Huda, our mission is to make the profound wisdom of the Quran and Hadith accessible to all, combining the best of traditional Islamic scholarship and modern technology. We aspire to provide a reliable and user-friendly platform for exploring and understanding Islamic teachings.",
     "Why": [
       "Nur Al Huda combines the latest in AI technology with the rich heritage of Islamic scholarship.",
       "Our platform is built upon authenticated sources, including the Quran and Sahih Hadith collections, ensuring that every piece of information shared is rooted in credibility and authenticity.",
       "We embrace advancements in technology to bring you an interactive, engaging experience in Islamic learning."
-        ],
+    ],
     "Why2": "By bringing together innovation and tradition, Nur Al Huda is committed to fostering a deeper connection to Islam and its teachings for generations to come."
   },
-
-  "Assistants": [
-    
-    {
-      "title": "Nur Al Huda",
-      "largeImage": "img/about-nbg.png",
-      "smallImage": "img/about-nbg.png",
-      "type": "nurAlHuda"
-    },
-    {
-      "title": "Nur Al Huda For Kids",
-      "largeImage": "img/nuralhudaforkids.png",
-      "smallImage": "img/nuralhudaforkids.png",
-      "type": "nurAlHudaForKids"
-    },
-    {
-      "title": "Islamic Socratic Method",
-      "largeImage": "img/islamic_socratic_method.png",
-      "smallImage": "img/islamic_socratic_method.png",
-      "type": "islamicSocraticMethod"
-    },
-    {
-      "title": "Iqra With Us",
-      "largeImage": "img/Nuralhuda-applogo.png",
-      "smallImage": "img/Nuralhuda-applogo.png",
-      "type": "iqraWithUs"
-    }
-  ],
   "Features": [
     {
       "icon": "fa fa-book",
       "name": "Authentic Sources",
-      "text": "Using The Quran and Authentic Hadith as our Primary Sources"    },
+      "text": "Using The Quran and Authentic Hadith as our Primary Sources"
+    },
     {
       "icon": "fa fa-search",
       "name": "Islamic Research Methods",
-      "text": "Islamic Research Methods giving you an Islamic perspective to all your researching needs"    },
+      "text": "Islamic Research Methods giving you an Islamic perspective to all your researching needs"
+    },
     {
       "icon": "fa fa-language",
       "name": "Multi-lingual",
       "text": "We offer a variaty of languages English, Arabic, and more!"
-        },
+    },
     {
       "icon": "fa fa-user",
       "name": "User Feedback",
-      "text": "User satisfaction is our top priority, suggest features or new assistants to make Nur Al Huda better for you and the community. \n Help us, Help you."    }
+      "text": "User satisfaction is our top priority, suggest features or new assistants to make Nur Al Huda better for you and the community. \n Help us, Help you."
+    }
   ],
-  
   "Team": [
     {
       "img": "img/team/moho.jpg",
       "name": "Mohammed Abdul Jabbar",
       "job": "Founder",
-      "description":"As a student of electrical engineering and an employee at the University of British Columbia's Center for Teaching, Learning and Technology, I bring valuable expertise in education technology and pedagogy to Nur Al Huda. Driven by a lifelong passion for learning and a desire to address the challenges of accessing Islamic knowledge in today's fast-paced world, I am committed to developing innovative assistants that provide reliable, on-demand answers to Islamic questions."
+      "description": "As a student of electrical engineering and an employee at the University of British Columbia's Center for Teaching, Learning and Technology, I bring valuable expertise in education technology and pedagogy to Nur Al Huda. Driven by a lifelong passion for learning and a desire to address the challenges of accessing Islamic knowledge in today's fast-paced world, I am committed to developing innovative assistants that provide reliable, on-demand answers to Islamic questions."
     },
     {
       "img": "img/team/Ibrahim.jpg",
       "name": "Ibrahim Murtaza",
       "job": "Co-Founder",
-      "description":"As an electrical engineer raised between Qatar and Ottawa, I've experienced  Islamic education my whole life. With a family background in education and active involvement in the Islamic community, my passion for community service has always been strong. Recognizing a void in the AI landscape concerning Muslims and Islamic research, I felt compelled to explore this intersection further. This inspiration fuels my dedication to contribute meaningfully to the advancement of AI technology within the Muslim community."
+      "description": "As an electrical engineer raised between Qatar and Ottawa, I've experienced Islamic education my whole life. With a family background in education and active involvement in the Islamic community, my passion for community service has always been strong. Recognizing a void in the AI landscape concerning Muslims and Islamic research, I felt compelled to explore this intersection further. This inspiration fuels my dedication to contribute meaningfully to the advancement of AI technology within the Muslim community."
     }
-  
   ],
   "Contact": {
-   
     "phone": "+1 604 339 2925",
     "email": "nuralhudaco@gmail.com",
     "facebook": "https://www.facebook.com/profile.php?id=61557975303687",
     "instagram": "https://www.instagram.com/_nur_al_huda_/",
     "youtube": "https://www.youtube.com/channel/UCrMvCuQepj_ZO1OeMcw_ljQ"
   },
-
   "Meetyourassistants": [
     {
       "iconImg": "img/about-nbg.png",
       "title": "Nur Al Huda",
       "text": "As-salam-alaikum! I am Nur Al-Huda, an AI assistant designed to provide compassionate, accurate, and reliable guidance on Islamic teachings, rooted in the Quran and authentic Hadith. My purpose is to serve as a trusted companion and source of knowledge for those seeking to deepen their understanding and connection with Islam, while maintaining a warm, empathetic, and non-judgmental approach. It is my honor and privilege to assist you on your journey of spiritual growth and self-discovery, in sha Allah.",
       "description": ""
-      },
-      {
+    },
+    {
       "iconImg": "img/nuralhudaforkids.png",
       "title": "Nur Al Huda Kids",
-      "text": "As-salam-alaikum! I'm Nur Al Huda Kids, your friendly guide to learning about Islam. I'm here to answer your questions and share stories about our beautiful religion in a way that's easy and fun for you to understand. Feel free to ask me anything, and let's explore the wonders of Islam together!" ,
+      "text": "As-salam-alaikum! I'm Nur Al Huda Kids, your friendly guide to learning about Islam. I'm here to answer your questions and share stories about our beautiful religion in a way that's easy and fun for you to understand. Feel free to ask me anything, and let's explore the wonders of Islam together!",
       "description": ""
     },
-      {
+    {
       "iconImg": "img/islamic_socratic_method.png",
       "title": "Islamic Socratic Method",
       "text": "The Socratic method is a form of cooperative argumentative dialogue between individuals, based on asking and answering questions to stimulate critical thinking and to draw out ideas and underlying presuppositions. The Socratic method is a method of hypothesis elimination, in that better hypotheses are found by steadily identifying and eliminating those that lead to contradictions.",
@@ -109,6 +80,32 @@
       "title": "Iqra With Us",
       "text": "As-salam-alaikum! I am Iqra With Us, your Quran Assistant. I'm here to help you understand the Quran by providing accurate Arabic texts, English translations, and concise explanations based on traditional tafseer. My aim is to offer practical insights that you can apply in your daily life.",
       "description": ""
+    }
+  ],
+  "Assistants": [
+    {
+      "title": "Nur Al Huda",
+      "smallImage": "img/about-nbg.png",
+      "text": "As-salam-alaikum! I am Nur Al-Huda, an AI assistant designed to provide compassionate, accurate, and reliable guidance on Islamic teachings, rooted in the Quran and authentic Hadith. My purpose is to serve as a trusted companion and source of knowledge for those seeking to deepen their understanding and connection with Islam, while maintaining a warm, empathetic, and non-judgmental approach. It is my honor and privilege to assist you on your journey of spiritual growth and self-discovery, in sha Allah.",
+      "type": "nurAlHuda"
+    },
+    {
+      "title": "Nur Al Huda For Kids",
+      "smallImage": "img/nuralhudaforkids.png",
+      "text": "As-salam-alaikum! I'm Nur Al Huda Kids, your friendly guide to learning about Islam. I'm here to answer your questions and share stories about our beautiful religion in a way that's easy and fun for you to understand. Feel free to ask me anything, and let's explore the wonders of Islam together!",
+      "type": "nurAlHudaForKids"
+    },
+    {
+      "title": "Islamic Socratic Method",
+      "smallImage": "img/islamic_socratic_method.png",
+      "text": "The Socratic method is a form of cooperative argumentative dialogue between individuals, based on asking and answering questions to stimulate critical thinking and to draw out ideas and underlying presuppositions. The Socratic method is a method of hypothesis elimination, in that better hypotheses are found by steadily identifying and eliminating those that lead to contradictions.",
+      "type": "islamicSocraticMethod"
+    },
+    {
+      "title": "Iqra With Us",
+      "smallImage": "img/Nuralhuda-applogo.png",
+      "text": "As-salam-alaikum! I am Iqra With Us, your Quran Assistant. I'm here to help you understand the Quran by providing accurate Arabic texts, English translations, and concise explanations based on traditional tafseer. My aim is to offer practical insights that you can apply in your daily life.",
+      "type": "iqraWithUs"
     }
   ]
 }

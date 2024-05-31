@@ -1,3 +1,4 @@
+/*
 import React from "react";
 import { Image } from "./image";
 
@@ -24,3 +25,4 @@ export const Meetyourassistants = (props) => {
     </div>
   );
 };
+*/
