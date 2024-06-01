@@ -4,14 +4,14 @@ import { createThread, createMessage, createRun, titleToAssistantIDMap } from '.
 import { RenderMarkdown } from './RenderMarkdown';
 import { SuggestedPrompts, getPromptsForType } from './SuggestedPrompts';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { auth } from '../config/firebase-config';
+import { auth, db } from '../config/firebase-config';
+import { collection, addDoc } from 'firebase/firestore';
 import Modal from './modal';
 
 import nurAlHudaImg from '../img/about-nbg.png';
 import nurAlHudaForKidsImg from '../img/nuralhudaforkids.png';
 import islamicSocraticMethodImg from '../img/islamic_socratic_method.png';
 import iqraWithUsImg from '../img/Nuralhuda-applogo.png';
-
 
 const titleToChatbotTypeMap = {
   'Nur Al Huda': 'nurAlHuda',
@@ -28,7 +28,6 @@ const titleToImageMap = {
   'Islamic Socratic Method': islamicSocraticMethodImg,
   'Iqra With Us': iqraWithUsImg,
 };
-
 
 const ChatScreen = () => {
   const { chatbotType } = useParams();
@@ -153,17 +152,45 @@ const ChatScreen = () => {
   const sendNegativeReport = (msgReported) => {
     console.log("Negative Report Clicked", msgReported);
     setReportedMessage(msgReported);
-    //reportFeedbackMessage (the feedback). reportedMessage{global} or msgReported{local} is the message itself
     setIsModalOpenReport(true);
   };
 
-  const sendPositiveReport = (reportedMessage) => {
+  const sendPositiveReport = async (reportedMessage) => {
     console.log("Positive Report Clicked", reportedMessage);
+    if (user) {
+      try {
+        await addDoc(collection(db, 'positiveReviews'), {
+          message: reportedMessage,
+          user: user.uid,
+          timestamp: new Date(),
+        });
+        console.log('Positive report saved');
+      } catch (error) {
+        console.error('Error saving positive report:', error);
+      }
+    } else {
+      console.log('User not logged in');
+    }
   };
 
-  const handleReportSubmit = () => {
+  const handleReportSubmit = async () => {
     console.log("Message reported\n", reportedMessage, reportFeedbackMessage);
     setIsModalOpenReport(false);
+    if (user) {
+      try {
+        await addDoc(collection(db, 'negativeReviews'), {
+          message: reportedMessage,
+          feedback: reportFeedbackMessage,
+          user: user.uid,
+          timestamp: new Date(),
+        });
+        console.log('Negative report saved');
+      } catch (error) {
+        console.error('Error saving negative report:', error);
+      }
+    } else {
+      console.log('User not logged in');
+    }
   };
 
   return (
