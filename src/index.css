@@ -1,5 +1,3 @@
-/* index.css */
-
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -20,6 +18,10 @@ img {
   max-width: 100%;
   height: auto;
 }
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 /* Box-sizing rule for all elements */
 *,

@@ -10,8 +10,11 @@ import ChatScreen from './chat/chatScreen';
 import Register from './register/Register'; // Import the Register component
 import JsonData from './data/data.json';
 import SmoothScroll from 'smooth-scroll';
+import Pricing from './Pricing/pricing';
 import Popup from './home/Popup'; // Import the Popup component
-import ThankYou from './register/ThankYou'; 
+import ThankYou from './register/ThankYou';
+import AccountSetup from './Pricing/AccountSetup';
+import PaymentSuccess from './Pricing/PaymentSuccess'
 
 import './App.css';
 
@@ -29,20 +32,32 @@ const App = () => {
     setLandingPageData(JsonData); // Assuming JsonData is immediately available or simulated as such
   }, []);
 
+  useEffect(() => {
+    if (location.hash) {
+      const element = document.getElementById(location.hash.substring(1));
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  }, [location]);
+
   if (loading) {
     return <div>Loading...</div>; // Render loading screen while checking auth state
   }
-console.log(user);
+
   return (
     <div className="App">
-      {location.pathname === '/' && <Navigation/>}
+      {(location.pathname === '/' || location.pathname === '/login' || location.pathname === '/pricing') && <Navigation />} {/* Display Navigation only on Home, Login, and Pricing pages */}
       {location.pathname === '/' && <Popup />} {/* Display Popup only on Home page */}
       <Routes>
         <Route path="/" element={landingPageData ? <Home data={landingPageData} /> : <div>Loading...</div>} />
         <Route path="/login" element={<Login />} />
         <Route path="/chat/:chatbotType" element={<ChatScreen />} />
+        <Route path="/pricing" element={<Pricing />} />
         <Route path="/register" element={<Register />} /> {/* Add the Register route */}
+        <Route path="/account-setup" element={<AccountSetup />} />
         <Route path="/thank-you" element={<ThankYou />} /> {/* Add the Thank You route */}
+        <Route path="/payment-success" element={<PaymentSuccess />} />
         <Route path="*" element={<div>404 Not Found</div>} />
       </Routes>
     </div>
