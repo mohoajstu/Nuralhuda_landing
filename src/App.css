@@ -7,6 +7,7 @@ html {
   font-weight: 400;
   width: 100% !important;
   height: 100% !important;
+  background-color: #dcca98;
 }
 
 h2,
@@ -46,7 +47,8 @@ h5 {
   font-weight: 700;
   line-height: 20px;
 }
-h6{
+
+h6 {
   justify-content: center;
   text-transform: uppercase;
   margin: 0 0 20px;
@@ -137,11 +139,13 @@ hr {
 #menu.navbar-default .navbar-nav > li > a:hover:after {
   width: 100%;
 }
+
 .navbar-default .navbar-nav > .active > a,
 .navbar-default .navbar-nav > .active > a:hover,
 .navbar-default .navbar-nav > .active > a:focus {
   background-color: transparent;
 }
+
 .navbar-default .navbar-nav > .active > a:after,
 .navbar-default .navbar-nav > .active > a:hover:after,
 .navbar-default .navbar-nav > .active > a:focus:after {
@@ -183,7 +187,8 @@ hr {
 }
 
 @media (min-width: 768px) {
-  .brand-title, .brand-subtitle {
+  .brand-title,
+  .brand-subtitle {
     display: inline;
   }
 }
@@ -278,11 +283,7 @@ a:focus,
 .intro h1 {
   font-family: "Times", cursive;
   color: #ffbb00;
-  text-shadow:
-    -1px -1px 0 #000,
-    1px -1px 0 #000,
-    -1px 1px 0 #000,
-    1px 1px 0 #000;
+  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
   font-size: 40px;
   font-weight: 700;
   text-transform: uppercase;
@@ -300,11 +301,7 @@ a:focus,
   text-align: center;
   font-family: "Times", cursive;
   color: #ffbb10;
-  text-shadow:
-    -1px -1px 0 #000,
-    1px -1px 0 #000,
-    -1px 1px 0 #000,
-    1px 1px 0 #000;
+  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
   font-size: 30px;
   font-weight: 500;
   line-height: 30px;
@@ -389,8 +386,9 @@ header .intro-text {
 
 /* About Section */
 #about {
-  padding: 100px 0;
+  padding-top: 100px;
   background: #dcca98;
+  padding-bottom: -100px;
 }
 
 #about h3 {
@@ -445,7 +443,7 @@ header .intro-text {
   margin: 30px 0;
 }
 
-/* Assistants Section */
+/* features Section */
 #features {
   padding: 100px 0;
   background: linear-gradient(to right, #114040 0%, #144c4c 100%);
@@ -518,11 +516,7 @@ header .intro-text {
   text-align: center;
   margin: 0 auto;
   color: #dcca98;
-  background: linear-gradient(
-    to right,
-    rgba(99, 114, 255, 0.8) 0%,
-    rgba(92, 169, 251, 0.8) 100%
-  );
+  background: linear-gradient(to right, rgba(99, 114, 255, 0.8) 0%, rgba(92, 169, 251, 0.8) 100%);
   padding: 30% 0 0;
   height: 100%;
   width: 100%;
@@ -792,7 +786,7 @@ label {
   border: none; /* No border */
   font-size: large;
   font-weight: bold;
-  color: #Dcca98; /* White text */
+  color: #dcca98; /* White text */
   padding: 10px 20px; /* Padding inside the button */
   text-align: center; /* Center the text */
   width: 100%; /* Full width */
@@ -1272,8 +1266,8 @@ input[type="button"] {
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #114040; /* Updated background color */
-  /* ... */
+  /*background-color: #114040;  Updated background color */
+  background: linear-gradient(to right, #114040 0%, #144c4c 100%); /* Updated gradient background */
 }
 
 .login-form {
@@ -1580,7 +1574,7 @@ input[type="button"] {
 }
 
 .popup-content {
-  background: #Dcca98; /* Background color updated to match website theme */
+  background: #dcca98; /* Background color updated to match website theme */
   padding: 20px;
   border-radius: 5px;
   text-align: center;
@@ -1607,7 +1601,7 @@ input[type="button"] {
 .popup-content button {
   padding: 10px 20px;
   background: #144040; /* Button background color updated to match website theme */
-  color: #Dcca98; /* Button text color updated to match website theme */
+  color: #dcca98; /* Button text color updated to match website theme */
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -1733,7 +1727,7 @@ input[type="button"] {
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #Dcca98; /* Background color updated to match website theme */
+  background-color: #dcca98; /* Background color updated to match website theme */
   color: #144040; /* Text color updated to match website theme */
   text-align: center;
 }
@@ -1753,7 +1747,7 @@ input[type="button"] {
 .thankyou-home-button {
   padding: 10px 20px;
   background: #144040; /* Button background color updated to match website theme */
-  color: #Dcca98; /* Button text color updated to match website theme */
+  color: #dcca98; /* Button text color updated to match website theme */
   border: none;
   border-radius: 5px;
   cursor: pointer;
