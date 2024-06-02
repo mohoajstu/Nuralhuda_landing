@@ -10,8 +10,8 @@ const Home = ({ data }) => {
   return (
     <div className="home">
       <Header data={data?.Header} />
-      <About data={data?.About} />
       <Assistants data={data?.Assistants} />
+      <About data={data?.About} />
       <Features data={data?.Features} />
       <Team data={data?.Team} />
       <Contact data={data?.Contact} />
