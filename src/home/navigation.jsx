@@ -1,9 +1,13 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { addDoc, collection, onSnapshot } from 'firebase/firestore';
+import { auth, db } from './config/firebase-config'; // Adjust the import as per your project structure
 
-export const Navigation = (props) => {
+const Navigation = (props) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [navbarOpen, setNavbarOpen] = useState(false);
+  const [user] = useAuthState(auth);
   const navigate = useNavigate();
 
   const handleNavigation = (path) => {
@@ -28,6 +32,15 @@ export const Navigation = (props) => {
 
   const handleAssistantClick = (chatbotType) => {
     navigate(`/chat/${encodeURIComponent(chatbotType)}`);
+  };
+
+  const handlePricingClick = () => {
+    if (user) {
+      navigate('/pricing');
+    } else {
+      alert('You need to complete account setup before accessing the pricing page.');
+      navigate('/account-setup');
+    }
   };
 
   const assistants = [
@@ -58,28 +71,27 @@ export const Navigation = (props) => {
         </div>
         <div className={`collapse navbar-collapse ${navbarOpen ? 'in' : ''}`} id="bs-example-navbar-collapse-1">
           <ul className="nav navbar-nav navbar-right">
-          <li className="dropdown">
-  <div className="dropdown-wrapper">
-    <a href="/#assistants" onClick={() => handleNavigation('/#assistants')} className="page-scroll">
-       Assistants 
-    </a>
-    <button className="dropdown-toggle" onClick={handleDropdownToggle} aria-haspopup="true" aria-expanded={dropdownOpen}>
-      <span className="icon-bar"></span>
-      <span className="icon-bar"></span>
-      <span className="icon-bar"></span>
-    </button>
-  </div>
-  <ul className={`dropdown-menu ${dropdownOpen ? 'show' : ''}`}>
-    {assistants.map((assistant, index) => (
-      <li key={index}>
-        <a href="#" onClick={() => handleAssistantClick(assistant.type)}>
-          {assistant.title}
-        </a>
-      </li>
-    ))}
-  </ul>
-</li>
-
+            <li className="dropdown">
+              <div className="dropdown-wrapper">
+                <a href="/#assistants" onClick={() => handleNavigation('/#assistants')} className="page-scroll">
+                  Assistants
+                </a>
+                <button className="dropdown-toggle" onClick={handleDropdownToggle} aria-haspopup="true" aria-expanded={dropdownOpen}>
+                  <span className="icon-bar"></span>
+                  <span className="icon-bar"></span>
+                  <span className="icon-bar"></span>
+                </button>
+              </div>
+              <ul className={`dropdown-menu ${dropdownOpen ? 'show' : ''}`}>
+                {assistants.map((assistant, index) => (
+                  <li key={index}>
+                    <button onClick={() => handleAssistantClick(assistant.type)}>
+                      {assistant.title}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </li>
             <li>
               <a href="/#about" onClick={() => handleNavigation('/#about')} className="page-scroll">
                 About
@@ -101,7 +113,12 @@ export const Navigation = (props) => {
               </a>
             </li>
             <li>
-              <Link to="/login">Login</Link>  
+              <a href="#" onClick={handlePricingClick}>
+                Pricing
+              </a>
+            </li>
+            <li>
+              <Link to="/login">Login</Link>
             </li>
           </ul>
         </div>
@@ -109,3 +126,5 @@ export const Navigation = (props) => {
     </nav>
   );
 };
+
+export default Navigation;
