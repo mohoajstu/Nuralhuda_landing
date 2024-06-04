@@ -1,0 +1,31 @@
+const functions = require('firebase-functions');
+const admin = require('firebase-admin');
+const stripe = require('stripe')(functions.config().stripe.secret);
+
+admin.initializeApp();
+
+exports.handleStripeWebhook = functions.https.onRequest(async (req, res) => {
+  const sig = req.headers['stripe-signature'];
+  let event;
+
+  try {
+    event = stripe.webhooks.constructEvent(req.rawBody, sig, functions.config().stripe.webhooksecret);
+  } catch (err) {
+    res.status(400).send(`Webhook Error: ${err.message}`);
+    return;
+  }
+
+  if (event.type === 'checkout.session.completed') {
+    const session = event.data.object;
+    const userId = session.metadata.user_id;
+    const plan = session.metadata.plan;
+
+    // Update user payment status and plan in Firestore
+    await admin.firestore().collection('users').doc(userId).update({
+      paymentStatus: 'paid',
+      plan: plan,
+    });
+  }
+
+  res.json({ received: true });
+});

@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { addDoc, collection, onSnapshot } from 'firebase/firestore';
-import { auth, db } from './config/firebase-config'; // Adjust the import as per your project structure
+//import { addDoc, collection, onSnapshot } from 'firebase/firestore';
+import { auth, db } from '../config/firebase-config'; // Adjust the import as per your project structure
 
 const Navigation = (props) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);

@@ -27,3 +27,9 @@ img {
 *::after {
   box-sizing: border-box;
 }
+
+/* index.css */
+@tailwind base;
+@tailwind components;
+@tailwind elements;
+@tailwind utilities;
