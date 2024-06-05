@@ -11,6 +11,9 @@ import JsonData from './data/data.json';
 import SmoothScroll from 'smooth-scroll';
 
 import './App.css';
+import Pricing from './pricing/Pricing';
+import AccountSetup from './pricing/AccountSetup';
+import PaymentSuccess from './pricing/PaymentSuccess';
 
 export const scroll = new SmoothScroll('a[href*="#"]', {
   speed: 1000,
@@ -46,6 +49,9 @@ const App = () => {
       <Routes>
         <Route path="/" element={landingPageData ? <Home data={landingPageData} /> : <div>Loading...</div>} />
         <Route path="/login" element={<Login />} />
+        <Route path="/pricing" element = {<Pricing/>}/>
+        <Route path="/account-setup" element = {<AccountSetup/>}/>
+        <Route path="/payment-success" element = {<PaymentSuccess/>}/>
         <Route path="/chat/:chatbotType" element={<ChatScreen />} />
         <Route path="*" element={<div>404 Not Found</div>} />
       </Routes>

@@ -5,7 +5,7 @@ import { RenderMarkdown } from './RenderMarkdown';
 import { SuggestedPrompts, getPromptsForType } from './SuggestedPrompts';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth, db } from '../config/firebase-config';
-import { collection, addDoc } from 'firebase/firestore';
+import { collection, addDoc, doc, getDoc } from 'firebase/firestore';
 import Modal from './modal';
 
 import nurAlHudaImg from '../img/about-nbg.png';
@@ -46,10 +46,13 @@ const ChatScreen = () => {
   const [user] = useAuthState(auth);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalOpenReport, setIsModalOpenReport] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+  const [redirectPath, setRedirectPath] = useState('');
   const [currentPrompts, setCurrentPrompts] = useState([]);
   const [accumulatedMessage, setAccumulatedMessage] = useState('');
   const [reportFeedbackMessage, setReportFeedbackMessage] = useState('');
   const [reportedMessage, setReportedMessage] = useState('');
+  const [paymentStatus, setPaymentStatus] = useState('unpaid');
 
   useEffect(() => {
     const handleResize = () => {
@@ -69,6 +72,19 @@ const ChatScreen = () => {
   useEffect(() => {
     setCurrentPrompts(getPromptsForType(chatbotType));
   }, [chatbotType]);
+
+  useEffect(() => {
+    const checkPaymentStatus = async () => {
+      if (user) {
+        const userDoc = await getDoc(doc(db, 'users', user.uid));
+        if (userDoc.exists()) {
+          setPaymentStatus(userDoc.data().paymentStatus || 'unpaid');
+        }
+      }
+    };
+
+    checkPaymentStatus();
+  }, [user]);
 
   const handleNewMessage = (message) => {
     setAccumulatedMessage((prevAccumulated) => {
@@ -97,11 +113,23 @@ const ChatScreen = () => {
     setMessages((prevMessages) => [...prevMessages, userMessage]);
     setCurrentMessage('');
     setShowImage(false);
-    
+
     if (!currentPrompts.includes(currentMessage.trim()) && !user) {
-      setIsModalOpen(true);  
+      setModalMessage('Please login to use this feature.');
+      setRedirectPath('/login');
+      setIsModalOpen(true);
+      setIsSending(false);
       return;
     }
+
+    if (paymentStatus !== 'paid') {
+      setModalMessage('Please complete your payment to use this feature.');
+      setRedirectPath('/pricing');
+      setIsModalOpen(true);
+      setIsSending(false);
+      return;
+    }
+
     let localThreadId = threadId;
 
     if (!localThreadId) {
@@ -147,6 +175,10 @@ const ChatScreen = () => {
 
   const handleGoToHome = () => {
     navigate('/');
+  };
+
+  const handleModalConfirm = () => {
+    navigate(redirectPath, { state: { from: location.pathname } });
   };
 
   const sendNegativeReport = (msgReported) => {
@@ -198,10 +230,10 @@ const ChatScreen = () => {
       <Modal 
         isOpen={isModalOpen}
         onClose={handleGoToHome}
-        onConfirm={() => navigate('/login', { state: { from: location.pathname } })}
-        confirmLabel="Login"
+        onConfirm={handleModalConfirm}
+        confirmLabel="Continue"
         closeLabel="Cancel"
-        message={<p className="modal-message">Please Login To Use This Premium Feature.</p>}
+        message={<p className="modal-message">{modalMessage}</p>}
       />
 
       <Modal
