@@ -414,7 +414,7 @@ header .intro-text {
   padding-bottom: 15px;
 }
 
-#about h2::after {
+#about .section-title h2::after {
   position: absolute;
   content: "";
   background-image: linear-gradient(to right, #114040 0%, #144c4c 100%);
