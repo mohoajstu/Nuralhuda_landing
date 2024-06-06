@@ -44,7 +44,7 @@ const App = () => {
 
   return (
     <div className="App">
-      {(location.pathname === '/' || location.pathname === '/login' || location.pathname === '/pricing') && <Navigation />} {/* Display Navigation only on Home, Login, Pricing, and Chat pages */}
+      {(location.pathname === '/' || location.pathname === '/login' || location.pathname === '/pricing' || location.pathname === '/payment-success') && <Navigation />} {/* Display Navigation only on Home, Login, Pricing, and Chat pages */}
       
       <Routes>
         <Route path="/" element={landingPageData ? <Home data={landingPageData} /> : <div>Loading...</div>} />

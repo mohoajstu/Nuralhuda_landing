@@ -2224,3 +2224,44 @@ input[type="button"] {
   background-color: darken(var(--primary-color), 10%);
   color: var(--primary-color);
 }
+
+/* Add this CSS to your main stylesheet or create a new CSS file for the PaymentSuccess component */
+
+.payment-success-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  color: #333;
+  text-align: center;
+  padding: 20px;
+}
+
+.payment-success-container h2 {
+  font-size: 2.5em;
+  margin-bottom: 20px;
+}
+
+.payment-success-container p {
+  font-size: 1.2em;
+  margin-bottom: 20px;
+}
+
+.payment-success-container .button-container {
+  margin-top: 30px;
+}
+
+.payment-success-container button {
+  border: none;
+  padding: 10px 20px;
+  font-size: 1em;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.payment-success-container button:hover {
+  background-color: #144040;
+  color: #dcca98;
+}

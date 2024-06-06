@@ -22,10 +22,17 @@ const PaymentSuccess = () => {
     updatePaymentStatus();
   }, [navigate]);
 
+  const handleGoToHome = () => {
+    navigate('/'); // Adjust the path to your dashboard
+  };
+
   return (
     <div className="payment-success-container">
       <h2>Payment Successful!</h2>
-      <p>Thank you for your purchase.</p>
+      <p>Thank you for your purchase. Your payment has been successfully processed.</p>
+      <div className="button-container">
+        <button onClick={handleGoToHome}>Go Home</button>
+      </div>
     </div>
   );
 };

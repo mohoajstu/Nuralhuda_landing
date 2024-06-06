@@ -1,10 +1,12 @@
 import React from 'react';
 import Slideshow from './Slideshow';
 import { useNavigate } from 'react-router-dom';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { auth } from '../config/firebase-config'; // Adjust the import as per your project structure
 import OverlayComponent from './OverlayComponent';
 
-
 const Pricing = () => {
+  const [user] = useAuthState(auth);
   const navigate = useNavigate();
 
   const handleContactUsClick = () => {
@@ -26,10 +28,11 @@ const Pricing = () => {
         <h6 className="subheading">Choose the plan that best suits your needs.</h6>
       </div>
       <div id="pricing-section" className="relative">
-      <stripe-pricing-table pricing-table-id="prctbl_1PLkpt05w9FZLaHVMFYhXhZN"
-publishable-key="pk_live_51PLZjS05w9FZLaHVPD3797QnhbMKux0srEkA2gotxNHl5Q9HsYTP6EtOXsyfi4BbTPHXS8IZ7pqbHvav7xQXmTq800myJ6Ejsz">
-</stripe-pricing-table>
-        <OverlayComponent />
+        <stripe-pricing-table
+          pricing-table-id="prctbl_1PLkpt05w9FZLaHVMFYhXhZN"
+          publishable-key="pk_live_51PLZjS05w9FZLaHVPD3797QnhbMKux0srEkA2gotxNHl5Q9HsYTP6EtOXsyfi4BbTPHXS8IZ7pqbHvav7xQXmTq800myJ6Ejsz"
+        ></stripe-pricing-table>
+        {!user && <OverlayComponent />}
       </div>
 
       <div className="enterprise-card-container">

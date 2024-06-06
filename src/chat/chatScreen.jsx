@@ -114,7 +114,7 @@ const ChatScreen = () => {
     setCurrentMessage('');
     setShowImage(false);
 
-    if (!currentPrompts.includes(currentMessage.trim()) && !user) {
+    if (!user) {
       setModalMessage('Please login to use this feature.');
       setRedirectPath('/login');
       setIsModalOpen(true);
@@ -122,7 +122,7 @@ const ChatScreen = () => {
       return;
     }
 
-    if (paymentStatus !== 'paid') {
+    if (!currentPrompts.includes(currentMessage.trim()) && paymentStatus !== 'paid') {
       setModalMessage('Please complete your payment to use this feature.');
       setRedirectPath('/pricing');
       setIsModalOpen(true);

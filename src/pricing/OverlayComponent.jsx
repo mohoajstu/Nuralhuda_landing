@@ -21,11 +21,14 @@ const OverlayComponent = () => {
       if (user) {
         const userDoc = await getDoc(doc(db, 'users', user.uid));
         if (userDoc.exists() && userDoc.data().paymentStatus === 'paid') {
+          console.log('User is logged in and has paid');
           return;
         } else {
-          setModalOpen(true);
+          console.log('User is logged in but has not paid');
+          setModalOpen(false);
         }
       } else {
+        console.log('No user is logged in');
         setModalOpen(true);
       }
     };
