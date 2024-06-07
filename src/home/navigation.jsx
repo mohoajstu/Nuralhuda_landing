@@ -58,28 +58,27 @@ export const Navigation = (props) => {
         </div>
         <div className={`collapse navbar-collapse ${navbarOpen ? 'in' : ''}`} id="bs-example-navbar-collapse-1">
           <ul className="nav navbar-nav navbar-right">
-          <li className="dropdown">
-  <div className="dropdown-wrapper">
-    <a href="/#assistants" onClick={() => handleNavigation('/#assistants')} className="page-scroll">
-       Assistants 
-    </a>
-    <button className="dropdown-toggle" onClick={handleDropdownToggle} aria-haspopup="true" aria-expanded={dropdownOpen}>
-      <span className="icon-bar"></span>
-      <span className="icon-bar"></span>
-      <span className="icon-bar"></span>
-    </button>
-  </div>
-  <ul className={`dropdown-menu ${dropdownOpen ? 'show' : ''}`}>
-    {assistants.map((assistant, index) => (
-      <li key={index}>
-        <a href="#" onClick={() => handleAssistantClick(assistant.type)}>
-          {assistant.title}
-        </a>
-      </li>
-    ))}
-  </ul>
-</li>
-
+            <li className="dropdown">
+              <div className="dropdown-wrapper">
+                <a href="/#assistants" onClick={() => handleNavigation('/#assistants')} className="page-scroll">
+                  Assistants 
+                </a>
+                <button className="dropdown-toggle" onClick={handleDropdownToggle} aria-haspopup="true" aria-expanded={dropdownOpen}>
+                  <span className="icon-bar"></span>
+                  <span className="icon-bar"></span>
+                  <span className="icon-bar"></span>
+                </button>
+              </div>
+              <ul className={`dropdown-menu ${dropdownOpen ? 'show' : ''}`}>
+                {assistants.map((assistant, index) => (
+                  <li key={index}>
+                    <a href="#" onClick={() => handleAssistantClick(assistant.type)}>
+                      {assistant.title}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </li>
             <li>
               <a href="/#about" onClick={() => handleNavigation('/#about')} className="page-scroll">
                 About
