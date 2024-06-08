@@ -6,9 +6,9 @@ const titleToPromptMap = {
   'nurAlHudaForKids': ["Tell me a story", "Teach me a prayer", "What is Ramadan?", "Give Me A Random Fact", "Story of a Prophet", "Learning to Fast", "What is Eid?", "Prayer Basics", "Good Deeds", "Allah's Creations"],
   'islamicSocraticMethod': ["Explain Tawhid", "What is Islamic Philosophy?", "Tell me about Ijtihad", "Socratic Method!", "Define Sharia", "Purpose of Zakat", "Ethics of War in Islam", "Women's Rights in Islam", "Evolution of Fiqh", "Concept of Ummah"],
   'aiForIslamicResearch': ["Latest research on Islamic History", "AI and Quranic studies", "Islam and Science intersection", "Research Fact!"],
-  'iqraWithUs': ["Let's read Surah Al-Fatiha", "Discuss Ayat Al-Kursi", "Explore Surah Al-Ikhlas", "Analyze Surah Al-Mulk", "Recite Surah Ar-Rahman", "Study Surah Al-Baqarah:286", "Learn Surah Yasin:9", "Memorize Surah Al-Muzzammil:1-4", "Understand Surah Al-Fil", "Reflect on Surah Al-Asr"]
+  'iqraWithUs': ["Surah Al-Fatiha", "Discuss Ayat Al-Kursi", "Surah Al-Ikhlas", "Surah Al-Mulk", "Surah Ar-Rahman", "Surah Al-Baqarah:286", "Surah Yasin:9", "Surah Al-Muzzammil:1-4", "Surah Al-Fil", "Surah Al-Asr"],
+  'paliGPT': ["Overview of Palestinian History", "Key Events in Palestinian Struggle", "Explain Nakba", "Cultural Heritage of Palestine", "Palestinian Cuisine", "Traditional Palestinian Dress", "Important Palestinian Figures", "Role of UN in Palestine", "Impact of Occupation", "Palestinian Refugee Crisis"]
 };
-
 
 export const getPromptsForType = (chatbotType) => {
   return titleToPromptMap[chatbotType] || ["Fallback prompt if key is incorrect"];
