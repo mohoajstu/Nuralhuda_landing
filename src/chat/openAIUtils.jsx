@@ -72,5 +72,6 @@ export const titleToAssistantIDMap = {
   'Nur Al Huda For Kids': "asst_2z9CBAnU88vgmSnZnNHZVaGz",
   'Islamic Socratic Method': "asst_nUrppuSP9pPPjRPHDD3l13bH",
   'Iqra With Us': "asst_NSjlngEyPNwU1PeAcmZZHC9K",
+  'PaliGPT' : "asst_ShMxEdN8gnWONFOVVFv8dKTJ",
   default: process.env.REACT_APP_NUR_ALHUDA_ASSISTANT_ID,
 };

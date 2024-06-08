@@ -12,6 +12,7 @@ import nurAlHudaImg from '../img/about-nbg.png';
 import nurAlHudaForKidsImg from '../img/nuralhudaforkids.png';
 import islamicSocraticMethodImg from '../img/islamic_socratic_method.png';
 import iqraWithUsImg from '../img/Nuralhuda-applogo.png';
+import paliGPTImg from '../img/PaliGPT.png'
 
 const titleToChatbotTypeMap = {
   'Nur Al Huda': 'nurAlHuda',
@@ -19,6 +20,7 @@ const titleToChatbotTypeMap = {
   'Islamic Socratic Method': 'islamicSocraticMethod',
   'AI for Islamic Research': 'aiForIslamicResearch',
   'Iqra With Us': 'iqraWithUs',
+  'PaliGPT': 'paliGPT',
   default: 'default',
 };
 
@@ -27,6 +29,7 @@ const titleToImageMap = {
   'Nur Al Huda For Kids': nurAlHudaForKidsImg,
   'Islamic Socratic Method': islamicSocraticMethodImg,
   'Iqra With Us': iqraWithUsImg,
+  'PaliGPT': paliGPTImg,
 };
 
 const ChatScreen = () => {
