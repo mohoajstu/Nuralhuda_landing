@@ -15,28 +15,26 @@ export const Contact = (props) => {
     const { name, value } = e.target;
     setState((prevState) => ({ ...prevState, [name]: value }));
   };
-  const clearState = () => setState({initialState});
   
+  const clearState = () => setState({ ...initialState });
   
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log(name, email, message);
-    
-    /* replace below with your own Service ID, Template ID and Public Key from your EmailJS account */ 
-    
+
     emailjs
       .sendForm("service_rpg9tsq", "template_t06rk76", e.target, "2c0CoID2ucNYaKVFe")
       .then(
         (result) => {
           console.log(result.text);
           clearState();
-          setState({initialState });
         },
         (error) => {
           console.log(error.text);
         }
       );
   };
+
   return (
     <div>
       <div id="contact">
@@ -50,7 +48,7 @@ export const Contact = (props) => {
                   get back to you as soon as possible.
                 </p>
               </div>
-              <form name="sentMessage" validate onSubmit={handleSubmit}>
+              <form name="sentMessage" noValidate onSubmit={handleSubmit}>
                 <div className="row">
                   <div className="col-md-6">
                     <div className="form-group">
@@ -103,13 +101,6 @@ export const Contact = (props) => {
           <div className="col-md-3 col-md-offset-1 contact-info">
             <div className="contact-item">
               <h3>Contact Info</h3>
-              {/*
-              <p>
-                <span>
-                  <i className="fa fa-map-marker"></i> Address
-                </span>
-                {props.data ? props.data.address : "loading"}
-              </p>*/}
             </div>
             <div className="contact-item">
               <p>
@@ -155,11 +146,19 @@ export const Contact = (props) => {
       </div>
       <div id="footer">
         <div className="container text-center">
-        <p>
-  Disclaimer: <br />
-  At Nur Al Huda, we strive to provide insightful Islamic teachings using advanced AI technology. While our AI continuously evolves and improves for an enhanced user experience, it is not flawless. The responses and information provided here are for educational and informational purposes only and should not be taken as Islamic legal rulings (fatwa). We recommend consulting qualified Islamic scholars for detailed guidance, particularly on matters related to fiqh (Islamic jurisprudence). Your journey of understanding and knowledge is important to us, and we are committed to supporting it with the most accurate and helpful information possible.
-</p>
-
+          <p>
+            Disclaimer: <br />
+            At Nur Al Huda, we strive to provide insightful Islamic teachings
+            using advanced AI technology. While our AI continuously evolves and
+            improves for an enhanced user experience, it is not flawless. The
+            responses and information provided here are for educational and
+            informational purposes only and should not be taken as Islamic legal
+            rulings (fatwa). We recommend consulting qualified Islamic scholars
+            for detailed guidance, particularly on matters related to fiqh
+            (Islamic jurisprudence). Your journey of understanding and knowledge
+            is important to us, and we are committed to supporting it with the
+            most accurate and helpful information possible.
+          </p>
         </div>
       </div>
     </div>

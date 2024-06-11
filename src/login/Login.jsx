@@ -1,18 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { signInWithEmailAndPassword, signOut, sendPasswordResetEmail } from "firebase/auth";
+import { signInWithEmailAndPassword, signOut, sendPasswordResetEmail, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { getFirestore, doc, setDoc } from 'firebase/firestore';
 import { auth } from '../config/firebase-config';
 import { useNavigate } from 'react-router-dom';
+import googleLogo from '../img/Google-Icon.png'; // Make sure you have a Google logo image
+
+const db = getFirestore();
+const provider = new GoogleAuthProvider();
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
     const [resetEmail, setResetEmail] = useState('');
     const [error, setError] = useState('');
     const [showResetForm, setShowResetForm] = useState(false);
+    const [isSignup, setIsSignup] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Sign out user on component mount to enforce login at the start of each session
         const signOutUser = async () => {
             await signOut(auth);
         };
@@ -32,7 +38,6 @@ const Login = () => {
         window.addEventListener('mousemove', handleActivity);
         window.addEventListener('keypress', handleActivity);
 
-        // Clean up event listeners on unmount
         return () => {
             window.removeEventListener('mousemove', handleActivity);
             window.removeEventListener('keypress', handleActivity);
@@ -65,12 +70,13 @@ const Login = () => {
             console.error("Logout failed: ", error);
         }
     };
+
     const handleLogin = async (event) => {
         event.preventDefault();
         try {
             await signInWithEmailAndPassword(auth, email, password);
-            setEmail('');  // Clear email field
-            setPassword('');  // Clear password field
+            setEmail('');
+            setPassword('');
             navigate('/');
         } catch (error) {
             console.error(error);
@@ -78,41 +84,67 @@ const Login = () => {
         }
     };
 
+    const handleSignup = async (event) => {
+        event.preventDefault();
+        if (password !== confirmPassword) {
+            setError("Passwords do not match!");
+            return;
+        }
+        try {
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
+
+            await setDoc(doc(db, 'users', user.uid), {
+                email: email,
+                paymentStatus: 'unpaid',
+            });
+
+            sessionStorage.setItem('accountSetupComplete', 'true');
+            sessionStorage.setItem('userEmail', email);
+            navigate('/pricing', { state: { email } });
+        } catch (error) {
+            console.error("Error creating account:", error);
+            setError(error.message);
+        }
+    };
+
+    const handleGoogleLogin = async () => {
+        try {
+            const result = await signInWithPopup(auth, provider);
+            const user = result.user;
+
+            await setDoc(doc(db, 'users', user.uid), {
+                email: user.email,
+                paymentStatus: 'unpaid',
+            });
+
+            navigate('/');
+        } catch (error) {
+            console.error(error);
+            setError("Failed to log in with Google.");
+        }
+    };
+
     return (
         <div className="login-container">
-            <form className="login-form" onSubmit={showResetForm ? handlePasswordReset : handleLogin}>
-                <h2>{showResetForm ? "Reset Password" : "Login"}</h2>
+            <form className="login-form" onSubmit={showResetForm ? handlePasswordReset : (isSignup ? handleSignup : handleLogin)}>
+                <h2>{showResetForm ? "Reset Password" : (isSignup ? "Create an account" : "Welcome back")}</h2>
                 {error && <p className="error-message">{error}</p>}
-                
-                {!showResetForm && (
-                    <div className="input-group">
-                        <label htmlFor="email">Email:</label>
-                        <input
-                            id="email"
-                            type="email"
-                            value={email}
-                            onChange={e => setEmail(e.target.value)}
-                            required
-                        />
-                    </div>
-                )}
 
-                {showResetForm && (
-                    <div className="input-group">
-                        <label htmlFor="resetEmail">Email:</label>
-                        <input
-                            id="resetEmail"
-                            type="email"
-                            value={resetEmail}
-                            onChange={e => setResetEmail(e.target.value)}
-                            required
-                        />
-                    </div>
-                )}
+                <div className="input-group">
+                    <label htmlFor="email">Email address</label>
+                    <input
+                        id="email"
+                        type="email"
+                        value={isSignup ? email : (showResetForm ? resetEmail : email)}
+                        onChange={e => isSignup ? setEmail(e.target.value) : (showResetForm ? setResetEmail(e.target.value) : setEmail(e.target.value))}
+                        required
+                    />
+                </div>
 
-                {!showResetForm && (
+                {!showResetForm && !isSignup && (
                     <div className="input-group">
-                        <label htmlFor="password">Password:</label>
+                        <label htmlFor="password">Password</label>
                         <input
                             id="password"
                             type="password"
@@ -123,22 +155,63 @@ const Login = () => {
                     </div>
                 )}
 
+                {isSignup && (
+                    <div className="input-group">
+                        <label htmlFor="password">Password</label>
+                        <input
+                            id="password"
+                            type="password"
+                            value={password}
+                            onChange={e => setPassword(e.target.value)}
+                            required
+                        />
+                    </div>
+                )}
+
+                {isSignup && (
+                    <div className="input-group">
+                        <label htmlFor="confirmPassword">Confirm Password</label>
+                        <input
+                            id="confirmPassword"
+                            type="password"
+                            value={confirmPassword}
+                            onChange={e => setConfirmPassword(e.target.value)}
+                            required
+                        />
+                    </div>
+                )}
+
                 <button type="submit" className="login-button">
-                    {showResetForm ? "Send Reset Email" : "Login"}
+                    {showResetForm ? "Send Reset Email" : (isSignup ? "Sign Up" : "Continue")}
                 </button>
-                
-                {!showResetForm && (
+
+                {!showResetForm && !isSignup && (
                     <button type="button" onClick={handleLogout} className="logout-button">Logout</button>
                 )}
 
-                {!showResetForm ? (
+                {!showResetForm && !isSignup && (
                     <p className="form-toggle" onClick={() => setShowResetForm(true)}>
                         Forgot password?
                     </p>
-                ) : (
+                )}
+
+                {showResetForm && (
                     <p className="form-toggle" onClick={() => setShowResetForm(false)}>
                         Back to Login
                     </p>
+                )}
+
+                {!showResetForm && (
+                    <p className="form-toggle" onClick={() => setIsSignup(!isSignup)}>
+                        {isSignup ? "Already have an account? Login" : "Don't have an account? Sign Up"}
+                    </p>
+                )}
+
+                {!showResetForm && (
+                    <button type="button" onClick={handleGoogleLogin} className="google-login-button">
+                        <img src={googleLogo} alt="Google Logo" className="google-logo" />
+                        Continue with Google
+                    </button>
                 )}
             </form>
         </div>
