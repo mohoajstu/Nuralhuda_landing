@@ -1,6 +1,7 @@
 import { useState } from "react";
 import emailjs from "emailjs-com";
 import React from "react";
+import SimpleModal from './SimpleModal.jsx';
 
 const initialState = {
   name: "",
@@ -10,14 +11,15 @@ const initialState = {
 
 export const Contact = (props) => {
   const [{ name, email, message }, setState] = useState(initialState);
+  const [showModal, setShowModal] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setState((prevState) => ({ ...prevState, [name]: value }));
   };
-  
+
   const clearState = () => setState({ ...initialState });
-  
+
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log(name, email, message);
@@ -28,12 +30,15 @@ export const Contact = (props) => {
         (result) => {
           console.log(result.text);
           clearState();
+          setShowModal(true);
         },
         (error) => {
           console.log(error.text);
         }
       );
   };
+
+  const handleCloseModal = () => setShowModal(false);
 
   return (
     <div>
@@ -60,6 +65,7 @@ export const Contact = (props) => {
                         placeholder="Name"
                         required
                         onChange={handleChange}
+                        value={name}
                       />
                       <p className="help-block text-danger"></p>
                     </div>
@@ -74,6 +80,7 @@ export const Contact = (props) => {
                         placeholder="Email"
                         required
                         onChange={handleChange}
+                        value={email}
                       />
                       <p className="help-block text-danger"></p>
                     </div>
@@ -88,6 +95,7 @@ export const Contact = (props) => {
                     placeholder="Message"
                     required
                     onChange={handleChange}
+                    value={message}
                   ></textarea>
                   <p className="help-block text-danger"></p>
                 </div>
@@ -161,6 +169,13 @@ export const Contact = (props) => {
           </p>
         </div>
       </div>
+
+      {/* Modal */}
+      <SimpleModal
+        isOpen={showModal}
+        onClose={handleCloseModal}
+        message="Thank you for your submission. We will reach out soon."
+      />
     </div>
   );
 };

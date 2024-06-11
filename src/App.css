@@ -2290,3 +2290,53 @@ input[type="button"] {
   background-color: #144040;
   color: #dcca98;
 }
+
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1050; /* High z-index to appear above other elements */
+}
+
+.modal-content {
+  background-color: #DCCA98; /* Light background color */
+  padding: 20px;
+  border-radius: 5px;
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.modal-body {
+  margin-bottom: 20px;
+  color: #144040; /* Dark text color */
+  font-size: 16px;
+}
+
+.modal-buttons-container {
+  display: flex;
+  justify-content: center;
+}
+
+.modal-button {
+  background-color: #144040; /* Dark button color */
+  color: #DCCA98; /* Light text color */
+  border: none;
+  padding: 10px 20px;
+  margin: 5px;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.modal-button:hover {
+  background-color: #113737; /* Darker shade on hover */
+}
