@@ -5,7 +5,6 @@ import { Features } from './features';
 import { Assistants } from './assistants';
 import { Team } from './Team';
 import { Contact } from './contact';
-import 'bootstrap/dist/css/bootstrap.min.css';
 
 const Home = ({ data }) => {
   return (

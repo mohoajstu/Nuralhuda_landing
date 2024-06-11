@@ -3,6 +3,7 @@ import { Routes, Route, useLocation } from 'react-router-dom';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from './config/firebase-config'; // Ensure path accuracy
 
+
 import { Navigation } from './home/navigation'; // Adjust according to your structure
 import Home from './home/Home';
 import Login from './login/Login';
