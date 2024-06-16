@@ -1,12 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef} from "react";
 import { Link, useNavigate } from 'react-router-dom';
 
 export const Navigation = (props) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [navbarOpen, setNavbarOpen] = useState(false);
   const navigate = useNavigate();
+  const navbarRef = useRef(null);
 
   const handleNavigation = (path) => {
+    setNavbarOpen(false);
+    setDropdownOpen(false);
     navigate(path);
     if (path.includes('#')) {
       setTimeout(() => {
@@ -27,6 +30,8 @@ export const Navigation = (props) => {
   };
 
   const handleAssistantClick = (chatbotType) => {
+    setNavbarOpen(false);
+    setDropdownOpen(false);
     navigate(`/chat/${encodeURIComponent(chatbotType)}`);
   };
 
@@ -37,8 +42,21 @@ export const Navigation = (props) => {
     { title: 'Iqra With Us', type: 'iqraWithUs' },
   ];
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (navbarRef.current && !navbarRef.current.contains(event.target)) {
+        setNavbarOpen(false);
+      }
+    };
+  
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [navbarRef]);  
+
   return (
-    <nav id="menu" className="navbar navbar-default navbar-fixed-top">
+    <nav id="menu" ref={navbarRef} className="navbar navbar-default navbar-fixed-top">
       <div className="container">
         <div className="navbar-header">
           <button
@@ -100,10 +118,10 @@ export const Navigation = (props) => {
               </a>
             </li>
             <li>
-              <Link to="/pricing">Pricing</Link>
+              <Link to="/pricing" onClick={() => handleNavigation('/pricing')}>Pricing</Link>
             </li>
             <li>
-              <Link to="/login">Login</Link>  
+              <Link to="/login" onClick={() => handleNavigation('/login')}>Login</Link>  
             </li>
           </ul>
         </div>
