@@ -12,7 +12,8 @@ import nurAlHudaImg from '../img/about-nbg.png';
 import nurAlHudaForKidsImg from '../img/nuralhudaforkids.png';
 import islamicSocraticMethodImg from '../img/islamic_socratic_method.png';
 import iqraWithUsImg from '../img/Nuralhuda-applogo.png';
-import paliGPTImg from '../img/PaliGPT.png'
+import paliGPTImg from '../img/PaliGPT.png';
+import muslimReferenceAIIMG from '../img/muslimReferenceAI.png';
 
 const titleToChatbotTypeMap = {
   'Nur Al Huda': 'nurAlHuda',
@@ -20,6 +21,7 @@ const titleToChatbotTypeMap = {
   'Islamic Socratic Method': 'islamicSocraticMethod',
   'AI for Islamic Research': 'aiForIslamicResearch',
   'Iqra With Us': 'iqraWithUs',
+  'Muslim Reference AI': 'muslimReferenceAI',
   'PaliGPT': 'paliGPT',
   default: 'default',
 };
@@ -29,6 +31,7 @@ const titleToImageMap = {
   'Nur Al Huda For Kids': nurAlHudaForKidsImg,
   'Islamic Socratic Method': islamicSocraticMethodImg,
   'Iqra With Us': iqraWithUsImg,
+  'Muslim Reference AI': muslimReferenceAIIMG,
   'PaliGPT': paliGPTImg,
 };
 
@@ -137,7 +140,7 @@ const ChatScreen = () => {
 
     if (!localThreadId) {
       try {
-        const threadResponse = await createThread();
+        const threadResponse = await createThread(assistantTitle);
         if (threadResponse?.id) {
           setThreadId(threadResponse.id);
           localThreadId = threadResponse.id;
@@ -152,8 +155,8 @@ const ChatScreen = () => {
     }
 
     try {
-      await createMessage(localThreadId, currentMessage);
-      createRun(localThreadId, assistantId, handleNewMessage, handleError);
+      await createMessage(localThreadId, currentMessage, assistantTitle);
+      createRun(localThreadId, assistantId, handleNewMessage, handleError, assistantTitle);
     } catch (error) {
       console.error("Communication error:", error);
     } finally {
