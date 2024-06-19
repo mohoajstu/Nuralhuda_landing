@@ -1,8 +1,8 @@
+// App.jsx
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from './config/firebase-config'; // Ensure path accuracy
-
 
 import { Navigation } from './home/navigation'; // Adjust according to your structure
 import Home from './home/Home';
@@ -15,6 +15,7 @@ import './App.css';
 import Pricing from './pricing/Pricing';
 import AccountSetup from './pricing/AccountSetup';
 import PaymentSuccess from './pricing/PaymentSuccess';
+import Quran from './Quran/Quran'; // Import the new Quran page
 
 export const scroll = new SmoothScroll('a[href*="#"]', {
   speed: 1000,
@@ -45,15 +46,19 @@ const App = () => {
 
   return (
     <div className="App">
-      {(location.pathname === '/' || location.pathname === '/login' || location.pathname === '/pricing' || location.pathname === '/payment-success') && <Navigation />} {/* Display Navigation only on Home, Login, Pricing, and Chat pages */}
+      {(location.pathname === '/' || location.pathname === '/login' || location.pathname === '/pricing' || location.pathname === '/payment-success') && <Navigation />} {/* Display Navigation only on Home, Login, Pricing, and Payment Success pages */}
       
       <Routes>
         <Route path="/" element={landingPageData ? <Home data={landingPageData} /> : <div>Loading...</div>} />
         <Route path="/login" element={<Login />} />
-        <Route path="/pricing" element = {<Pricing/>}/>
-        <Route path="/account-setup" element = {<AccountSetup/>}/>
-        <Route path="/payment-success" element = {<PaymentSuccess/>}/>
+        <Route path="/pricing" element={<Pricing />} />
+        <Route path="/account-setup" element={<AccountSetup />} />
+        <Route path="/payment-success" element={<PaymentSuccess />} />
         <Route path="/chat/:chatbotType" element={<ChatScreen />} />
+        
+        {/* Quran route */}
+        <Route path="/quran/*" element={<Quran />} /> {/* Use wildcard to match nested routes */}
+        
         <Route path="*" element={<div>404 Not Found</div>} />
       </Routes>
     </div>

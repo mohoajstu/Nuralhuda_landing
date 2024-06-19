@@ -1,0 +1,198 @@
+/* General styles */
+body {
+    font-family: 'Arial', sans-serif;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+  
+.main-layout {
+    display: flex;
+}
+  
+/* Sidebar styles */
+.sidebar {
+    padding: 15px;
+    background-color: #2c3e50;
+    color: white;
+    width: 250px;
+    height: 100vh;
+    position: fixed;
+    overflow-y: auto;
+}
+  
+.sidebar h2, .sidebar h3 {
+    color: #ecf0f1;
+    margin-top: 0;
+}
+  
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+  
+.sidebar ul li {
+    margin: 10px 0;
+}
+  
+.sidebar ul li a {
+    color: #ecf0f1;
+    text-decoration: none;
+    display: block;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #34495e;
+    transition: background-color 0.3s;
+}
+  
+.sidebar ul li a:hover {
+    background-color: #1abc9c;
+}
+  
+/* Content styles */
+.content {
+    margin-left: 270px;
+    padding: 20px;
+    min-height: 100vh;
+}
+  
+/* Surah list styles */
+.surah-list {
+    list-style: none;
+    padding: 0;
+}
+  
+.surah-list li {
+    margin: 10px 0;
+}
+  
+.surah-list li a {
+    color: #2980b9;
+    text-decoration: none;
+    font-size: 18px;
+    display: block;
+    padding: 10px;
+    background-color: #ecf0f1;
+    border: 1px solid #ecf0f1;
+    border-radius: 5px;
+    transition: background-color 0.3s, color 0.3s;
+}
+  
+.surah-list li a:hover {
+    background-color: #1abc9c;
+    color: #ffffff;
+}
+  
+/* Search container styles */
+.search-container {
+    margin-bottom: 20px;
+}
+  
+.search-container input[type="text"] {
+    width: calc(100% - 110px);
+    padding: 10px;
+    border: 1px solid #ecf0f1;
+    border-radius: 5px;
+}
+  
+.search-container button {
+    padding: 10px 20px;
+    border: none;
+    background-color: #2980b9;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+  
+.search-container button:hover {
+    background-color: #1abc9c;
+}
+  
+/* Juz list styles */
+.juz-list {
+    list-style: none;
+    padding: 0;
+}
+  
+.juz-list li {
+    margin: 10px 0;
+}
+  
+.juz-list li a {
+    color: #2980b9;
+    text-decoration: none;
+    font-size: 18px;
+    display: block;
+    padding: 10px;
+    background-color: #ecf0f1;
+    border: 1px solid #ecf0f1;
+    border-radius: 5px;
+    transition: background-color 0.3s, color 0.3s;
+}
+  
+.juz-list li a:hover {
+    background-color: #1abc9c;
+    color: #ffffff;
+}
+  
+/* Ayah styles */
+.ayah {
+    background: #fff;
+    margin: 10px 0;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    transition: background 0.3s, transform 0.3s;
+}
+  
+.ayah:hover {
+    background: #e0f7fa;
+    transform: translateY(-2px);
+}
+  
+.ayah-number {
+    font-size: 1em;
+    color: #00796b;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+  
+.ayah p {
+    margin: 10px 0;
+    line-height: 1.6;
+}
+  
+.arabic-text {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #2c3e50;
+    text-align: right;
+    direction: rtl;
+}
+  
+.translation {
+    color: #00796b;
+}
+  
+/* Responsive styles */
+@media (max-width: 768px) {
+    .main-layout {
+        flex-direction: column;
+    }
+  
+    .sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+    }
+  
+    .content {
+        margin-left: 0;
+        width: 100%;
+    }
+  
+    .juz-list li {
+        width: calc(100% - 10px);
+    }
+}
