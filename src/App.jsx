@@ -46,7 +46,7 @@ const App = () => {
 
   return (
     <div className="App">
-      {(location.pathname === '/' || location.pathname === '/login' || location.pathname === '/pricing' || location.pathname === '/payment-success') && <Navigation />} {/* Display Navigation only on Home, Login, Pricing, and Payment Success pages */}
+      {(location.pathname === '/' || location.pathname === '/quran' || location.pathname === '/login' || location.pathname === '/pricing' || location.pathname === '/payment-success') && <Navigation />} {/* Display Navigation only on Home, Login, Pricing, and Payment Success pages */}
       
       <Routes>
         <Route path="/" element={landingPageData ? <Home data={landingPageData} /> : <div>Loading...</div>} />
