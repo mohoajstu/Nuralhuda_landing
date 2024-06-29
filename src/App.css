@@ -117,8 +117,6 @@ hr {
   text-transform: uppercase;
 }
 
-
-
 #menu.navbar-default .navbar-nav > li {
   list-style: none;
   margin: 0 10px;
@@ -187,14 +185,32 @@ hr {
   }
 }
 
-.brand-title {
+.brand-title,
+.brand-subtitle {
   display: block;
+  line-height: 1; /* Ensure there is no extra space between lines */
 }
 
 .brand-subtitle {
-  display: block;
   font-size: 14px;
   color: #144c4c;
+}
+
+.brand-container {
+  display: flex;
+  align-items: center;
+}
+
+.brand-logo {
+  width: 50px; /* Adjust the size as needed */
+  height: auto;
+  margin-right: 10px; /* Space between logo and text */
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 @media (min-width: 768px) {

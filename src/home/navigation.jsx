@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useRef} from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from 'react-router-dom';
+import logo from '../img/about-nbg.png';
 
 export const Navigation = (props) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -70,8 +71,13 @@ export const Navigation = (props) => {
             <span className="icon-bar"></span>
           </button>
           <a className="navbar-brand page-scroll" href="/">
-            <div className="brand-title">Nur Al Huda</div>
-            <div className="brand-subtitle">AI for Islamic Research</div>
+            <div className="brand-container">
+              <img src={logo} alt="Nur Al Huda Logo" className="brand-logo" />
+              <div className="brand-text">
+                <div className="brand-title">Nur Al Huda</div>
+                <div className="brand-subtitle">AI for Islamic Research</div>
+              </div>
+            </div>
           </a>
         </div>
         <div className={`collapse navbar-collapse ${navbarOpen ? 'in' : ''}`} id="bs-example-navbar-collapse-1">
