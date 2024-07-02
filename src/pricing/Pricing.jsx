@@ -14,7 +14,7 @@ const Pricing = () => {
     if (contactSection) {
       contactSection.scrollIntoView({ behavior: 'smooth' });
     } else {
-      navigate('/#contact');
+      navigate('/contact-form');
     }
   };
 

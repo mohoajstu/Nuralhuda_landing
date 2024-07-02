@@ -15,6 +15,7 @@ import './App.css';
 import Pricing from './pricing/Pricing';
 import AccountSetup from './pricing/AccountSetup';
 import PaymentSuccess from './pricing/PaymentSuccess';
+import Contact from './pricing/ContactForm';
 
 export const scroll = new SmoothScroll('a[href*="#"]', {
   speed: 1000,
@@ -45,12 +46,13 @@ const App = () => {
 
   return (
     <div className="App">
-      {(location.pathname === '/' || location.pathname === '/login' || location.pathname === '/pricing' || location.pathname === '/payment-success') && <Navigation />} {/* Display Navigation only on Home, Login, Pricing, and Chat pages */}
+      {(location.pathname === '/' || location.pathname === '/login' || location.pathname === '/pricing' || location.pathname === '/payment-success' || location.pathname === '/contact-form') && <Navigation />} {/* Display Navigation only on Home, Login, Pricing, and Chat pages */}
       
       <Routes>
         <Route path="/" element={landingPageData ? <Home data={landingPageData} /> : <div>Loading...</div>} />
         <Route path="/login" element={<Login />} />
         <Route path="/pricing" element = {<Pricing/>}/>
+        <Route path="/contact-form" element = {<Contact/>}/>
         <Route path="/account-setup" element = {<AccountSetup/>}/>
         <Route path="/payment-success" element = {<PaymentSuccess/>}/>
         <Route path="/chat/:chatbotType" element={<ChatScreen />} />
