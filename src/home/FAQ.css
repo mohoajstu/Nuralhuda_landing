@@ -42,12 +42,13 @@
     font-weight: bold;
     border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.3s ease;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   }
   
   .category-header:hover {
     background-color: #efd899;
+    transform: translateY(-2px);
   }
   
   .faq-container {
@@ -71,6 +72,7 @@
   
   .faq-item:hover {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transform: translateY(-2px);
   }
   
   .faq-item.open {
@@ -104,16 +106,5 @@
     font-size: 1em;
     color: #ffffff;
     line-height: 1.5;
-    max-height: 0;
-    opacity: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease-out, opacity 0.3s ease-out, margin-top 0.3s ease-out;
     font-weight: bold;
   }
-  
-  .faq-item.open .faq-answer {
-    max-height: 1000px;
-    opacity: 1;
-    margin-top: 10px;
-  }
-  

@@ -1,5 +1,5 @@
-// src/components/FAQ.jsx
 import React, { useState } from 'react';
+import { useSpring, animated } from 'react-spring';
 import faqData from '../data/faqData.json';
 import './FAQ.css';
 import faqImage from '../img/FAQ.jpg'; // Adjust the path as needed
@@ -10,6 +10,12 @@ const FAQItem = ({ question, answer }) => {
   const toggleOpen = () => {
     setIsOpen(!isOpen);
   };
+
+  const animationProps = useSpring({
+    maxHeight: isOpen ? 1000 : 0,
+    opacity: isOpen ? 1 : 0,
+    marginTop: isOpen ? 10 : 0,
+  });
 
   return (
     <div 
@@ -22,7 +28,9 @@ const FAQItem = ({ question, answer }) => {
       <img src={faqImage} alt="FAQ Icon" className="faq-icon" />
       <div className="faq-content">
         <div className="faq-question">{question}</div>
-        <div className="faq-answer">{answer}</div>
+        <animated.div className="faq-answer" style={animationProps}>
+          {answer}
+        </animated.div>
       </div>
     </div>
   );
@@ -35,6 +43,12 @@ const FAQCategory = ({ category, items }) => {
     setIsOpen(!isOpen);
   };
 
+  const animationProps = useSpring({
+    opacity: isOpen ? 1 : 0,
+    maxHeight: isOpen ? 1000 : 0,
+    overflow: 'hidden',
+  });
+
   return (
     <div>
       <div 
@@ -46,11 +60,13 @@ const FAQCategory = ({ category, items }) => {
       >
         {category}
       </div>
-      {isOpen && <div className="faq-container">
-        {items.map((item, index) => (
-          <FAQItem key={index} question={item.question} answer={item.answer} />
-        ))}
-      </div>}
+      <animated.div style={animationProps}>
+        <div className="faq-container">
+          {items.map((item, index) => (
+            <FAQItem key={index} question={item.question} answer={item.answer} />
+          ))}
+        </div>
+      </animated.div>
     </div>
   );
 };
