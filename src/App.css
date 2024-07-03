@@ -2356,3 +2356,35 @@ input[type="button"] {
 .modal-button:hover {
   background-color: #113737; /* Darker shade on hover */
 }
+
+.prompt-count-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #E8F0FE;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  font-size: 0.9em;
+  color: #333;
+  margin-top: 10px;
+}
+
+.prompt-count-text {
+  margin: 0;
+  font-weight: bold;
+}
+
+.upgrade-message {
+  background-color: #FFD700;
+  color: #222222;
+  padding: 5px 10px;
+  border-radius: 3px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.upgrade-message:hover {
+  background-color: #FFC107;
+}
