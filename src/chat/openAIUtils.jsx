@@ -14,7 +14,6 @@ const assistantApiKeyMap = {
 // Function to initialize OpenAI client with the appropriate API key
 function initializeOpenAIClient(assistantTitle) {
   const apiKey = assistantApiKeyMap[assistantTitle] || assistantApiKeyMap.default;
-  console.log(`Initializing OpenAI client for ${assistantTitle} with API key: ${apiKey}`);
   return new OpenAI({
     apiKey: apiKey,
     dangerouslyAllowBrowser: true,
