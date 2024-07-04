@@ -8,7 +8,7 @@ class ContactForm extends Component {
     this.state = {
       name: "",
       position: "",
-      plan: "Basic",
+      number: "",
       message: "",
       email: ""
     };
@@ -36,9 +36,9 @@ class ContactForm extends Component {
     });
   };
 
-  handleplanChange = (event) => {
+  handlenumberChange = (event) => {
     this.setState({
-      plan: event.target.value,
+      number: event.target.value,
     });
   };
 
@@ -61,7 +61,7 @@ class ContactForm extends Component {
     this.setState({
       name: "",
       position: "",
-      plan: "Basic",
+      number: "",
       message: "",
       email: ""
     });
@@ -71,7 +71,7 @@ class ContactForm extends Component {
 
 
   render() {
-    const { name, position, plan, message, email } = this.state;
+    const { name, position, number, message, email } = this.state;
     return (
       <div className="contact-form-container">
         <div className="contact-form">
@@ -79,35 +79,29 @@ class ContactForm extends Component {
           <form onSubmit={this.handleSubmit}>
             <div className="contact-flex-container">
               <div className="contact-flex-item input-group">
-                <label>Name:</label>
+                <label>Name:*</label>
                 <input
                   type="text"
                   value={name}
                   onChange={this.handlenameChange}
+                  required
                 />
               </div>
               <div className="contact-flex-item input-group">
-                <label>Position:</label>
+                <label>Position:*</label>
                 <input
                   type="text"
                   value={position}
                   onChange={this.handlepositionChange}
+                  required
                 />
               </div>
             </div>
 
             <div className="contact-flex-container">
-              <div className="contact-flex-item input-group">
-                <label>Plan:</label>
-                <select value={plan} onChange={this.handleplanChange}>
-                  <option value="Basic">Basic</option>
-                  <option value="Premium">Premium</option>
-                  <option value="Enterprise">Enterprise</option>
-                </select>
-              </div>
 
               <div className="contact-flex-item input-group">
-                <label htmlFor="email">Email address:</label>
+                <label htmlFor="email">Email address:*</label>
                 <input
                     id="email"
                     type="email"
@@ -116,6 +110,17 @@ class ContactForm extends Component {
                     required
                 />
               </div>
+
+              <div className="contact-flex-item input-group">
+                <label>Phone Number:</label>
+                  <input
+                    type="tel"
+                    value={number}
+                    onChange={this.handlenumberChange}
+                    placeholder="+1(123)456-7890"
+                  />
+              </div>
+
             </div>
               
             <div className="contact-full-width textarea-group input-group">
