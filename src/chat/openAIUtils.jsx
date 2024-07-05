@@ -91,5 +91,6 @@ export const titleToAssistantIDMap = {
   'Islamic Socratic Method': "asst_nUrppuSP9pPPjRPHDD3l13bH",
   'Iqra With Us': "asst_NSjlngEyPNwU1PeAcmZZHC9K",
   'Muslim Reference AI': "asst_gJad0rJeSMH3s4Uo9oTWjE9y",
-  'PaliGPT': "asst_ShMxEdN8gnWONFOVVFv8dKTJ"
+  'PaliGPT': "asst_ShMxEdN8gnWONFOVVFv8dKTJ",
+  'Quiz Generator': "asst_paDb8Yr8jvqDUmFd2q4n1Fbi" 
 };
