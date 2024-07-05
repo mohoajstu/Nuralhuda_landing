@@ -50,7 +50,6 @@ const QuizGenerator = () => {
         }
       ]
     };
-
     setQuizData(mockQuizData);
     setIsLoading(false);
     setUserAnswers({});
@@ -58,15 +57,19 @@ const QuizGenerator = () => {
     setScore(0);
   };
 
-  const handleAnswerChange = (questionIndex, answer) => {
-    setUserAnswers(prev => ({...prev, [questionIndex]: answer}));
-  };
-
   const handleQuizSubmit = () => {
     let newScore = 0;
     quizData.questions.forEach((question, index) => {
       if (question.type === 'matching') {
         if (JSON.stringify(userAnswers[index]) === JSON.stringify(question.correctMatches)) {
+          newScore++;
+        }
+      } else if (question.type === 'fill-in-the-blank') {
+        if (userAnswers[index]?.toLowerCase() === question.correctAnswer.toLowerCase()) {
+          newScore++;
+        }
+      } else if (question.type === 'true-false') {
+        if (userAnswers[index] === (question.correctAnswer ? 0 : 1)) {
           newScore++;
         }
       } else if (userAnswers[index] === question.correctAnswer) {
@@ -82,7 +85,17 @@ const QuizGenerator = () => {
     if (question.type === 'matching') {
       return JSON.stringify(userAnswers[questionIndex]) === JSON.stringify(question.correctMatches);
     }
+    if (question.type === 'fill-in-the-blank') {
+      return userAnswers[questionIndex]?.toLowerCase() === question.correctAnswer.toLowerCase();
+    }
+    if (question.type === 'true-false') {
+      return userAnswers[questionIndex] === (question.correctAnswer ? 0 : 1);
+    }
     return userAnswers[questionIndex] === question.correctAnswer;
+  };
+
+  const handleAnswerChange = (questionIndex, answer) => {
+    setUserAnswers(prev => ({...prev, [questionIndex]: answer}));
   };
 
   return (
