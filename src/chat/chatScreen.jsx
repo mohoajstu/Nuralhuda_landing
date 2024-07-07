@@ -293,7 +293,7 @@ const ChatScreen = () => {
 
   return (
     <div className="chatscreen-container">
-      <Modal {/* the model is messed up we need to make it go to login */}
+      <Modal 
         isOpen={isModalOpen}
         onClose={handleModalClose}
         onConfirm={handleModalConfirm}
