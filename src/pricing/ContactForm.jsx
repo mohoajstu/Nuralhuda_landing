@@ -118,7 +118,7 @@ class ContactForm extends Component {
                     type="tel"
                     value={number}
                     onChange={this.handlenumberChange}
-                    placeholder="+1(123)456-7890"
+                    placeholder="+1(123) 456-7890"
                   />
               </div>
 
