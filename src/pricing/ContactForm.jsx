@@ -93,6 +93,7 @@ class ContactForm extends Component {
                   type="text"
                   value={position}
                   onChange={this.handlepositionChange}
+                  placeholder="Principal, Teacher, Parent"
                   required
                 />
               </div>
@@ -125,7 +126,7 @@ class ContactForm extends Component {
               
             <div className="contact-full-width textarea-group input-group">
               <label>Message:</label>
-              <textarea value={message} onChange={this.handlemessageChange} rows="4" />
+              <textarea value={message} placeholder="Outline your request:" onChange={this.handlemessageChange} rows="4" />
             </div>
             <button type="submit" className="login-button">Submit</button>
           </form>
