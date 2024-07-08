@@ -1614,3 +1614,57 @@ font-size: 1.5rem;
   border-radius: 5px;
   cursor: pointer;
 }
+
+.pricing-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 50px 0;
+  font-size: 18px;
+  text-align: left;
+}
+.pricing-table th, .pricing-table td {
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+}
+.pricing-table th {
+  background-color: #f4f4f4;
+}
+
+/* /mnt/data/Slideshow.css */
+.slideshow {
+  position: relative;
+  width: 80%;
+  margin: 0 auto;
+  text-align: center;
+  background-color: #f4f4f4;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.slide {
+  transition: opacity 0.5s ease-in-out;
+}
+
+.arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.arrow.left {
+  left: 10px;
+}
+
+.arrow.right {
+  right: 10px;
+}
+
+.arrow:hover {
+  color: #144c4c;
+}
