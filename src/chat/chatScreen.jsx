@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { useNavigate, useParams, useLocation } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { createThread, createMessage, createRun, titleToAssistantIDMap } from './openAIUtils';
 import { RenderMarkdown } from './RenderMarkdown';
 import { SuggestedPrompts, getPromptsForType } from './SuggestedPrompts';
@@ -48,7 +48,6 @@ const ChatScreen = () => {
   const chatbotImage = titleToImageMap[assistantTitle];
   const assistantId = titleToAssistantIDMap[assistantTitle];
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-  const location = useLocation();
   const [user] = useAuthState(auth);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalOpenReport, setIsModalOpenReport] = useState(false);
@@ -81,71 +80,80 @@ const ChatScreen = () => {
     setCurrentPrompts(getPromptsForType(chatbotType));
   }, [chatbotType]);
 
-  useEffect(() => {
-    const fetchUserData = async () => {
+  const checkAndResetPromptCount = async (userData) => {
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+    const userLastResetDate = userData?.lastResetDate?.toDate() || null;
+
+    if (userLastResetDate && userLastResetDate.toDateString() !== today.toDateString()) {
+      console.log('Resetting prompt count for the new day');
       if (user) {
-        console.log(`Fetching data for user: ${user.uid}`);
-        const userDoc = await getDoc(doc(db, 'users', user.uid));
-        if (userDoc.exists()) {
-          const userData = userDoc.data();
-          console.log('User data:', userData);
-          setTotalPromptCount(userData.totalPromptCount || 0);
-          setLastResetDate(userData.lastResetDate ? userData.lastResetDate.toDate() : null);
-          const userIsPaid = userData.paymentStatus === 'paid';
-          setIsPaidUser(userIsPaid);
-          setMaxPrompts(userIsPaid ? 40 : 5);
-        } else {
-          // If the user document doesn't exist, create it
-          console.log('User document does not exist, creating a new one');
-          await setDoc(doc(db, 'users', user.uid), {
-            totalPromptCount: 0,
-            lastResetDate: new Date(),
-            paymentStatus: 'unpaid'
-          });
-        }
+        await setDoc(doc(db, 'users', user.uid), {
+          totalPromptCount: 0,
+          lastResetDate: today
+        }, { merge: true });
       } else {
-        const sessionPromptCount = sessionStorage.getItem('totalPromptCount');
-        const sessionLastResetDate = sessionStorage.getItem('lastResetDate');
-
-        if (sessionPromptCount) {
-          setTotalPromptCount(parseInt(sessionPromptCount, 10));
-        }
-
-        if (sessionLastResetDate) {
-          setLastResetDate(new Date(sessionLastResetDate));
-        } else {
-          setLastResetDate(new Date());
-          sessionStorage.setItem('lastResetDate', new Date().toISOString());
-        }
+        setTotalPromptCount(0);
+        sessionStorage.setItem('totalPromptCount', '0');
+        sessionStorage.setItem('lastResetDate', today.toISOString());
       }
-    };
+      setLastResetDate(today);
+      setTotalPromptCount(0); // Ensure the local state is updated immediately
+    }
+  };
 
+  const fetchUserData = async () => {
+    if (user) {
+      console.log(`Fetching data for user: ${user.uid}`);
+      const userDoc = await getDoc(doc(db, 'users', user.uid));
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        console.log('User data:', userData);
+        setTotalPromptCount(userData.totalPromptCount || 0);
+        setLastResetDate(userData.lastResetDate ? userData.lastResetDate.toDate() : null);
+        const userIsPaid = userData.paymentStatus === 'paid';
+        setIsPaidUser(userIsPaid);
+        setMaxPrompts(userIsPaid ? 40 : 5);
+
+        // Check and reset prompt count if needed
+        await checkAndResetPromptCount(userData);
+      } else {
+        // If the user document doesn't exist, create it
+        console.log('User document does not exist, creating a new one');
+        const currentDate = new Date();
+        await setDoc(doc(db, 'users', user.uid), {
+          totalPromptCount: 0,
+          lastResetDate: currentDate,
+          paymentStatus: 'unpaid'
+        });
+        setLastResetDate(currentDate);
+        setTotalPromptCount(0);
+      }
+    } else {
+      const sessionPromptCount = sessionStorage.getItem('totalPromptCount');
+      const sessionLastResetDate = sessionStorage.getItem('lastResetDate');
+
+      if (sessionPromptCount) {
+        setTotalPromptCount(parseInt(sessionPromptCount, 10));
+      }
+
+      if (sessionLastResetDate) {
+        setLastResetDate(new Date(sessionLastResetDate));
+      } else {
+        const currentDate = new Date();
+        setLastResetDate(currentDate);
+        sessionStorage.setItem('lastResetDate', currentDate.toISOString());
+      }
+
+      // Check and reset prompt count if needed
+      await checkAndResetPromptCount();
+    }
+  };
+
+  useEffect(() => {
     fetchUserData();
   }, [user]);
-
-  useEffect(() => {
-    const checkAndResetPromptCount = async () => {
-      const now = new Date();
-      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-
-      if (lastResetDate && lastResetDate < today) {
-        console.log('Resetting prompt count for the new day');
-        if (user) {
-          await setDoc(doc(db, 'users', user.uid), {
-            totalPromptCount: 0,
-            lastResetDate: today
-          }, { merge: true });
-        } else {
-          setTotalPromptCount(0);
-          sessionStorage.setItem('totalPromptCount', '0');
-          sessionStorage.setItem('lastResetDate', today.toISOString());
-        }
-        setLastResetDate(today);
-      }
-    };
-
-    checkAndResetPromptCount();
-  }, [lastResetDate, user]);
 
   const handleNewMessage = (message) => {
     setAccumulatedMessage((prevAccumulated) => {
