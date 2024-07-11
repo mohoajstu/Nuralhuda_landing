@@ -170,6 +170,12 @@ const ChatScreen = () => {
     if (isSending || !currentMessage.trim()) return;
 
     if (!user) {
+      if (!currentPrompts.includes(currentMessage.trim())) {
+        setModalMessage('Please log in to use this feature.');
+        setIsModalOpen(true);
+        return;
+      }
+      
       if (totalPromptCount >= maxPrompts) {
         setModalMessage(`You have reached the daily limit of ${maxPrompts} prompts. Please log in to continue using the service.`);
         setIsModalOpen(true);
