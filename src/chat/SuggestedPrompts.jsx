@@ -2,12 +2,37 @@ import React, { useState, useEffect } from 'react';
 
 // Define the prompts map inside the component file
 const titleToPromptMap = {
-  'nurAlHuda': ["Who Are You?", "5 Pillars of Islam", "What is Ramadan?", "Give Me A Random Fact", "Quran's Significance", "Prophet Muhammad", "Zakat Importance", "What is Eid?", "Hajj Significance", "Islam on Peace"],
-  'nurAlHudaForKids': ["Tell me a story", "Teach me a prayer", "What is Ramadan?", "Give Me A Random Fact", "Story of a Prophet", "Learning to Fast", "What is Eid?", "Prayer Basics", "Good Deeds", "Allah's Creations"],
-  'islamicSocraticMethod': ["Explain Tawhid", "What is Islamic Philosophy?", "Tell me about Ijtihad", "Socratic Method!", "Define Sharia", "Purpose of Zakat", "Ethics of War in Islam", "Women's Rights in Islam", "Evolution of Fiqh", "Concept of Ummah"],
+    'nurAlHuda': [
+      "Cultivating humility",
+      "Islamic lesson of the day",
+      "Habits for strengthening faith",
+      "Quran's daily life impact",
+      "Following Prophet Muhammad (SAW)",
+      "Importance of Zakat",
+      "Spiritual significance of Hajj",
+      "Islam's peace values",
+      "Navigating Muslim identity",
+      "Dispelling Islam misconceptions",
+      "Balancing spirituality and life",
+      "Community impact ideas"
+    ],
+    'nurAlHudaForKids': [
+      "Share a Prophet story",
+      "Teach a bedtime prayer",
+      "Cool Islamic fact",
+      "Prophet Muhammad's (SAW) story",
+      "Tips for starting to fast",
+      "Basic Wudu steps",
+      "Good deed ideas",
+      "Allah's beautiful world",
+      "Being a young Muslim",
+      "Fun ways to learn about Islam"
+    ],
+    'islamicSocraticMethod': ["Explain Tawhid", "What is Islamic Philosophy?", "Tell me about Ijtihad", "Socratic Method!", "Define Sharia", "Purpose of Zakat", "Ethics of War in Islam", "Women's Rights in Islam", "Evolution of Fiqh", "Concept of Ummah"],
   'aiForIslamicResearch': ["Latest research on Islamic History", "AI and Quranic studies", "Islam and Science intersection", "Research Fact!"],
   'iqraWithUs': ["Surah Al-Fatiha", "Discuss Ayat Al-Kursi", "Surah Al-Ikhlas", "Surah Al-Mulk", "Surah Ar-Rahman", "Surah Al-Baqarah:286", "Surah Yasin:9", "Surah Al-Muzzammil:1-4", "Surah Al-Fil", "Surah Al-Asr"],
-  'paliGPT': ["Overview of Palestinian History", "Key Events in Palestinian Struggle", "Explain Nakba", "Cultural Heritage of Palestine", "Palestinian Cuisine", "Traditional Palestinian Dress", "Important Palestinian Figures", "Role of UN in Palestine", "Impact of Occupation", "Palestinian Refugee Crisis"]
+  'muslimReferenceAI': ["Find a Quranic verse about patience.", "Provide a Hadith on the importance of charity.", "Cite a classical Islamic text discussing Tawhid.", "What does the Quran say about justice?", "Locate a Hadith on the significance of fasting.", "Find a reference from Ghazzali on ethical behavior.", "Provide a Quranic verse about forgiveness.", "What does Sahih Bukhari say about prayer?", "Cite an Islamic scholar on the concept of Ummah.", "Find a Hadith from Sahih Muslim on kindness to neighbors."],
+  'paliGPT': ["Overview of Palestinian History", "Key Events in Palestinian Struggle", "Explain Nakba", "Cultural Heritage of Palestine", "Palestinian Cuisine", "Traditional Palestinian Dress", "Important Palestinian Figures", "Impact of Occupation", "Palestinian Refugee Crisis"]
 };
 
 export const getPromptsForType = (chatbotType) => {
