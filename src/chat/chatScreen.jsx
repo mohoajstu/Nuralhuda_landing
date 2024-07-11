@@ -93,7 +93,7 @@ const ChatScreen = () => {
           setLastResetDate(userData.lastResetDate ? userData.lastResetDate.toDate() : null);
           const userIsPaid = userData.paymentStatus === 'paid';
           setIsPaidUser(userIsPaid);
-          setMaxPrompts(userIsPaid ? 30 : 5);
+          setMaxPrompts(userIsPaid ? 40 : 5);
         } else {
           // If the user document doesn't exist, create it
           console.log('User document does not exist, creating a new one');
@@ -103,6 +103,20 @@ const ChatScreen = () => {
             paymentStatus: 'unpaid'
           });
         }
+      } else {
+        const sessionPromptCount = sessionStorage.getItem('totalPromptCount');
+        const sessionLastResetDate = sessionStorage.getItem('lastResetDate');
+
+        if (sessionPromptCount) {
+          setTotalPromptCount(parseInt(sessionPromptCount, 10));
+        }
+
+        if (sessionLastResetDate) {
+          setLastResetDate(new Date(sessionLastResetDate));
+        } else {
+          setLastResetDate(new Date());
+          sessionStorage.setItem('lastResetDate', new Date().toISOString());
+        }
       }
     };
 
@@ -111,20 +125,22 @@ const ChatScreen = () => {
 
   useEffect(() => {
     const checkAndResetPromptCount = async () => {
-      if (user && lastResetDate) {
-        const now = new Date();
-        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        
-        if (lastResetDate < today) {
-          console.log('Resetting prompt count for the new day');
+      const now = new Date();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+      if (lastResetDate && lastResetDate < today) {
+        console.log('Resetting prompt count for the new day');
+        if (user) {
           await setDoc(doc(db, 'users', user.uid), {
             totalPromptCount: 0,
             lastResetDate: today
           }, { merge: true });
-          
+        } else {
           setTotalPromptCount(0);
-          setLastResetDate(today);
+          sessionStorage.setItem('totalPromptCount', '0');
+          sessionStorage.setItem('lastResetDate', today.toISOString());
         }
+        setLastResetDate(today);
       }
     };
 
@@ -153,28 +169,37 @@ const ChatScreen = () => {
   const handleSendMessage = async () => {
     if (isSending || !currentMessage.trim()) return;
 
-    
     if (!user) {
-      setModalMessage('Please login to use this feature.');
-      setIsModalOpen(true);
-      return;
-    }
+      if (totalPromptCount >= maxPrompts) {
+        setModalMessage(`You have reached the daily limit of ${maxPrompts} prompts. Please log in to continue using the service.`);
+        setIsModalOpen(true);
+        return;
+      }
+      setTotalPromptCount(prevCount => prevCount + 1);
+      sessionStorage.setItem('totalPromptCount', (totalPromptCount + 1).toString());
+    } else {
+      // Fetch the latest prompt count from Firestore
+      console.log('Fetching latest prompt count from Firestore');
+      const userDoc = await getDoc(doc(db, 'users', user.uid));
+      const userData = userDoc.data();
+      const currentPromptCount = userData.totalPromptCount || 0;
+      const userIsPaid = userData.paymentStatus === 'paid';
+      const userMaxPrompts = userIsPaid ? 40 : 5;
 
-    // Fetch the latest prompt count from Firestore
-    console.log('Fetching latest prompt count from Firestore');
-    const userDoc = await getDoc(doc(db, 'users', user.uid));
-    const userData = userDoc.data();
-    const currentPromptCount = userData.totalPromptCount || 0;
-    const userIsPaid = userData.paymentStatus === 'paid';
-    const userMaxPrompts = userIsPaid ? 30 : 5;
+      if (currentPromptCount >= userMaxPrompts) {
+        setModalMessage(`You have reached the daily limit of ${userMaxPrompts} prompts. ${userIsPaid ? 'Wait until tomorrow to learn more!' : 'Upgrade to a paid account for more prompts!'}`);
+        setIsModalOpen(true);
+        return;
+      }
 
-    console.log(userIsPaid);
-    console.log(userMaxPrompts);
+      // Increment total prompt count using Firebase increment
+      console.log('Incrementing total prompt count');
+      await setDoc(doc(db, 'users', user.uid), {
+        totalPromptCount: increment(1)
+      }, { merge: true });
 
-    if (currentPromptCount >= userMaxPrompts) {
-      setModalMessage(`You have reached the daily limit of ${userMaxPrompts} prompts. ${userIsPaid ? 'Wait until tomorrow to learn more!' : 'Upgrade to a paid account for more prompts!'}`);
-      setIsModalOpen(true);
-      return;
+      // Update local state
+      setTotalPromptCount(prevCount => prevCount + 1);
     }
 
     setIsSending(true);
@@ -182,15 +207,6 @@ const ChatScreen = () => {
     setMessages((prevMessages) => [...prevMessages, userMessage]);
     setCurrentMessage('');
     setShowImage(false);
-
-    // Increment total prompt count using Firebase increment
-    console.log('Incrementing total prompt count');
-    await setDoc(doc(db, 'users', user.uid), {
-      totalPromptCount: increment(1)
-    }, { merge: true });
-
-    // Update local state
-    setTotalPromptCount(prevCount => prevCount + 1);
 
     let localThreadId = threadId;
 
@@ -221,6 +237,12 @@ const ChatScreen = () => {
   };
 
   const handleSelectPrompt = (prompt) => {
+    if (totalPromptCount >= maxPrompts) {
+      setModalMessage(`You have reached the daily limit of ${maxPrompts} prompts.`);
+      setIsModalOpen(true);
+      return;
+    }
+
     setCurrentMessage(prompt);
     handleSendMessage();
   };
