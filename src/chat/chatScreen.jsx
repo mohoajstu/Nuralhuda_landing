@@ -1,12 +1,16 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { useNavigate, useParams, useLocation } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { createThread, createMessage, createRun, titleToAssistantIDMap } from './openAIUtils';
-import { RenderMarkdown } from './RenderMarkdown';
-import { SuggestedPrompts, getPromptsForType } from './SuggestedPrompts';
+import { getPromptsForType } from './SuggestedPrompts';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth, db } from '../config/firebase-config';
-import { collection, addDoc, doc, getDoc, setDoc, increment } from 'firebase/firestore';
+import { doc, getDoc, setDoc, increment, addDoc, collection } from 'firebase/firestore';
 import Modal from './modal';
+import Header from './ChatScreen/Header';
+import Messages from './ChatScreen/Messages';
+import Input from './ChatScreen/Input';
+import PromptCountInfo from './ChatScreen/PromptCountInfo';
+import SuggestedPrompts from './SuggestedPrompts';
 
 import nurAlHudaImg from '../img/about-nbg.png';
 import nurAlHudaForKidsImg from '../img/nuralhudaforkids.png';
@@ -48,7 +52,6 @@ const ChatScreen = () => {
   const chatbotImage = titleToImageMap[assistantTitle];
   const assistantId = titleToAssistantIDMap[assistantTitle];
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-  const location = useLocation();
   const [user] = useAuthState(auth);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalOpenReport, setIsModalOpenReport] = useState(false);
@@ -347,94 +350,44 @@ const ChatScreen = () => {
         )}
       />
 
-      <div className="chatscreen-header-container">
-        <button className="chatscreen-home-button" onClick={handleGoToHome}>
-          Home
-        </button>
-        <div className="chatscreen-header-title" style={{ fontSize: titleSize }}>
-          {assistantTitle}
-        </div>
+      <Header assistantTitle={assistantTitle} titleSize={titleSize} onHomeClick={handleGoToHome} />
+      
+      <div ref={scrollViewRef}>
+        <Messages
+          messages={messages}
+          chatbotImage={chatbotImage}
+          isSending={isSending}
+          accumulatedMessage={accumulatedMessage}
+          handlePositiveReport={sendPositiveReport}
+          handleNegativeReport={sendNegativeReport}
+        />
       </div>
-      <div ref={scrollViewRef} className="chatscreen-messages-container">
-        {messages.map((message, index) => (
-          <React.Fragment key={index}>
-            <div className={`chatscreen-message-wrapper ${message.sender === 'user' ? 'user-message-wrapper' : 'bot-message-wrapper'}`}>
-              {message.sender !== 'user' && (
-                <div className="bot-profile-and-actions">
-                  <img src={chatbotImage} alt="Bot" className="chatbot-profile-image" />
-                  <div className="bot-actions">
-                    <button className="thumb-button" onClick={() => sendPositiveReport(message.text)}>👍</button>
-                    <button className="thumb-button" onClick={() => sendNegativeReport(message.text)}>👎</button>
-                  </div>
-                </div>
-              )}
-              <div className={`chatscreen-message-container ${message.sender === 'user' ? 'chatscreen-user-message' : 'chatscreen-bot-message'}`}>
-                <RenderMarkdown markdown={message.text} />
-              </div>
-            </div>
-            {isSending && index === messages.length - 1 && !accumulatedMessage && (
-              <div className="chatscreen-message-wrapper bot-message-wrapper">
-                <div className="chatscreen-message-container chatscreen-bot-message">
-                  <div className="typing-indicator">
-                    <div className="typing-indicator-dot"></div>
-                    <div className="typing-indicator-dot"></div>
-                    <div className="typing-indicator-dot"></div>
-                  </div>
-                </div>
-              </div>
-            )}
-            {isSending && index === messages.length - 1 && accumulatedMessage && (
-              <div className="chatscreen-message-wrapper bot-message-wrapper">
-                <div className="bot-profile-and-actions">
-                  <img src={chatbotImage} alt="Bot" className="chatbot-profile-image" />
-                </div>
-                <div className="chatscreen-message-container chatscreen-bot-message">
-                  <RenderMarkdown markdown={accumulatedMessage} />
-                </div>
-              </div>
-            )}
-          </React.Fragment>
-        ))}
-      </div>
-  
+
       {showImage && chatbotImage && (
         <div className="chatscreen-message-image">
           <img src={chatbotImage} alt={assistantTitle + " Image"} />
         </div>
       )}
-  
+
       <SuggestedPrompts onSelectPrompt={handleSelectPrompt} isSending={isSending} chatbotType={chatbotType} />
 
       {maxPrompts - totalPromptCount < 5 && (
-        <div className="prompt-count-info">
-          <p className="prompt-count-text">
-            Prompts used today: {totalPromptCount}/{maxPrompts}
-          </p>
-          {!isPaidUser && totalPromptCount >= maxPrompts && (
-            <span className="upgrade-message" onClick={() => navigate('/pricing')}> Upgrade for more prompts!</span>
-          )}
-        </div>
+        <PromptCountInfo
+          totalPromptCount={totalPromptCount}
+          maxPrompts={maxPrompts}
+          isPaidUser={isPaidUser}
+          onUpgradeClick={() => navigate('/pricing')}
+        />
       )}
 
-      <div className="chatscreen-input-container">
-        <input
-          className="chatscreen-input"
-          value={currentMessage}
-          onChange={(e) => setCurrentMessage(e.target.value)}
-          placeholder="Type your message..."
-          onKeyDown={(e) => { if (e.key === 'Enter' && !isSending) handleSendMessage(); }}
-          disabled={isSending}
-        />
-        <button
-          className="chatscreen-send-button"
-          onClick={handleSendMessage}
-          disabled={isSending}
-        >
-          Send
-        </button>
-      </div>
+      <Input
+        currentMessage={currentMessage}
+        onMessageChange={(e) => setCurrentMessage(e.target.value)}
+        onSendMessage={handleSendMessage}
+        isSending={isSending}
+      />
     </div>
-  );  
+  );
 };
 
 export default ChatScreen;
