@@ -2388,3 +2388,64 @@ input[type="button"] {
 .upgrade-message:hover {
   background-color: #FFC107;
 }
+
+
+/* ContactForm.css */
+.contact-form-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(to right, #114040 0%, #144c4c 100%);
+}
+
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 2em;
+  background: #dcca98;
+  border-radius: 5px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  max-width: 600px;
+  width: 100%;
+}
+
+.contact-form h2 {
+  text-align: center;
+  color: #144c4c;
+  position: relative;
+}
+
+.contact-form h2::after {
+  content: "";
+  display: block;
+  width: 100px; 
+  height: 2px; 
+  background-color: #144c4c; 
+  margin: 8px auto 0; 
+}
+
+
+.contact-flex-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.contact-flex-item {
+  flex: 1;
+  margin-right: 10px;
+}
+
+.contact-flex-item:last-child {
+  margin-right: 0;
+}
+
+.textarea-group {
+  margin-bottom: 20px;
+}
+
+.contact-full-width {
+  width: 100%;
+  margin-bottom: 20px;
+}

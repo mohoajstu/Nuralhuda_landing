@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { useNavigate, useParams, useLocation } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { createThread, createMessage, createRun, titleToAssistantIDMap } from './openAIUtils';
 import { RenderMarkdown } from './RenderMarkdown';
 import { SuggestedPrompts, getPromptsForType } from './SuggestedPrompts';
@@ -48,7 +48,6 @@ const ChatScreen = () => {
   const chatbotImage = titleToImageMap[assistantTitle];
   const assistantId = titleToAssistantIDMap[assistantTitle];
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-  const location = useLocation();
   const [user] = useAuthState(auth);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalOpenReport, setIsModalOpenReport] = useState(false);
@@ -59,7 +58,7 @@ const ChatScreen = () => {
   const [reportedMessage, setReportedMessage] = useState('');
   const [totalPromptCount, setTotalPromptCount] = useState(0);
   const [lastResetDate, setLastResetDate] = useState(null);
-  const [isPaidUser, setIsPaidUser] = useState(false);
+  const [accountType, setAccountType] = useState('');
   const [maxPrompts, setMaxPrompts] = useState(5);
 
   useEffect(() => {
@@ -81,55 +80,111 @@ const ChatScreen = () => {
     setCurrentPrompts(getPromptsForType(chatbotType));
   }, [chatbotType]);
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      if (user) {
-        console.log(`Fetching data for user: ${user.uid}`);
-        const userDoc = await getDoc(doc(db, 'users', user.uid));
-        if (userDoc.exists()) {
-          const userData = userDoc.data();
-          console.log('User data:', userData);
-          setTotalPromptCount(userData.totalPromptCount || 0);
-          setLastResetDate(userData.lastResetDate ? userData.lastResetDate.toDate() : null);
-          const userIsPaid = userData.paymentStatus === 'paid';
-          setIsPaidUser(userIsPaid);
-          setMaxPrompts(userIsPaid ? 30 : 5);
-        } else {
-          // If the user document doesn't exist, create it
-          console.log('User document does not exist, creating a new one');
-          await setDoc(doc(db, 'users', user.uid), {
-            totalPromptCount: 0,
-            lastResetDate: new Date(),
-            paymentStatus: 'unpaid'
-          });
-        }
-      }
-    };
+  const checkAndResetPromptCount = async (userData) => {
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
+    const userLastResetDate = userData?.lastResetDate?.toDate() || null;
+
+    if (userLastResetDate && userLastResetDate.toDateString() !== today.toDateString()) {
+      console.log('Resetting prompt count for the new day');
+      if (user) {
+        await setDoc(doc(db, 'users', user.uid), {
+          totalPromptCount: 0,
+          lastResetDate: today
+        }, { merge: true });
+      } else {
+        setTotalPromptCount(0);
+        sessionStorage.setItem('totalPromptCount', '0');
+        sessionStorage.setItem('lastResetDate', today.toISOString());
+      }
+      setLastResetDate(today);
+      setTotalPromptCount(0); // Ensure the local state is updated immediately
+    }
+  };
+
+  const fetchUserData = async () => {
+    if (user) {
+      console.log(`Fetching data for user: ${user.uid}`);
+      const userDoc = await getDoc(doc(db, 'users', user.uid));
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        console.log('User data:', userData);
+        setTotalPromptCount(userData.totalPromptCount || 0);
+        setLastResetDate(userData.lastResetDate ? userData.lastResetDate.toDate() : null);
+        setAccountType(userData.account || '');
+
+        const isNurAlHuda = chatbotType === 'nurAlHuda';
+        const isPaliGPT = chatbotType === 'paliGPT';
+
+        // Set maxPrompts based on user account type and chatbot type
+        if (isPaliGPT) {
+          setMaxPrompts(Infinity);
+        } else if (userData.account === 'premium') {
+          setMaxPrompts(40);
+        } else if (userData.account === 'basic' && isNurAlHuda) {
+          setMaxPrompts(40);
+        } else {
+          setMaxPrompts(5);
+        }
+
+        // Check and reset prompt count if needed
+        await checkAndResetPromptCount(userData);
+      } else {
+        // If the user document doesn't exist, create it
+        console.log('User document does not exist, creating a new one');
+        const currentDate = new Date();
+        await setDoc(doc(db, 'users', user.uid), {
+          totalPromptCount: 0,
+          lastResetDate: currentDate,
+          account: ''
+        });
+        setLastResetDate(currentDate);
+        setTotalPromptCount(0);
+        setAccountType('');
+      }
+    } else {
+      const sessionPromptCount = sessionStorage.getItem('totalPromptCount');
+      const sessionLastResetDate = sessionStorage.getItem('lastResetDate');
+      let sessionAccountType = sessionStorage.getItem('account') || '';
+
+      if (!sessionPromptCount) {
+        sessionStorage.setItem('totalPromptCount', '0');
+        setTotalPromptCount(0);
+      } else {
+        setTotalPromptCount(parseInt(sessionPromptCount, 10));
+      }
+
+      if (!sessionLastResetDate) {
+        const currentDate = new Date();
+        sessionStorage.setItem('lastResetDate', currentDate.toISOString());
+        setLastResetDate(currentDate);
+      } else {
+        setLastResetDate(new Date(sessionLastResetDate));
+      }
+
+      sessionStorage.setItem('account', sessionAccountType);
+
+      const isNurAlHuda = chatbotType === 'nurAlHuda';
+      const isPaliGPT = chatbotType === 'paliGPT';
+
+      // Set maxPrompts based on user type and chatbot type
+      if (isPaliGPT) {
+        setMaxPrompts(Infinity);
+      } else if (isNurAlHuda && sessionAccountType !== '') {
+        setMaxPrompts(40);
+      } else {
+        setMaxPrompts(5);
+      }
+
+      // Check and reset prompt count if needed
+      await checkAndResetPromptCount();
+    }
+  };
+
+  useEffect(() => {
     fetchUserData();
   }, [user]);
-
-  useEffect(() => {
-    const checkAndResetPromptCount = async () => {
-      if (user && lastResetDate) {
-        const now = new Date();
-        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        
-        if (lastResetDate < today) {
-          console.log('Resetting prompt count for the new day');
-          await setDoc(doc(db, 'users', user.uid), {
-            totalPromptCount: 0,
-            lastResetDate: today
-          }, { merge: true });
-          
-          setTotalPromptCount(0);
-          setLastResetDate(today);
-        }
-      }
-    };
-
-    checkAndResetPromptCount();
-  }, [lastResetDate, user]);
 
   const handleNewMessage = (message) => {
     setAccumulatedMessage((prevAccumulated) => {
@@ -153,28 +208,57 @@ const ChatScreen = () => {
   const handleSendMessage = async () => {
     if (isSending || !currentMessage.trim()) return;
 
-    
+    const isPaliGPT = chatbotType === 'paliGPT';
+
     if (!user) {
-      setModalMessage('Please login to use this feature.');
-      setIsModalOpen(true);
-      return;
-    }
+      if (!isPaliGPT && !currentPrompts.includes(currentMessage.trim())) {
+        setModalMessage('Please log in to use this feature.');
+        setIsModalOpen(true);
+        return;
+      }
+      
+      if (!isPaliGPT && totalPromptCount >= maxPrompts) {
+        setModalMessage(`You have reached the daily limit of ${maxPrompts} prompts. Please log in to continue using the service.`);
+        setIsModalOpen(true);
+        return;
+      }
+      setTotalPromptCount(prevCount => prevCount + 1);
+      sessionStorage.setItem('totalPromptCount', (totalPromptCount + 1).toString());
+    } else {
+      // Fetch the latest prompt count from Firestore
+      console.log('Fetching latest prompt count from Firestore');
+      const userDoc = await getDoc(doc(db, 'users', user.uid));
+      const userData = userDoc.data();
+      const currentPromptCount = userData.totalPromptCount || 0;
+      const userAccount = userData.account || '';
+      const isNurAlHuda = chatbotType === 'nurAlHuda';
 
-    // Fetch the latest prompt count from Firestore
-    console.log('Fetching latest prompt count from Firestore');
-    const userDoc = await getDoc(doc(db, 'users', user.uid));
-    const userData = userDoc.data();
-    const currentPromptCount = userData.totalPromptCount || 0;
-    const userIsPaid = userData.paymentStatus === 'paid';
-    const userMaxPrompts = userIsPaid ? 30 : 5;
+      // Set userMaxPrompts based on user account type and chatbot type
+      let userMaxPrompts = maxPrompts;
+      if (isPaliGPT) {
+        userMaxPrompts = Infinity;
+      } else if (userAccount === 'premium') {
+        userMaxPrompts = 40;
+      } else if (userAccount === 'basic' && isNurAlHuda) {
+        userMaxPrompts = 40;
+      } else {
+        userMaxPrompts = 5;
+      }
 
-    console.log(userIsPaid);
-    console.log(userMaxPrompts);
+      if (currentPromptCount >= userMaxPrompts) {
+        setModalMessage(`You have reached the daily limit of ${userMaxPrompts} prompts. ${userAccount === 'premium' ? 'Wait until tomorrow to learn more!' : 'Upgrade to a premium account for more prompts!'}`);
+        setIsModalOpen(true);
+        return;
+      }
 
-    if (currentPromptCount >= userMaxPrompts) {
-      setModalMessage(`You have reached the daily limit of ${userMaxPrompts} prompts. ${userIsPaid ? 'Wait until tomorrow to learn more!' : 'Upgrade to a paid account for more prompts!'}`);
-      setIsModalOpen(true);
-      return;
+      // Increment total prompt count using Firebase increment
+      console.log('Incrementing total prompt count');
+      await setDoc(doc(db, 'users', user.uid), {
+        totalPromptCount: increment(1)
+      }, { merge: true });
+
+      // Update local state
+      setTotalPromptCount(prevCount => prevCount + 1);
     }
 
     setIsSending(true);
@@ -182,15 +266,6 @@ const ChatScreen = () => {
     setMessages((prevMessages) => [...prevMessages, userMessage]);
     setCurrentMessage('');
     setShowImage(false);
-
-    // Increment total prompt count using Firebase increment
-    console.log('Incrementing total prompt count');
-    await setDoc(doc(db, 'users', user.uid), {
-      totalPromptCount: increment(1)
-    }, { merge: true });
-
-    // Update local state
-    setTotalPromptCount(prevCount => prevCount + 1);
 
     let localThreadId = threadId;
 
@@ -221,6 +296,12 @@ const ChatScreen = () => {
   };
 
   const handleSelectPrompt = (prompt) => {
+    if (totalPromptCount >= maxPrompts) {
+      setModalMessage(`You have reached the daily limit of ${maxPrompts} prompts.`);
+      setIsModalOpen(true);
+      return;
+    }
+
     setCurrentMessage(prompt);
     handleSendMessage();
   };
@@ -386,9 +467,9 @@ const ChatScreen = () => {
       {maxPrompts - totalPromptCount < 5 && (
         <div className="prompt-count-info">
           <p className="prompt-count-text">
-            Prompts used today: {totalPromptCount}/{maxPrompts}
+            Prompts used today: {totalPromptCount > maxPrompts ? `${maxPrompts}/${maxPrompts}` : `${totalPromptCount}/${maxPrompts}`}
           </p>
-          {!isPaidUser && totalPromptCount >= maxPrompts && (
+          {accountType !== 'premium' && totalPromptCount >= maxPrompts && (
             <span className="upgrade-message" onClick={() => navigate('/pricing')}> Upgrade for more prompts!</span>
           )}
         </div>
