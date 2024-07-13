@@ -58,7 +58,7 @@ const ChatScreen = () => {
   const [reportedMessage, setReportedMessage] = useState('');
   const [totalPromptCount, setTotalPromptCount] = useState(0);
   const [lastResetDate, setLastResetDate] = useState(null);
-  const [isPaidUser, setIsPaidUser] = useState(false);
+  const [accountType, setAccountType] = useState('');
   const [maxPrompts, setMaxPrompts] = useState(5);
 
   useEffect(() => {
@@ -112,9 +112,21 @@ const ChatScreen = () => {
         console.log('User data:', userData);
         setTotalPromptCount(userData.totalPromptCount || 0);
         setLastResetDate(userData.lastResetDate ? userData.lastResetDate.toDate() : null);
-        const userIsPaid = userData.paymentStatus === 'paid';
-        setIsPaidUser(userIsPaid);
-        setMaxPrompts(userIsPaid ? 40 : 5);
+        setAccountType(userData.account || '');
+
+        const isNurAlHuda = chatbotType === 'nurAlHuda';
+        const isPaliGPT = chatbotType === 'paliGPT';
+
+        // Set maxPrompts based on user account type and chatbot type
+        if (isPaliGPT) {
+          setMaxPrompts(Infinity);
+        } else if (userData.account === 'premium') {
+          setMaxPrompts(40);
+        } else if (userData.account === 'basic' && isNurAlHuda) {
+          setMaxPrompts(40);
+        } else {
+          setMaxPrompts(5);
+        }
 
         // Check and reset prompt count if needed
         await checkAndResetPromptCount(userData);
@@ -125,25 +137,44 @@ const ChatScreen = () => {
         await setDoc(doc(db, 'users', user.uid), {
           totalPromptCount: 0,
           lastResetDate: currentDate,
-          paymentStatus: 'unpaid'
+          account: ''
         });
         setLastResetDate(currentDate);
         setTotalPromptCount(0);
+        setAccountType('');
       }
     } else {
       const sessionPromptCount = sessionStorage.getItem('totalPromptCount');
       const sessionLastResetDate = sessionStorage.getItem('lastResetDate');
+      let sessionAccountType = sessionStorage.getItem('account') || '';
 
-      if (sessionPromptCount) {
+      if (!sessionPromptCount) {
+        sessionStorage.setItem('totalPromptCount', '0');
+        setTotalPromptCount(0);
+      } else {
         setTotalPromptCount(parseInt(sessionPromptCount, 10));
       }
 
-      if (sessionLastResetDate) {
-        setLastResetDate(new Date(sessionLastResetDate));
-      } else {
+      if (!sessionLastResetDate) {
         const currentDate = new Date();
-        setLastResetDate(currentDate);
         sessionStorage.setItem('lastResetDate', currentDate.toISOString());
+        setLastResetDate(currentDate);
+      } else {
+        setLastResetDate(new Date(sessionLastResetDate));
+      }
+
+      sessionStorage.setItem('account', sessionAccountType);
+
+      const isNurAlHuda = chatbotType === 'nurAlHuda';
+      const isPaliGPT = chatbotType === 'paliGPT';
+
+      // Set maxPrompts based on user type and chatbot type
+      if (isPaliGPT) {
+        setMaxPrompts(Infinity);
+      } else if (isNurAlHuda && sessionAccountType !== '') {
+        setMaxPrompts(40);
+      } else {
+        setMaxPrompts(5);
       }
 
       // Check and reset prompt count if needed
@@ -177,14 +208,16 @@ const ChatScreen = () => {
   const handleSendMessage = async () => {
     if (isSending || !currentMessage.trim()) return;
 
+    const isPaliGPT = chatbotType === 'paliGPT';
+
     if (!user) {
-      if (!currentPrompts.includes(currentMessage.trim())) {
+      if (!isPaliGPT && !currentPrompts.includes(currentMessage.trim())) {
         setModalMessage('Please log in to use this feature.');
         setIsModalOpen(true);
         return;
       }
       
-      if (totalPromptCount >= maxPrompts) {
+      if (!isPaliGPT && totalPromptCount >= maxPrompts) {
         setModalMessage(`You have reached the daily limit of ${maxPrompts} prompts. Please log in to continue using the service.`);
         setIsModalOpen(true);
         return;
@@ -197,11 +230,23 @@ const ChatScreen = () => {
       const userDoc = await getDoc(doc(db, 'users', user.uid));
       const userData = userDoc.data();
       const currentPromptCount = userData.totalPromptCount || 0;
-      const userIsPaid = userData.paymentStatus === 'paid';
-      const userMaxPrompts = userIsPaid ? 40 : 5;
+      const userAccount = userData.account || '';
+      const isNurAlHuda = chatbotType === 'nurAlHuda';
+
+      // Set userMaxPrompts based on user account type and chatbot type
+      let userMaxPrompts = maxPrompts;
+      if (isPaliGPT) {
+        userMaxPrompts = Infinity;
+      } else if (userAccount === 'premium') {
+        userMaxPrompts = 40;
+      } else if (userAccount === 'basic' && isNurAlHuda) {
+        userMaxPrompts = 40;
+      } else {
+        userMaxPrompts = 5;
+      }
 
       if (currentPromptCount >= userMaxPrompts) {
-        setModalMessage(`You have reached the daily limit of ${userMaxPrompts} prompts. ${userIsPaid ? 'Wait until tomorrow to learn more!' : 'Upgrade to a paid account for more prompts!'}`);
+        setModalMessage(`You have reached the daily limit of ${userMaxPrompts} prompts. ${userAccount === 'premium' ? 'Wait until tomorrow to learn more!' : 'Upgrade to a premium account for more prompts!'}`);
         setIsModalOpen(true);
         return;
       }
@@ -422,9 +467,9 @@ const ChatScreen = () => {
       {maxPrompts - totalPromptCount < 5 && (
         <div className="prompt-count-info">
           <p className="prompt-count-text">
-            Prompts used today: {totalPromptCount}/{maxPrompts}
+            Prompts used today: {totalPromptCount > maxPrompts ? `${maxPrompts}/${maxPrompts}` : `${totalPromptCount}/${maxPrompts}`}
           </p>
-          {!isPaidUser && totalPromptCount >= maxPrompts && (
+          {accountType !== 'premium' && totalPromptCount >= maxPrompts && (
             <span className="upgrade-message" onClick={() => navigate('/pricing')}> Upgrade for more prompts!</span>
           )}
         </div>
