@@ -44,12 +44,11 @@ const App = () => {
 
   if (loading) {
     return <div>Loading...</div>;
-    return <div>Loading...</div>;
   }
 
   return (
     <div className="App">
- {(location.pathname === '/' || location.pathname === '/login' || location.pathname === '/pricing' || location.pathname === '/payment-success' || location.pathname === '/contact-form') && <Navigation />}
+ {(location.pathname === '/' || location.pathname === '/login' || location.pathname === '/pricing' || location.pathname === '/payment-success' || location.pathname === '/contact-form' || location.pathname === '/quiz-generator') && <Navigation />}
 
       <Routes>
         <Route path="/" element={landingPageData ? <Home data={landingPageData} /> : <div>Loading...</div>} />
