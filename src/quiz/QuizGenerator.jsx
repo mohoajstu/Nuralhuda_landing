@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { createThread, createMessage, createRun, titleToAssistantIDMap } from '../chat/openAIUtils';
 import { QuizQuestion, MultipleChoice, TrueFalse, FillInTheBlank, Matching, Explanation } from './QuizComponents';
+import { db } from '../config/firebase-config';
+import { collection, addDoc } from 'firebase/firestore';
 import './QuizGenerator.css';
 import jsPDF from 'jspdf';
 
@@ -45,6 +47,7 @@ const QuizGenerator = () => {
         try {
           const response = JSON.parse(prevAccumulated);
           setQuizData(response);
+          saveQuizToFirestore(response); // Save the quiz to Firestore
         } catch (error) {
           console.error("Error parsing response:", error);
           setError('An error occurred while parsing the quiz data. Please try again.');
@@ -112,6 +115,7 @@ const QuizGenerator = () => {
     }
     return y;
   };
+
   const exportToPDF = () => {
     const doc = new jsPDF();
     let y = 10;
@@ -215,6 +219,28 @@ const QuizGenerator = () => {
     });
 
     doc.save(fileName);
+  };
+
+  const saveQuizToFirestore = async (quiz) => {
+    try {
+      const stringifiedQuiz = JSON.stringify(quiz); // Stringify the quiz data
+      const docRef = await addDoc(collection(db, "quizzes"), { data: stringifiedQuiz });
+      console.log("Document written with ID: ", docRef.id);
+      const quizLink = `${window.location.origin}/quiz/${docRef.id}`;
+      copyToClipboard(quizLink);
+      alert(`Quiz saved! Link copied to clipboard: ${quizLink}`);
+    } catch (error) {
+      console.error("Error saving quiz: ", error);
+      setError('An error occurred while saving the quiz. Please try again.');
+    }
+  };
+
+  const copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text).then(() => {
+      console.log('Copied to clipboard successfully!');
+    }, (err) => {
+      console.error('Could not copy text: ', err);
+    });
   };
 
   return (

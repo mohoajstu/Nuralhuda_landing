@@ -16,6 +16,8 @@ import AccountSetup from './pricing/AccountSetup';
 import PaymentSuccess from './pricing/PaymentSuccess';
 import FAQ from './home/FAQ'; // Import FAQ component
 import QuizGenerator from './quiz/QuizGenerator';
+import FetchQuiz from './quiz/FetchQuiz'; // Import the component to fetch and display the quiz
+
 
 import './App.css';
 
@@ -60,6 +62,7 @@ const App = () => {
         <Route path="/chat/:chatbotType" element={<ChatScreen />} />
         <Route path="/faq" element={<FAQ />} /> {/* Add FAQ route */}
         <Route path="/quiz-generator" element={<QuizGenerator />} />
+        <Route path="/quiz/:quizId" element={<FetchQuiz />} /> {/* Add this route */}
         <Route path="*" element={<div>404 Not Found</div>} />
       </Routes>
     </div>
