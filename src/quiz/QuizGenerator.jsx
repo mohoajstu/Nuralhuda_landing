@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { createThread, createMessage, createRun, titleToAssistantIDMap } from '../chat/openAIUtils';
 import { QuizQuestion, MultipleChoice, TrueFalse, FillInTheBlank, Matching, Explanation } from './QuizComponents';
+import './QuizGenerator.css';
+import jsPDF from 'jspdf';
 
 const QuizGenerator = () => {
   const [text, setText] = useState('');
@@ -11,12 +13,16 @@ const QuizGenerator = () => {
   const [submitted, setSubmitted] = useState(false);
   const [score, setScore] = useState(0);
   const [responseBuffer, setResponseBuffer] = useState('');
+  const [error, setError] = useState('');
+  const [exportWithAnswers, setExportWithAnswers] = useState('questions');
 
   const handleTextChange = (e) => setText(e.target.value);
   const handleFileChange = (e) => setFile(e.target.files[0]);
+  const handleExportChange = (e) => setExportWithAnswers(e.target.value);
 
   const handleSubmit = async () => {
     setIsLoading(true);
+    setError('');
     const assistantTitle = 'Quiz Generator';
     setResponseBuffer(''); // Reset the response buffer
     try {
@@ -26,6 +32,7 @@ const QuizGenerator = () => {
       await createRun(thread.id, titleToAssistantIDMap[assistantTitle], handleMessage, handleError, assistantTitle);
     } catch (error) {
       console.error("Error generating quiz:", error);
+      setError('An error occurred while generating the quiz. Please try again.');
       setIsLoading(false);
     }
   };
@@ -40,6 +47,7 @@ const QuizGenerator = () => {
           setQuizData(response);
         } catch (error) {
           console.error("Error parsing response:", error);
+          setError('An error occurred while parsing the quiz data. Please try again.');
         }
         return '';
       } else {
@@ -51,6 +59,7 @@ const QuizGenerator = () => {
 
   const handleError = (error) => {
     console.error("Error handling message:", error);
+    setError('An error occurred while handling the response. Please try again.');
     setIsLoading(false);
   };
 
@@ -62,7 +71,7 @@ const QuizGenerator = () => {
           newScore++;
         }
       } else if (question.type === 'fill-in-the-blank') {
-        if (userAnswers[index]?.toLowerCase() === question.correctAnswer.toLowerCase()) {
+        if (userAnswers[index]?.trim().toLowerCase() === question.correctAnswer.trim().toLowerCase()) {
           newScore++;
         }
       } else if (question.type === 'true-false') {
@@ -83,7 +92,7 @@ const QuizGenerator = () => {
       return JSON.stringify(userAnswers[questionIndex]) === JSON.stringify(question.correctMatches);
     }
     if (question.type === 'fill-in-the-blank') {
-      return userAnswers[questionIndex]?.toLowerCase() === question.correctAnswer.toLowerCase();
+      return userAnswers[questionIndex]?.trim().toLowerCase() === question.correctAnswer.trim().toLowerCase();
     }
     if (question.type === 'true-false') {
       return userAnswers[questionIndex] === (question.correctAnswer ? 0 : 1);
@@ -95,40 +104,148 @@ const QuizGenerator = () => {
     setUserAnswers((prev) => ({ ...prev, [questionIndex]: answer }));
   };
 
+  const addNewPageIfNeeded = (doc, y, additionalHeight) => {
+    const pageHeight = 270;
+    if (y + additionalHeight > pageHeight) {
+      doc.addPage();
+      return 10; // Reset y position
+    }
+    return y;
+  };
+  const exportToPDF = () => {
+    const doc = new jsPDF();
+    let y = 10;
+    const lineHeight = 7;
+    const questionSpacing = 10;
+    const pageWidth = doc.internal.pageSize.width;
+    const pageHeight = doc.internal.pageSize.height;
+    const margin = 10;
+    const contentWidth = pageWidth - 2 * margin;
+    const fileName = `${quizData.title.replace(/\s+/g, '_')}_${exportWithAnswers === 'answers' ? 'Answers' : 'Questions'}.pdf`;
+
+    const addNewPageIfNeeded = (height) => {
+      if (y + height > pageHeight - margin) {
+        doc.addPage();
+        return margin;
+      }
+      return y;
+    };
+
+    const writeText = (text, x, maxWidth, fontSize = 12) => {
+      doc.setFontSize(fontSize);
+      const splitText = doc.splitTextToSize(text, maxWidth);
+      doc.text(splitText, x, y);
+      return splitText.length * lineHeight;
+    };
+
+    const calculateQuestionHeight = (question, index) => {
+      let height = lineHeight * 2; // Question text + extra space
+      if (question.type === 'multiple-choice') {
+        height += question.options.length * lineHeight;
+      } else if (question.type === 'true-false') {
+        height += 2 * lineHeight; // True and False options
+      } else if (question.type === 'fill-in-the-blank') {
+        height += lineHeight; // Answer line
+      } else if (question.type === 'matching') {
+        height += (question.columnA.length + 1) * lineHeight * 1.5; // +1 for the instruction line, 1.5 for extra spacing
+      }
+      if (exportWithAnswers === 'answers') {
+        height += 3 * lineHeight; // Correct answer and explanation
+      }
+      return height + questionSpacing;
+    };
+
+    const writeQuestion = (question, index) => {
+      const startY = y;
+      y += writeText(`Question ${index + 1}: ${question.question || 'Matching:'}`, margin, contentWidth);
+      y += lineHeight; // Add extra space after question text
+      
+      if (question.type === 'multiple-choice') {
+        question.options.forEach((option, i) => {
+          y += writeText(`${i + 1}. ${option}`, margin + 5, contentWidth - 5);
+        });
+      } else if (question.type === 'true-false') {
+        y += writeText('1. True', margin + 5, contentWidth - 5);
+        y += writeText('2. False', margin + 5, contentWidth - 5);
+      } else if (question.type === 'fill-in-the-blank') {
+        y += writeText('Answer: __________', margin + 5, contentWidth - 5);
+      } else if (question.type === 'matching') {
+        y += writeText('Match the following options:', margin, contentWidth);
+        y += lineHeight; // Add extra space after instruction
+        const columnAWidth = contentWidth * 0.45;
+        const columnBWidth = contentWidth * 0.45;
+        const columnSpacing = contentWidth * 0.1;
+        question.columnA.forEach((item, i) => {
+          const lineY = y;
+          writeText(item, margin, columnAWidth);
+          writeText(question.columnB[i], margin + columnAWidth + columnSpacing, columnBWidth);
+          y = lineY + lineHeight * 1.5; // Increase spacing between matching items
+        });
+      }
+
+      if (exportWithAnswers === 'answers') {
+        y += lineHeight * 1.5; // Add more space before answers
+        if (question.type === 'matching') {
+          y += writeText('Correct Matches:', margin, contentWidth);
+          question.columnA.forEach((item, i) => {
+            y += writeText(`${item} - ${question.columnB[question.correctMatches[i]]}`, margin + 10, contentWidth - 10);
+          });
+        } else {
+          y += writeText(`Correct Answer: ${
+            question.type === 'true-false' ? (question.correctAnswer ? 'True' : 'False') :
+            question.type === 'multiple-choice' ? question.options[question.correctAnswer] :
+            question.correctAnswer
+          }`, margin, contentWidth);
+        }
+        y += lineHeight;
+        y += writeText(`Explanation: ${question.explanation}`, margin, contentWidth);
+      }
+
+      y += questionSpacing;
+      return y - startY;
+    };
+
+    writeText('Quiz: ' + (quizData.title || 'Untitled Quiz'), margin, contentWidth, 16);
+    y += 20;
+
+    quizData.questions.forEach((question, index) => {
+      const questionHeight = calculateQuestionHeight(question, index);
+      y = addNewPageIfNeeded(questionHeight);
+      writeQuestion(question, index);
+    });
+
+    doc.save(fileName);
+  };
+
   return (
-    <div className="container mx-auto p-8 bg-[#e6d9b8] min-h-screen">
-      <h1 className="text-4xl font-bold mb-8 text-[#005c69] text-center">Islamic Studies Quiz Generator</h1>
-      <div className="mb-8 bg-white p-6 rounded-lg shadow-md">
+    <div className="quiz-generator-container">
+      <header className="quiz-generator-header">
+        <h1>Islamic Studies Quiz Generator</h1>
+      </header>
+      <div className="input-section">
         <textarea
           value={text}
           onChange={handleTextChange}
           placeholder="Enter text content here or upload a file"
-          className="w-full p-3 border border-gray-300 rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-[#005c69]"
           rows={6}
         />
         <input
           type="file"
           onChange={handleFileChange}
           accept=".txt,.doc,.docx,.pdf"
-          className="mb-4 block w-full text-sm text-gray-500
-            file:mr-4 file:py-2 file:px-4
-            file:rounded-md file:border-0
-            file:text-sm file:font-semibold
-            file:bg-[#005c69] file:text-white
-            hover:file:bg-[#00404d]"
         />
         <button
           onClick={handleSubmit}
           disabled={isLoading}
-          className="w-full bg-[#005c69] hover:bg-[#00404d] text-white font-bold py-3 px-4 rounded-md transition duration-300 ease-in-out transform hover:scale-105"
         >
           {isLoading ? 'Generating Quiz...' : 'Generate Quiz'}
         </button>
+        {error && <p className="error-message">{error}</p>}
       </div>
 
       {quizData && (
-        <div className="bg-white p-8 rounded-lg shadow-md">
-          <h2 className="text-3xl font-bold mb-6 text-[#005c69] text-center">{quizData.title}</h2>
+        <div className="quiz-content">
+          <h2>{quizData.title}</h2>
           {quizData.questions.map((q, index) => (
             <QuizQuestion key={index} question={q.question} index={index}>
               {q.type === 'multiple-choice' && (
@@ -138,6 +255,7 @@ const QuizGenerator = () => {
                   userAnswer={userAnswers[index]}
                   correctAnswer={submitted ? q.correctAnswer : null}
                   isDisabled={submitted}
+                  questionIndex={index} // Pass the questionIndex to ensure unique name attribute
                 />
               )}
               {q.type === 'true-false' && (
@@ -146,6 +264,7 @@ const QuizGenerator = () => {
                   userAnswer={userAnswers[index]}
                   correctAnswer={submitted ? q.correctAnswer : null}
                   isDisabled={submitted}
+                  questionIndex={index} // Pass the questionIndex to ensure unique name attribute
                 />
               )}
               {q.type === 'fill-in-the-blank' && (
@@ -177,22 +296,23 @@ const QuizGenerator = () => {
           {!submitted && (
             <button
               onClick={handleQuizSubmit}
-              className="mt-6 w-full bg-[#005c69] hover:bg-[#00404d] text-white font-bold py-3 px-4 rounded-md transition duration-300 ease-in-out transform hover:scale-105"
+              className="submit-button"
             >
               Submit Quiz
             </button>
           )}
-          {submitted && (
-            <div className="mt-6 text-center">
-              <h3 className="text-2xl font-bold text-[#005c69]">Your Score: {score} / {quizData.questions.length}</h3>
-              <button
-                onClick={handleSubmit}
-                className="mt-4 bg-[#005c69] hover:bg-[#00404d] text-white font-bold py-2 px-4 rounded-md transition duration-300 ease-in-out transform hover:scale-105"
-              >
-                Generate New Quiz
-              </button>
-            </div>
-          )}
+          <div className="export-section">
+            <select onChange={handleExportChange} value={exportWithAnswers}>
+              <option value="questions">Export Questions Only</option>
+              <option value="answers">Export Questions with Answers</option>
+            </select>
+            <button
+              onClick={exportToPDF}
+              className="export-button"
+            >
+              Export to PDF
+            </button>
+          </div>
         </div>
       )}
     </div>
