@@ -71,7 +71,7 @@
 
 .matching-grid {
   display: grid;
-  grid-template-columns: 3fr 2fr; /* Adjust the columns to be equal */
+  grid-template-columns: 1fr 1fr; /* Adjust the columns to be equal */
   gap: 1rem;
 }
 

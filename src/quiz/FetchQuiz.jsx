@@ -3,13 +3,14 @@ import { useParams } from 'react-router-dom';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../config/firebase-config';
 import { QuizQuestion, MultipleChoice, TrueFalse, FillInTheBlank, Matching, Explanation } from './QuizComponents';
-import './FetchQuiz.css'; // Import the CSS file
+import './FetchQuiz.css'; // Use the same CSS file as QuizGenerator for consistent styling
 
 const FetchQuiz = () => {
   const { quizId } = useParams();
   const [quizData, setQuizData] = useState(null);
   const [userAnswers, setUserAnswers] = useState({});
   const [submitted, setSubmitted] = useState(false);
+  const [score, setScore] = useState(0);
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -46,7 +47,26 @@ const FetchQuiz = () => {
     setUserAnswers((prev) => ({ ...prev, [questionIndex]: answer }));
   };
 
-  const handleSubmit = () => {
+  const handleQuizSubmit = () => {
+    let newScore = 0;
+    quizData.questions.forEach((question, index) => {
+      if (question.type === 'matching') {
+        if (JSON.stringify(userAnswers[index]) === JSON.stringify(question.correctMatches)) {
+          newScore++;
+        }
+      } else if (question.type === 'fill-in-the-blank') {
+        if (userAnswers[index]?.trim().toLowerCase() === question.correctAnswer.trim().toLowerCase()) {
+          newScore++;
+        }
+      } else if (question.type === 'true-false') {
+        if (userAnswers[index] === (question.correctAnswer ? 0 : 1)) {
+          newScore++;
+        }
+      } else if (userAnswers[index] === question.correctAnswer) {
+        newScore++;
+      }
+    });
+    setScore(newScore);
     setSubmitted(true);
   };
 
@@ -73,7 +93,7 @@ const FetchQuiz = () => {
   }
 
   return (
-    <div className="quiz-container">
+    <div className="quiz-generator-container">
       <div className="quiz-content">
         <h2>{quizData.title}</h2>
         {quizData.questions.map((q, index) => (
@@ -124,9 +144,17 @@ const FetchQuiz = () => {
           </QuizQuestion>
         ))}
         {!submitted && (
-          <button onClick={handleSubmit} className="submit-button">
+          <button
+            onClick={handleQuizSubmit}
+            className="submit-button"
+          >
             Submit Quiz
           </button>
+        )}
+        {submitted && (
+          <div className="score-section">
+            <h3>Your Score: {score} / {quizData.questions.length}</h3>
+          </div>
         )}
       </div>
     </div>
