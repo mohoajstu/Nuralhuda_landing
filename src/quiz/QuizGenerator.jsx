@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createThread, createMessage, createRun, titleToAssistantIDMap } from '../chat/openAIUtils';
 import { QuizQuestion, MultipleChoice, TrueFalse, FillInTheBlank, Matching, Explanation } from './QuizComponents';
 import { db } from '../config/firebase-config';
-import { collection, addDoc } from 'firebase/firestore';
+import { collection, addDoc, doc, updateDoc } from 'firebase/firestore';
 import './QuizGenerator.css';
 import jsPDF from 'jspdf';
 
@@ -17,6 +17,16 @@ const QuizGenerator = () => {
   const [responseBuffer, setResponseBuffer] = useState('');
   const [error, setError] = useState('');
   const [exportWithAnswers, setExportWithAnswers] = useState('questions');
+  const [quizLink, setQuizLink] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedQuizData, setEditedQuizData] = useState(null);
+  const [quizDocId, setQuizDocId] = useState(null);
+
+  useEffect(() => {
+    if (quizData) {
+      setEditedQuizData(JSON.parse(JSON.stringify(quizData)));
+    }
+  }, [quizData]);
 
   const handleTextChange = (e) => setText(e.target.value);
   const handleFileChange = (e) => setFile(e.target.files[0]);
@@ -105,15 +115,6 @@ const QuizGenerator = () => {
 
   const handleAnswerChange = (questionIndex, answer) => {
     setUserAnswers((prev) => ({ ...prev, [questionIndex]: answer }));
-  };
-
-  const addNewPageIfNeeded = (doc, y, additionalHeight) => {
-    const pageHeight = 270;
-    if (y + additionalHeight > pageHeight) {
-      doc.addPage();
-      return 10; // Reset y position
-    }
-    return y;
   };
 
   const exportToPDF = () => {
@@ -223,30 +224,104 @@ const QuizGenerator = () => {
 
   const saveQuizToFirestore = async (quiz) => {
     try {
-      const stringifiedQuiz = JSON.stringify(quiz); // Stringify the quiz data
+      const stringifiedQuiz = JSON.stringify(quiz);
       const docRef = await addDoc(collection(db, "quizzes"), { data: stringifiedQuiz });
       console.log("Document written with ID: ", docRef.id);
-      const quizLink = `${window.location.origin}/quiz/${docRef.id}`;
-      copyToClipboard(quizLink);
-      alert(`Quiz saved! Link copied to clipboard: ${quizLink}`);
+      setQuizDocId(docRef.id);
+      const newQuizLink = `${window.location.origin}/quiz/${docRef.id}`;
+      setQuizLink(newQuizLink);
     } catch (error) {
       console.error("Error saving quiz: ", error);
       setError('An error occurred while saving the quiz. Please try again.');
     }
   };
 
-  const copyToClipboard = (text) => {
-    navigator.clipboard.writeText(text).then(() => {
-      console.log('Copied to clipboard successfully!');
-    }, (err) => {
-      console.error('Could not copy text: ', err);
+  const copyQuizLinkToClipboard = () => {
+    if (quizLink) {
+      navigator.clipboard.writeText(quizLink).then(() => {
+        alert('Quiz link copied to clipboard!');
+      }, (err) => {
+        console.error('Could not copy text: ', err);
+        alert('Failed to copy quiz link. Please try again.');
+      });
+    } else {
+      alert('No quiz link available. Please generate a quiz first.');
+    }
+  };
+
+  const handleEditToggle = () => {
+    setIsEditing(!isEditing);
+    if (!isEditing) {
+      setEditedQuizData(JSON.parse(JSON.stringify(quizData)));
+    }
+  };
+
+  const handleQuestionEdit = (index, field, value) => {
+    setEditedQuizData(prevData => {
+      const newData = { ...prevData };
+      newData.questions[index][field] = value;
+      return newData;
     });
+  };
+
+  const handleOptionEdit = (questionIndex, optionIndex, value) => {
+    setEditedQuizData(prevData => {
+      const newData = { ...prevData };
+      if (newData.questions[questionIndex].type === 'multiple-choice') {
+        newData.questions[questionIndex].options[optionIndex] = value;
+      } else if (newData.questions[questionIndex].type === 'matching') {
+        if (optionIndex < newData.questions[questionIndex].columnA.length) {
+          newData.questions[questionIndex].columnA[optionIndex] = value;
+        } else {
+          newData.questions[questionIndex].columnB[optionIndex - newData.questions[questionIndex].columnA.length] = value;
+        }
+      }
+      return newData;
+    });
+  };
+
+  const handleCorrectAnswerEdit = (questionIndex, value) => {
+    setEditedQuizData(prevData => {
+      const newData = { ...prevData };
+      if (newData.questions[questionIndex].type === 'multiple-choice') {
+        newData.questions[questionIndex].correctAnswer = parseInt(value);
+      } else if (newData.questions[questionIndex].type === 'true-false') {
+        newData.questions[questionIndex].correctAnswer = value === 'true';
+      } else if (newData.questions[questionIndex].type === 'fill-in-the-blank') {
+        newData.questions[questionIndex].correctAnswer = value;
+      } else if (newData.questions[questionIndex].type === 'matching') {
+        newData.questions[questionIndex].correctMatches = JSON.parse(value);
+      }
+      return newData;
+    });
+  };
+
+
+  const handleSaveEdits = async () => {
+    setQuizData(editedQuizData);
+    setIsEditing(false);
+    try {
+      const stringifiedQuiz = JSON.stringify(editedQuizData);
+      await updateDoc(doc(db, "quizzes", quizDocId), { data: stringifiedQuiz });
+      alert('Quiz updated successfully!');
+    } catch (error) {
+      console.error("Error updating quiz: ", error);
+      setError('An error occurred while updating the quiz. Please try again.');
+    }
   };
 
   return (
     <div className="quiz-generator-container">
       <header className="quiz-generator-header">
         <h1>Islamic Studies Quiz Generator</h1>
+        {quizData && (
+          <button
+            onClick={handleEditToggle}
+            className="edit-button"
+          >
+            {isEditing ? 'Cancel Edit' : 'Edit Quiz'}
+          </button>
+        )}
       </header>
       <div className="input-section">
         <textarea
@@ -268,20 +343,39 @@ const QuizGenerator = () => {
         </button>
         {error && <p className="error-message">{error}</p>}
       </div>
-
       {quizData && (
         <div className="quiz-content">
-          <h2>{quizData.title}</h2>
-          {quizData.questions.map((q, index) => (
-            <QuizQuestion key={index} question={q.question} index={index}>
+          <h2>{isEditing ? (
+            <input
+              type="text"
+              value={editedQuizData.title}
+              onChange={(e) => setEditedQuizData({...editedQuizData, title: e.target.value})}
+              className="edit-input"
+            />
+          ) : quizData.title}</h2>
+          {(isEditing ? editedQuizData : quizData).questions.map((q, index) => (
+            <QuizQuestion
+              key={index}
+              question={isEditing ? (
+                <input
+                  type="text"
+                  value={q.question}
+                  onChange={(e) => handleQuestionEdit(index, 'question', e.target.value)}
+                  className="edit-input"
+                />
+              ) : q.question}
+              index={index}
+            >
               {q.type === 'multiple-choice' && (
                 <MultipleChoice
                   options={q.options}
                   onChange={(answer) => handleAnswerChange(index, answer)}
                   userAnswer={userAnswers[index]}
                   correctAnswer={submitted ? q.correctAnswer : null}
-                  isDisabled={submitted}
-                  questionIndex={index} // Pass the questionIndex to ensure unique name attribute
+                  isDisabled={submitted || isEditing}
+                  questionIndex={index}
+                  isEditing={isEditing}
+                  onOptionEdit={(optionIndex, value) => handleOptionEdit(index, optionIndex, value)}
                 />
               )}
               {q.type === 'true-false' && (
@@ -289,8 +383,8 @@ const QuizGenerator = () => {
                   onChange={(answer) => handleAnswerChange(index, answer)}
                   userAnswer={userAnswers[index]}
                   correctAnswer={submitted ? q.correctAnswer : null}
-                  isDisabled={submitted}
-                  questionIndex={index} // Pass the questionIndex to ensure unique name attribute
+                  isDisabled={submitted || isEditing}
+                  questionIndex={index}
                 />
               )}
               {q.type === 'fill-in-the-blank' && (
@@ -298,7 +392,7 @@ const QuizGenerator = () => {
                   onChange={(answer) => handleAnswerChange(index, answer)}
                   userAnswer={userAnswers[index]}
                   correctAnswer={submitted ? q.correctAnswer : null}
-                  isDisabled={submitted}
+                  isDisabled={submitted || isEditing}
                 />
               )}
               {q.type === 'matching' && (
@@ -308,23 +402,82 @@ const QuizGenerator = () => {
                   onChange={(matches) => handleAnswerChange(index, matches)}
                   userMatches={userAnswers[index]}
                   correctMatches={submitted ? q.correctMatches : null}
-                  isDisabled={submitted}
+                  isDisabled={submitted || isEditing}
+                  isEditing={isEditing}
+                  onOptionEdit={(optionIndex, value) => handleOptionEdit(index, optionIndex, value)}
                 />
               )}
-              {submitted && (
+              {submitted && !isEditing && (
                 <div className={`mt-2 p-2 rounded ${isCorrect(index) ? 'bg-green-100' : 'bg-red-100'}`}>
                   {isCorrect(index) ? 'Correct!' : 'Incorrect'}
                   <Explanation text={q.explanation} />
                 </div>
               )}
+              {isEditing && (
+                <div className="edit-section">
+                  <label>Correct Answer:</label>
+                  {q.type === 'multiple-choice' && (
+                    <select
+                      value={q.correctAnswer}
+                      onChange={(e) => handleCorrectAnswerEdit(index, e.target.value)}
+                      className="edit-input"
+                    >
+                      {q.options.map((_, i) => (
+                        <option key={i} value={i}>{i + 1}</option>
+                      ))}
+                    </select>
+                  )}
+                  {q.type === 'true-false' && (
+                    <select
+                      value={q.correctAnswer.toString()}
+                      onChange={(e) => handleCorrectAnswerEdit(index, e.target.value)}
+                      className="edit-input"
+                    >
+                      <option value="true">True</option>
+                      <option value="false">False</option>
+                    </select>
+                  )}
+                  {q.type === 'fill-in-the-blank' && (
+                    <input
+                      type="text"
+                      value={q.correctAnswer}
+                      onChange={(e) => handleCorrectAnswerEdit(index, e.target.value)}
+                      className="edit-input"
+                    />
+                  )}
+                  {q.type === 'matching' && (
+                    <textarea
+                      value={JSON.stringify(q.correctMatches)}
+                      onChange={(e) => handleCorrectAnswerEdit(index, e.target.value)}
+                      className="edit-input"
+                      rows={3}
+                    />
+                  )}
+                  <label>Explanation:</label>
+                  <textarea
+                    value={q.explanation}
+                    onChange={(e) => handleQuestionEdit(index, 'explanation', e.target.value)}
+                    className="edit-input"
+                    rows={3}
+                  />
+                </div>
+              )}
             </QuizQuestion>
           ))}
-          {!submitted && (
+          {!submitted && !isEditing && (
             <button
               onClick={handleQuizSubmit}
               className="submit-button"
             >
               Submit Quiz
+            </button>
+          )}
+          {isEditing && (
+            <button
+              onClick={handleSaveEdits}
+              className="save-button"
+            >
+              Save Changes
             </button>
           )}
           <div className="export-section">
@@ -337,6 +490,12 @@ const QuizGenerator = () => {
               className="export-button"
             >
               Export to PDF
+            </button>
+            <button
+              onClick={copyQuizLinkToClipboard}
+              className="export-button"
+            >
+              Export Quiz Link
             </button>
           </div>
         </div>
