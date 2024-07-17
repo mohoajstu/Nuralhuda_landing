@@ -1,0 +1,126 @@
+/* Container for the entire quiz generator page */
+.quiz-generator-container {
+  padding-top: 100px; /* Ensures enough space for the navbar */
+  background-color: #e6d9b8;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Header for the quiz generator */
+.quiz-generator-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #005c69;
+}
+
+.quiz-generator-header h1 {
+  font-size: 3rem;
+  font-weight: bold;
+}
+
+/* Container for the input section */
+.input-section {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+  margin-bottom: 2rem;
+  width: 100%;
+  max-width: 800px;
+}
+
+.input-section textarea,
+.input-section input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+
+.input-section button {
+  width: 100%;
+  background-color: #005c69;
+  color: white;
+  font-weight: bold;
+  padding: 0.75rem;
+  border-radius: 0.375rem;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  cursor: pointer;
+}
+
+.input-section button:hover {
+  background-color: #00404d;
+  transform: scale(1.05);
+}
+
+.error-message {
+  color: red;
+  margin-top: 1rem;
+}
+
+/* Container for the quiz content */
+.quiz-content {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+  width: 100%;
+  max-width: 800px;
+}
+
+.quiz-content h2 {
+  text-align: center;
+  color: #005c69;
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+}
+
+.submit-button, .export-button {
+  width: 100%;
+  background-color: #005c69;
+  color: white;
+  font-weight: bold;
+  padding: 0.75rem;
+  border-radius: 0.375rem;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  cursor: pointer;
+  margin-top: 2rem;
+}
+
+.submit-button:hover, .export-button:hover {
+  background-color: #00404d;
+  transform: scale(1.05);
+}
+
+.score-section {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.score-section h3 {
+  font-size: 2rem;
+  color: #005c69;
+}
+
+.score-section button {
+  margin-top: 1rem;
+}
+
+/* Export section styles */
+.export-section {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.export-section select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}

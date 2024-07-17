@@ -15,6 +15,11 @@ import Contact from './pricing/ContactForm';
 import AccountSetup from './pricing/AccountSetup';
 import PaymentSuccess from './pricing/PaymentSuccess';
 import FAQ from './home/FAQ'; // Import FAQ component
+import QuizGenerator from './quiz/QuizGenerator';
+import FetchQuiz from './quiz/FetchQuiz'; // Import the component to fetch and display the quiz
+
+
+import './App.css';
 
 export const scroll = new SmoothScroll('a[href*="#"]', {
   speed: 1000,
@@ -27,7 +32,7 @@ const App = () => {
   const [landingPageData, setLandingPageData] = useState(null);
 
   useEffect(() => {
-    setLandingPageData(JsonData); 
+    setLandingPageData(JsonData);
   }, []);
 
   useEffect(() => {
@@ -45,7 +50,7 @@ const App = () => {
 
   return (
     <div className="App">
- {(location.pathname === '/' || location.pathname === '/login' || location.pathname === '/pricing' || location.pathname === '/payment-success' || location.pathname === '/contact-form') && <Navigation />}
+ {(location.pathname === '/' || location.pathname === '/login' || location.pathname === '/pricing' || location.pathname === '/payment-success' || location.pathname === '/contact-form' || location.pathname === '/quiz-generator') && <Navigation />}
 
       <Routes>
         <Route path="/" element={landingPageData ? <Home data={landingPageData} /> : <div>Loading...</div>} />
@@ -56,6 +61,8 @@ const App = () => {
         <Route path="/payment-success" element={<PaymentSuccess />} />
         <Route path="/chat/:chatbotType" element={<ChatScreen />} />
         <Route path="/faq" element={<FAQ />} /> {/* Add FAQ route */}
+        <Route path="/quiz-generator" element={<QuizGenerator />} />
+        <Route path="/quiz/:quizId" element={<FetchQuiz />} /> {/* Add this route */}
         <Route path="*" element={<div>404 Not Found</div>} />
       </Routes>
     </div>
