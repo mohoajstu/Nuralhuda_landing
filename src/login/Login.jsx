@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { signInWithEmailAndPassword, signOut, sendPasswordResetEmail, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
-import { getFirestore, doc, setDoc } from 'firebase/firestore';
-import { auth } from '../config/firebase-config';
+import { getFirestore, doc, setDoc, getDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 import googleLogo from '../img/Google-Icon.png'; // Make sure you have a Google logo image
+import { auth } from '../config/firebase-config'; // Ensure path accuracy
+
+const provider = new GoogleAuthProvider();
 
 const db = getFirestore();
-const provider = new GoogleAuthProvider();
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -94,10 +95,17 @@ const Login = () => {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
 
-            await setDoc(doc(db, 'users', user.uid), {
-                email: email,
-                paymentStatus: 'unpaid',
-            });
+            const userDocRef = doc(db, 'users', user.uid);
+            const userDoc = await getDoc(userDocRef);
+
+            if (!userDoc.exists()) {
+                await setDoc(userDocRef, {
+                    email: email,
+                    paymentStatus: 'unpaid',
+                    account: '',
+                    lastResetDate: new Date(),
+                });
+            }
 
             sessionStorage.setItem('accountSetupComplete', 'true');
             sessionStorage.setItem('userEmail', email);
@@ -111,12 +119,21 @@ const Login = () => {
     const handleGoogleLogin = async () => {
         try {
             const result = await signInWithPopup(auth, provider);
+            const credential = GoogleAuthProvider.credentialFromResult(result);
+            const token = credential.accessToken;
             const user = result.user;
 
-            await setDoc(doc(db, 'users', user.uid), {
-                email: user.email,
-                paymentStatus: 'unpaid',
-            });
+            const userDocRef = doc(db, 'users', user.uid);
+            const userDoc = await getDoc(userDocRef);
+
+            if (!userDoc.exists()) {
+                await setDoc(userDocRef, {
+                    email: user.email,
+                    paymentStatus: 'unpaid',
+                    account: '',
+                    lastResetDate: new Date(),
+                });
+            }
 
             navigate('/');
         } catch (error) {
