@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../config/firebase-config';
-import { QuizQuestion, MultipleChoice, TrueFalse, FillInTheBlank, Matching, Explanation } from './QuizComponents';
-import './FetchQuiz.css'; // Use the same CSS file as QuizGenerator for consistent styling
+import { QuizQuestion, MultipleChoice, TrueFalse, FillInTheBlank, Matching, Explanation, ShortAnswer } from './QuizComponents';
+import './FetchQuiz.css';
 
 const FetchQuiz = () => {
   const { quizId } = useParams();
@@ -15,7 +15,7 @@ const FetchQuiz = () => {
 
   useEffect(() => {
     const fetchQuiz = async () => {
-      console.log("Quiz ID from URL:", quizId); // Log the quiz ID to confirm it's being read
+      console.log("Quiz ID from URL:", quizId);
       if (!quizId) {
         console.error('Quiz ID is not defined');
         setError('Quiz ID is not defined');
@@ -27,7 +27,7 @@ const FetchQuiz = () => {
         if (quizDoc.exists()) {
           const retrievedData = quizDoc.data();
           console.log('Retrieved data:', retrievedData);
-          const parsedData = JSON.parse(retrievedData.data); // Parse the stringified JSON data
+          const parsedData = JSON.parse(retrievedData.data);
           console.log('Parsed data:', parsedData);
           setQuizData(parsedData);
         } else {
@@ -55,13 +55,15 @@ const FetchQuiz = () => {
           newScore++;
         }
       } else if (question.type === 'fill-in-the-blank') {
-        if (userAnswers[index]?.trim().toLowerCase() === question.correctAnswer.trim().toLowerCase()) {
+        if (userAnswers[index]?.trim().toLowerCase() === question.explanation.trim().toLowerCase()) {
           newScore++;
         }
       } else if (question.type === 'true-false') {
         if (userAnswers[index] === (question.correctAnswer ? 0 : 1)) {
           newScore++;
         }
+      } else if (question.type === 'short-answer') {
+        newScore += 0; // Short answers are manually graded
       } else if (userAnswers[index] === question.correctAnswer) {
         newScore++;
       }
@@ -76,7 +78,7 @@ const FetchQuiz = () => {
       return JSON.stringify(userAnswers[questionIndex]) === JSON.stringify(question.correctMatches);
     }
     if (question.type === 'fill-in-the-blank') {
-      return userAnswers[questionIndex]?.trim().toLowerCase() === question.correctAnswer.trim().toLowerCase();
+      return userAnswers[questionIndex]?.trim().toLowerCase() === question.explanation.trim().toLowerCase();
     }
     if (question.type === 'true-false') {
       return userAnswers[questionIndex] === (question.correctAnswer ? 0 : 1);
@@ -105,7 +107,7 @@ const FetchQuiz = () => {
                 userAnswer={userAnswers[index]}
                 correctAnswer={submitted ? q.correctAnswer : null}
                 isDisabled={submitted}
-                questionIndex={index} // Pass the questionIndex to ensure unique name attribute
+                questionIndex={index}
               />
             )}
             {q.type === 'true-false' && (
@@ -114,7 +116,7 @@ const FetchQuiz = () => {
                 userAnswer={userAnswers[index]}
                 correctAnswer={submitted ? q.correctAnswer : null}
                 isDisabled={submitted}
-                questionIndex={index} // Pass the questionIndex to ensure unique name attribute
+                questionIndex={index}
               />
             )}
             {q.type === 'fill-in-the-blank' && (
@@ -135,7 +137,16 @@ const FetchQuiz = () => {
                 isDisabled={submitted}
               />
             )}
-            {submitted && (
+            {q.type === 'short-answer' && (
+              <ShortAnswer
+                onChange={(answer) => handleAnswerChange(index, answer)}
+                userAnswer={userAnswers[index]}
+                isDisabled={submitted}
+                teacherFeedback={q.teacherFeedback}
+                submitted={submitted}
+              />
+            )}
+            {submitted && q.type !== 'short-answer' && (
               <div className={`mt-2 p-2 rounded ${isCorrect(index) ? 'bg-green-100' : 'bg-red-100'}`}>
                 {isCorrect(index) ? 'Correct!' : 'Incorrect'}
                 <Explanation text={q.explanation} />

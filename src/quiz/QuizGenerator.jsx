@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createThread, createMessage, createRun, titleToAssistantIDMap } from '../chat/openAIUtils';
-import { QuizQuestion, MultipleChoice, TrueFalse, FillInTheBlank, Matching, Explanation } from './QuizComponents';
+import { QuizQuestion, MultipleChoice, TrueFalse, FillInTheBlank, Matching, Explanation, ShortAnswer } from './QuizComponents';
 import { db } from '../config/firebase-config';
 import { collection, addDoc, doc, updateDoc } from 'firebase/firestore';
 import './QuizGenerator.css';
@@ -36,7 +36,7 @@ const QuizGenerator = () => {
     setIsLoading(true);
     setError('');
     const assistantTitle = 'Quiz Generator';
-    setResponseBuffer(''); // Reset the response buffer
+    setResponseBuffer('');
     try {
       const thread = await createThread(assistantTitle);
       const messageContent = text || (file && await file.text());
@@ -53,19 +53,25 @@ const QuizGenerator = () => {
     setResponseBuffer((prevAccumulated) => {
       if (message.text === 'END_TOKEN') {
         setIsLoading(false);
-        console.log("Accumulated response buffer:", prevAccumulated); // Log the accumulated response
+        console.log("Accumulated response buffer:", prevAccumulated);
         try {
           const response = JSON.parse(prevAccumulated);
+          // Map correctAnswer to explanation
+          response.questions.forEach((question) => {
+            if (question.type === 'short-answer') {
+              question.explanation = question.correctAnswer;
+              delete question.correctAnswer;
+            }
+          });
           setQuizData(response);
-          saveQuizToFirestore(response); // Save the quiz to Firestore
+          saveQuizToFirestore(response);
         } catch (error) {
           console.error("Error parsing response:", error);
           setError('An error occurred while parsing the quiz data. Please try again.');
         }
         return '';
       } else {
-        const newAccumulated = prevAccumulated + message.text;
-        return newAccumulated;
+        return prevAccumulated + message.text;
       }
     });
   };
@@ -84,13 +90,15 @@ const QuizGenerator = () => {
           newScore++;
         }
       } else if (question.type === 'fill-in-the-blank') {
-        if (userAnswers[index]?.trim().toLowerCase() === question.correctAnswer.trim().toLowerCase()) {
+        if (userAnswers[index]?.trim().toLowerCase() === question.explanation.trim().toLowerCase()) {
           newScore++;
         }
       } else if (question.type === 'true-false') {
         if (userAnswers[index] === (question.correctAnswer ? 0 : 1)) {
           newScore++;
         }
+      } else if (question.type === 'short-answer') {
+        newScore += 0; // Short answers are manually graded
       } else if (userAnswers[index] === question.correctAnswer) {
         newScore++;
       }
@@ -105,7 +113,7 @@ const QuizGenerator = () => {
       return JSON.stringify(userAnswers[questionIndex]) === JSON.stringify(question.correctMatches);
     }
     if (question.type === 'fill-in-the-blank') {
-      return userAnswers[questionIndex]?.trim().toLowerCase() === question.correctAnswer.trim().toLowerCase();
+      return userAnswers[questionIndex]?.trim().toLowerCase() === question.explanation.trim().toLowerCase();
     }
     if (question.type === 'true-false') {
       return userAnswers[questionIndex] === (question.correctAnswer ? 0 : 1);
@@ -144,18 +152,18 @@ const QuizGenerator = () => {
     };
 
     const calculateQuestionHeight = (question, index) => {
-      let height = lineHeight * 2; // Question text + extra space
+      let height = lineHeight * 2;
       if (question.type === 'multiple-choice') {
         height += question.options.length * lineHeight;
       } else if (question.type === 'true-false') {
-        height += 2 * lineHeight; // True and False options
+        height += 2 * lineHeight;
       } else if (question.type === 'fill-in-the-blank') {
-        height += lineHeight; // Answer line
+        height += lineHeight;
       } else if (question.type === 'matching') {
-        height += (question.columnA.length + 1) * lineHeight * 1.5; // +1 for the instruction line, 1.5 for extra spacing
+        height += (question.columnA.length + 1) * lineHeight * 1.5;
       }
       if (exportWithAnswers === 'answers') {
-        height += 3 * lineHeight; // Correct answer and explanation
+        height += 3 * lineHeight;
       }
       return height + questionSpacing;
     };
@@ -163,8 +171,8 @@ const QuizGenerator = () => {
     const writeQuestion = (question, index) => {
       const startY = y;
       y += writeText(`Question ${index + 1}: ${question.question || 'Matching:'}`, margin, contentWidth);
-      y += lineHeight; // Add extra space after question text
-      
+      y += lineHeight;
+
       if (question.type === 'multiple-choice') {
         question.options.forEach((option, i) => {
           y += writeText(`${i + 1}. ${option}`, margin + 5, contentWidth - 5);
@@ -176,7 +184,7 @@ const QuizGenerator = () => {
         y += writeText('Answer: __________', margin + 5, contentWidth - 5);
       } else if (question.type === 'matching') {
         y += writeText('Match the following options:', margin, contentWidth);
-        y += lineHeight; // Add extra space after instruction
+        y += lineHeight;
         const columnAWidth = contentWidth * 0.45;
         const columnBWidth = contentWidth * 0.45;
         const columnSpacing = contentWidth * 0.1;
@@ -184,12 +192,12 @@ const QuizGenerator = () => {
           const lineY = y;
           writeText(item, margin, columnAWidth);
           writeText(question.columnB[i], margin + columnAWidth + columnSpacing, columnBWidth);
-          y = lineY + lineHeight * 1.5; // Increase spacing between matching items
+          y = lineY + lineHeight * 1.5;
         });
       }
 
       if (exportWithAnswers === 'answers') {
-        y += lineHeight * 1.5; // Add more space before answers
+        y += lineHeight * 1.5;
         if (question.type === 'matching') {
           y += writeText('Correct Matches:', margin, contentWidth);
           question.columnA.forEach((item, i) => {
@@ -199,6 +207,7 @@ const QuizGenerator = () => {
           y += writeText(`Correct Answer: ${
             question.type === 'true-false' ? (question.correctAnswer ? 'True' : 'False') :
             question.type === 'multiple-choice' ? question.options[question.correctAnswer] :
+            question.type === 'short-answer' ? question.explanation :
             question.correctAnswer
           }`, margin, contentWidth);
         }
@@ -259,7 +268,15 @@ const QuizGenerator = () => {
   const handleQuestionEdit = (index, field, value) => {
     setEditedQuizData(prevData => {
       const newData = { ...prevData };
-      newData.questions[index][field] = value;
+      if (field === 'type' && value === 'short-answer') {
+        newData.questions[index] = {
+          ...newData.questions[index],
+          type: 'short-answer',
+          teacherFeedback: ''
+        };
+      } else {
+        newData.questions[index][field] = value;
+      }
       return newData;
     });
   };
@@ -291,11 +308,20 @@ const QuizGenerator = () => {
         newData.questions[questionIndex].correctAnswer = value;
       } else if (newData.questions[questionIndex].type === 'matching') {
         newData.questions[questionIndex].correctMatches = JSON.parse(value);
+      } else if (newData.questions[questionIndex].type === 'short-answer') {
+        newData.questions[questionIndex].explanation = value;
       }
       return newData;
     });
   };
 
+  const handleTeacherFeedback = (questionIndex, feedback) => {
+    setEditedQuizData(prevData => {
+      const newData = { ...prevData };
+      newData.questions[questionIndex].teacherFeedback = feedback;
+      return newData;
+    });
+  };
 
   const handleSaveEdits = async () => {
     setQuizData(editedQuizData);
@@ -407,7 +433,16 @@ const QuizGenerator = () => {
                   onOptionEdit={(optionIndex, value) => handleOptionEdit(index, optionIndex, value)}
                 />
               )}
-              {submitted && !isEditing && (
+              {q.type === 'short-answer' && (
+                <ShortAnswer
+                  onChange={(answer) => handleAnswerChange(index, answer)}
+                  userAnswer={userAnswers[index]}
+                  isDisabled={submitted}
+                  teacherFeedback={q.teacherFeedback}
+                  submitted={submitted}
+                />
+              )}
+              {submitted && !isEditing && q.type !== 'short-answer' && (
                 <div className={`mt-2 p-2 rounded ${isCorrect(index) ? 'bg-green-100' : 'bg-red-100'}`}>
                   {isCorrect(index) ? 'Correct!' : 'Incorrect'}
                   <Explanation text={q.explanation} />
@@ -452,6 +487,18 @@ const QuizGenerator = () => {
                       className="edit-input"
                       rows={3}
                     />
+                  )}
+                  {q.type === 'short-answer' && (
+                    <div>
+                      <label>Teacher Feedback:</label>
+                      <textarea
+                        value={q.teacherFeedback}
+                        onChange={(e) => handleTeacherFeedback(index, e.target.value)}
+                        className="edit-input"
+                        rows={3}
+                        placeholder="Enter feedback for student's answer"
+                      />
+                    </div>
                   )}
                   <label>Explanation:</label>
                   <textarea
