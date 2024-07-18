@@ -48,6 +48,18 @@ const FetchQuiz = () => {
   };
 
   const handleQuizSubmit = () => {
+    const unansweredQuestions = quizData.questions.some((question, index) => {
+      if (question.type === 'matching') {
+        return !userAnswers[index] || userAnswers[index].length === 0;
+      }
+      return userAnswers[index] === undefined || userAnswers[index] === '';
+    });
+
+    if (unansweredQuestions) {
+      alert('Please answer all questions before submitting.');
+      return;
+    }
+
     let newScore = 0;
     quizData.questions.forEach((question, index) => {
       if (question.type === 'matching') {
@@ -55,7 +67,7 @@ const FetchQuiz = () => {
           newScore++;
         }
       } else if (question.type === 'fill-in-the-blank') {
-        if (userAnswers[index]?.trim().toLowerCase() === question.explanation.trim().toLowerCase()) {
+        if (userAnswers[index]?.trim().toLowerCase() === question.correctAnswer.trim().toLowerCase()) {
           newScore++;
         }
       } else if (question.type === 'true-false') {
@@ -78,7 +90,7 @@ const FetchQuiz = () => {
       return JSON.stringify(userAnswers[questionIndex]) === JSON.stringify(question.correctMatches);
     }
     if (question.type === 'fill-in-the-blank') {
-      return userAnswers[questionIndex]?.trim().toLowerCase() === question.explanation.trim().toLowerCase();
+      return userAnswers[questionIndex]?.trim().toLowerCase() === question.correctAnswer.trim().toLowerCase();
     }
     if (question.type === 'true-false') {
       return userAnswers[questionIndex] === (question.correctAnswer ? 0 : 1);
@@ -142,7 +154,8 @@ const FetchQuiz = () => {
                 onChange={(answer) => handleAnswerChange(index, answer)}
                 userAnswer={userAnswers[index]}
                 isDisabled={submitted}
-                teacherFeedback={q.teacherFeedback}
+                correctAnswer={q.correctAnswer}
+                explanation={q.explanation}
                 submitted={submitted}
               />
             )}
@@ -165,6 +178,7 @@ const FetchQuiz = () => {
         {submitted && (
           <div className="score-section">
             <h3>Your Score: {score} / {quizData.questions.length}</h3>
+            <h3>Note: Short answer questions will be manually graded.</h3>
           </div>
         )}
       </div>

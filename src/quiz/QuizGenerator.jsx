@@ -56,13 +56,6 @@ const QuizGenerator = () => {
         console.log("Accumulated response buffer:", prevAccumulated);
         try {
           const response = JSON.parse(prevAccumulated);
-          // Map correctAnswer to explanation
-          response.questions.forEach((question) => {
-            if (question.type === 'short-answer') {
-              question.explanation = question.correctAnswer;
-              delete question.correctAnswer;
-            }
-          });
           setQuizData(response);
           saveQuizToFirestore(response);
         } catch (error) {
@@ -82,7 +75,37 @@ const QuizGenerator = () => {
     setIsLoading(false);
   };
 
+  const saveQuizToFirestore = async (quiz) => {
+    try {
+      const stringifiedQuiz = JSON.stringify(quiz);
+      const docRef = await addDoc(collection(db, "quizzes"), { data: stringifiedQuiz });
+      console.log("Document written with ID: ", docRef.id);
+      setQuizDocId(docRef.id);
+      const newQuizLink = `${window.location.origin}/quiz/${docRef.id}`;
+      setQuizLink(newQuizLink);
+    } catch (error) {
+      console.error("Error saving quiz: ", error);
+      setError('An error occurred while saving the quiz. Please try again.');
+    }
+  };
+
+  const handleAnswerChange = (questionIndex, answer) => {
+    setUserAnswers((prev) => ({ ...prev, [questionIndex]: answer }));
+  };
+
   const handleQuizSubmit = () => {
+    const unansweredQuestions = quizData.questions.some((question, index) => {
+      if (question.type === 'matching') {
+        return !userAnswers[index] || userAnswers[index].length === 0;
+      }
+      return userAnswers[index] === undefined || userAnswers[index] === '';
+    });
+
+    if (unansweredQuestions) {
+      alert('Please answer all questions before submitting.');
+      return;
+    }
+
     let newScore = 0;
     quizData.questions.forEach((question, index) => {
       if (question.type === 'matching') {
@@ -90,7 +113,7 @@ const QuizGenerator = () => {
           newScore++;
         }
       } else if (question.type === 'fill-in-the-blank') {
-        if (userAnswers[index]?.trim().toLowerCase() === question.explanation.trim().toLowerCase()) {
+        if (userAnswers[index]?.trim().toLowerCase() === question.correctAnswer.trim().toLowerCase()) {
           newScore++;
         }
       } else if (question.type === 'true-false') {
@@ -113,16 +136,12 @@ const QuizGenerator = () => {
       return JSON.stringify(userAnswers[questionIndex]) === JSON.stringify(question.correctMatches);
     }
     if (question.type === 'fill-in-the-blank') {
-      return userAnswers[questionIndex]?.trim().toLowerCase() === question.explanation.trim().toLowerCase();
+      return userAnswers[questionIndex]?.trim().toLowerCase() === question.correctAnswer.trim().toLowerCase();
     }
     if (question.type === 'true-false') {
       return userAnswers[questionIndex] === (question.correctAnswer ? 0 : 1);
     }
     return userAnswers[questionIndex] === question.correctAnswer;
-  };
-
-  const handleAnswerChange = (questionIndex, answer) => {
-    setUserAnswers((prev) => ({ ...prev, [questionIndex]: answer }));
   };
 
   const exportToPDF = () => {
@@ -207,7 +226,6 @@ const QuizGenerator = () => {
           y += writeText(`Correct Answer: ${
             question.type === 'true-false' ? (question.correctAnswer ? 'True' : 'False') :
             question.type === 'multiple-choice' ? question.options[question.correctAnswer] :
-            question.type === 'short-answer' ? question.explanation :
             question.correctAnswer
           }`, margin, contentWidth);
         }
@@ -229,20 +247,6 @@ const QuizGenerator = () => {
     });
 
     doc.save(fileName);
-  };
-
-  const saveQuizToFirestore = async (quiz) => {
-    try {
-      const stringifiedQuiz = JSON.stringify(quiz);
-      const docRef = await addDoc(collection(db, "quizzes"), { data: stringifiedQuiz });
-      console.log("Document written with ID: ", docRef.id);
-      setQuizDocId(docRef.id);
-      const newQuizLink = `${window.location.origin}/quiz/${docRef.id}`;
-      setQuizLink(newQuizLink);
-    } catch (error) {
-      console.error("Error saving quiz: ", error);
-      setError('An error occurred while saving the quiz. Please try again.');
-    }
   };
 
   const copyQuizLinkToClipboard = () => {
@@ -272,7 +276,8 @@ const QuizGenerator = () => {
         newData.questions[index] = {
           ...newData.questions[index],
           type: 'short-answer',
-          teacherFeedback: ''
+          correctAnswer: '',
+          explanation: ''
         };
       } else {
         newData.questions[index][field] = value;
@@ -309,16 +314,18 @@ const QuizGenerator = () => {
       } else if (newData.questions[questionIndex].type === 'matching') {
         newData.questions[questionIndex].correctMatches = JSON.parse(value);
       } else if (newData.questions[questionIndex].type === 'short-answer') {
-        newData.questions[questionIndex].explanation = value;
+        newData.questions[questionIndex].correctAnswer = value; // Correct answer for short-answer
       }
       return newData;
     });
   };
 
-  const handleTeacherFeedback = (questionIndex, feedback) => {
+  const handleExplanationEdit = (questionIndex, value) => {
     setEditedQuizData(prevData => {
       const newData = { ...prevData };
-      newData.questions[questionIndex].teacherFeedback = feedback;
+      if (newData.questions[questionIndex].type === 'short-answer') {
+        newData.questions[questionIndex].explanation = value; // Explanation for short-answer
+      }
       return newData;
     });
   };
@@ -438,11 +445,12 @@ const QuizGenerator = () => {
                   onChange={(answer) => handleAnswerChange(index, answer)}
                   userAnswer={userAnswers[index]}
                   isDisabled={submitted}
-                  teacherFeedback={q.teacherFeedback}
+                  correctAnswer={q.correctAnswer}
+                  explanation={q.explanation}
                   submitted={submitted}
                 />
               )}
-              {submitted && !isEditing && q.type !== 'short-answer' && (
+              {submitted && q.type !== 'short-answer' && (
                 <div className={`mt-2 p-2 rounded ${isCorrect(index) ? 'bg-green-100' : 'bg-red-100'}`}>
                   {isCorrect(index) ? 'Correct!' : 'Incorrect'}
                   <Explanation text={q.explanation} />
@@ -490,23 +498,23 @@ const QuizGenerator = () => {
                   )}
                   {q.type === 'short-answer' && (
                     <div>
-                      <label>Teacher Feedback:</label>
+                      <label>Correct Answer:</label>
+                      <input
+                        type="text"
+                        value={q.correctAnswer}
+                        onChange={(e) => handleCorrectAnswerEdit(index, e.target.value)}
+                        className="edit-input"
+                      />
+                      <label>Explanation:</label>
                       <textarea
-                        value={q.teacherFeedback}
-                        onChange={(e) => handleTeacherFeedback(index, e.target.value)}
+                        value={q.explanation}
+                        onChange={(e) => handleExplanationEdit(index, e.target.value)}
                         className="edit-input"
                         rows={3}
-                        placeholder="Enter feedback for student's answer"
+                        placeholder="Enter explanation for the answer"
                       />
                     </div>
                   )}
-                  <label>Explanation:</label>
-                  <textarea
-                    value={q.explanation}
-                    onChange={(e) => handleQuestionEdit(index, 'explanation', e.target.value)}
-                    className="edit-input"
-                    rows={3}
-                  />
                 </div>
               )}
             </QuizQuestion>
@@ -518,6 +526,12 @@ const QuizGenerator = () => {
             >
               Submit Quiz
             </button>
+          )}
+          {submitted && (
+            <div className="score-section">
+              <h3>Your Score: {score} / {quizData.questions.length}</h3>
+              <p>Note: Short answer questions will be manually graded.</p>
+            </div>
           )}
           {isEditing && (
             <button

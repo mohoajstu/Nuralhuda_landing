@@ -122,7 +122,7 @@ export const Explanation = ({ text }) => (
   </div>
 );
 
-export const ShortAnswer = ({ onChange, userAnswer, isDisabled, teacherFeedback, submitted }) => (
+export const ShortAnswer = ({ onChange, userAnswer, isDisabled, correctAnswer, explanation, submitted }) => (
   <div className="short-answer-container">
     <textarea 
       value={userAnswer || ''}
@@ -133,9 +133,11 @@ export const ShortAnswer = ({ onChange, userAnswer, isDisabled, teacherFeedback,
       rows={4}
     />
     {submitted && (
-      <div className="teacher-feedback">
-        <h4>Teacher Feedback:</h4>
-        <p>{teacherFeedback || 'Wait for manual grade'}</p>
+      <div className="correct-answer-feedback">
+        <h4>Correct Answer:</h4>
+        <p>{correctAnswer || 'No correct answer provided'}</p>
+        <h4>Explanation:</h4>
+        <p>{explanation || 'No explanation provided'}</p>
       </div>
     )}
   </div>
