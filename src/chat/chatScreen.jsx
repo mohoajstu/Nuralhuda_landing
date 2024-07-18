@@ -5,7 +5,7 @@ import { RenderMarkdown } from './RenderMarkdown';
 import { SuggestedPrompts, getPromptsForType } from './SuggestedPrompts';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth, db } from '../config/firebase-config';
-import { collection, addDoc, doc, getDoc, setDoc, increment } from 'firebase/firestore';
+import { collection, addDoc, doc, getDoc, setDoc, increment, updateDoc, arrayUnion } from 'firebase/firestore';
 import Modal from './modal';
 
 import nurAlHudaImg from '../img/about-nbg.png';
@@ -275,6 +275,13 @@ const ChatScreen = () => {
         if (threadResponse?.id) {
           setThreadId(threadResponse.id);
           localThreadId = threadResponse.id;
+          // Add the thread ID to the user's Firestore document under the correct assistant/chatbot
+          if (user) {
+            const userRef = doc(db, 'users', user.uid);
+            await updateDoc(userRef, {
+              [`${assistantTitle}.Threads`]: arrayUnion(localThreadId)
+            });
+          }
         } else {
           throw new Error('Thread creation failed: No ID returned');
         }
