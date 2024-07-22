@@ -18,9 +18,6 @@ import FAQ from './home/FAQ'; // Import FAQ component
 import QuizGenerator from './quiz/QuizGenerator';
 import FetchQuiz from './quiz/FetchQuiz'; // Import the component to fetch and display the quiz
 
-
-import './App.css';
-
 export const scroll = new SmoothScroll('a[href*="#"]', {
   speed: 1000,
   speedAsDuration: true,
@@ -50,15 +47,14 @@ const App = () => {
 
   return (
     <div className="App">
- {(location.pathname === '/' || location.pathname === '/login' || location.pathname === '/pricing' || location.pathname === '/payment-success' || location.pathname === '/contact-form' || location.pathname === '/quiz-generator') && <Navigation />}
-
+      {(location.pathname === '/' || location.pathname === '/login' || location.pathname === '/pricing' || location.pathname === '/payment-success' || location.pathname === '/contact-form' || location.pathname === '/quiz-generator') && <Navigation />}
       <Routes>
         <Route path="/" element={landingPageData ? <Home data={landingPageData} /> : <div>Loading...</div>} />
         <Route path="/login" element={<Login />} />
         <Route path="/pricing" element={<Pricing />} />
         <Route path="/account-setup" element={<AccountSetup />} />
-        <Route path="/contact-form" element = {<Contact/>}/>
-        <Route path="/payment-success" element={<PaymentSuccess />} />
+        <Route path="/contact-form" element={<Contact />} />
+        <Route path="/payment-success/:accountToken" element={<PaymentSuccess />} />
         <Route path="/chat/:chatbotType" element={<ChatScreen />} />
         <Route path="/faq" element={<FAQ />} /> {/* Add FAQ route */}
         <Route path="/quiz-generator" element={<QuizGenerator />} />
