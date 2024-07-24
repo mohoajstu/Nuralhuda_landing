@@ -2,8 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { auth } from './config/firebase-config'; // Ensure path accuracy
-import { Navigation } from './home/navigation'; // Adjust according to your structure
+import { auth } from './config/firebase-config';
+import { Navigation } from './home/navigation';
 import Home from './home/Home';
 import Login from './login/Login';
 import ChatScreen from './chat/chatScreen';
@@ -14,9 +14,10 @@ import Pricing from './pricing/Pricing';
 import Contact from './pricing/ContactForm';
 import AccountSetup from './pricing/AccountSetup';
 import PaymentSuccess from './pricing/PaymentSuccess';
-import FAQ from './home/FAQ'; // Import FAQ component
+import FAQ from './home/FAQ';
 import QuizGenerator from './quiz/QuizGenerator';
-import FetchQuiz from './quiz/FetchQuiz'; // Import the component to fetch and display the quiz
+import FetchQuiz from './quiz/FetchQuiz';
+import Threads from './threads/threads'; // Import Threads component
 
 export const scroll = new SmoothScroll('a[href*="#"]', {
   speed: 1000,
@@ -55,10 +56,11 @@ const App = () => {
         <Route path="/account-setup" element={<AccountSetup />} />
         <Route path="/contact-form" element={<Contact />} />
         <Route path="/payment-success/:accountToken" element={<PaymentSuccess />} />
-        <Route path="/chat/:chatbotType" element={<ChatScreen />} />
-        <Route path="/faq" element={<FAQ />} /> {/* Add FAQ route */}
+        <Route path="/chat/:chatbotType/:threadId?" element={<ChatScreen />} /> {/* Update ChatScreen route */}
+        <Route path="/threads" element={<Threads />} /> {/* Add Threads route */}
+        <Route path="/faq" element={<FAQ />} />
         <Route path="/quiz-generator" element={<QuizGenerator />} />
-        <Route path="/quiz/:quizId" element={<FetchQuiz />} /> {/* Add this route */}
+        <Route path="/quiz/:quizId" element={<FetchQuiz />} />
         <Route path="*" element={<div>404 Not Found</div>} />
       </Routes>
     </div>
