@@ -1,5 +1,7 @@
+/* QuizComponents.css */
 .quiz-question {
   margin-bottom: 2rem;
+  padding: 1rem;
 }
 
 .question-title {
@@ -175,4 +177,42 @@
 
 .teacher-feedback p {
   margin: 0;
+}
+
+/* Media queries for responsive design */
+@media (max-width: 768px) {
+
+  .question-title {
+    font-size: 1rem;
+  }
+
+
+  .option-input {
+    margin-right: 0;
+    margin-bottom: 0.5rem;
+  }
+
+
+  .matching-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .matching-description {
+    margin-top: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+
+  .question-title {
+    font-size: 0.875rem;
+  }
+
+  .fill-input {
+    font-size: 0.875rem;
+  }
+
+  .short-answer-input {
+    font-size: 0.875rem;
+  }
 }
