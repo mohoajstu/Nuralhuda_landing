@@ -1,0 +1,31 @@
+.response-box {
+    background: #d1ac76;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 15px;
+    margin-bottom: 10px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.response-box h2 {
+    margin-top: 0;
+    font-size: 16px;
+    color: #333;
+}
+
+.response-content {
+    margin-top: 10px;
+}
+
+.response-item {
+    margin-bottom: 10px;
+}
+
+.response-label {
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+.response-value {
+    color: #144044;
+}

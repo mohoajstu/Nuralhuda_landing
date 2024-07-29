@@ -17,6 +17,9 @@ import PaymentSuccess from './pricing/PaymentSuccess';
 import FAQ from './home/FAQ'; // Import FAQ component
 import QuizGenerator from './quiz/QuizGenerator';
 import FetchQuiz from './quiz/FetchQuiz'; // Import the component to fetch and display the quiz
+import AutograderPage from './AutoGrader/AutGraderPage';
+import Onboarding from './AutoGrader/onboarding';
+
 
 export const scroll = new SmoothScroll('a[href*="#"]', {
   speed: 1000,
@@ -59,6 +62,8 @@ const App = () => {
         <Route path="/faq" element={<FAQ />} /> {/* Add FAQ route */}
         <Route path="/quiz-generator" element={<QuizGenerator />} />
         <Route path="/quiz/:quizId" element={<FetchQuiz />} /> {/* Add this route */}
+        <Route path="/autograder" element={<AutograderPage />} />
+        <Route path="/onboarding" element={<Onboarding />} />
         <Route path="*" element={<div>404 Not Found</div>} />
       </Routes>
     </div>

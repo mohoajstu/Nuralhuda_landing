@@ -1,0 +1,93 @@
+.autograder-page {
+    font-family: Arial, sans-serif;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+}
+
+#description {
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+#description input {
+    font-size: 16px;
+    padding: 5px;
+    margin-left: 5px;
+    margin-right: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.layout-container {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.box {
+    background: #ddbd74;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 20px;
+    margin: 10px;
+    flex: 1;
+    min-width: 250px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.box h2 {
+    margin-top: 0;
+    font-size: 18px;
+}
+
+.upload-details {
+    font-size: 14px;
+    color: #222222;
+}
+
+#uploadButton,
+#generate-button {
+    background-color: #144044;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin: 20px 0;
+    display: block;
+    width: 100%;
+    max-width: 200px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+#uploadButton:disabled,
+#generate-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.response-container {
+    margin-top: 20px;
+}
+
+.response-container p {
+    text-align: center;
+    color: #144044;
+}
+
+.export-button {
+    margin-top: 20px;
+    text-align: center;
+}
