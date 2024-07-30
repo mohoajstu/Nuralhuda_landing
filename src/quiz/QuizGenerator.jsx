@@ -5,6 +5,8 @@ import { db } from '../config/firebase-config';
 import { collection, addDoc, doc, updateDoc } from 'firebase/firestore';
 import './QuizGenerator.css';
 import jsPDF from 'jspdf';
+import mammoth from 'mammoth';
+import { fileTypeFromBuffer } from 'file-type';
 
 const QuizGenerator = () => {
   const [text, setText] = useState('');
@@ -31,7 +33,40 @@ const QuizGenerator = () => {
   const handleTextChange = (e) => setText(e.target.value);
   const handleFileChange = (e) => setFile(e.target.files[0]);
   const handleExportChange = (e) => setExportWithAnswers(e.target.value);
-
+  
+  /*
+  const readPDF = async (file) => {
+    const arrayBuffer = await file.arrayBuffer();
+    const pdfDoc = await PDFDocument.load(arrayBuffer);
+    const pages = pdfDoc.getPages();
+    let text = '';
+    for (const page of pages) {
+      const textContent = await page.getTextContent();
+      text += textContent.items.map((item) => item.str).join(' ');
+    }
+    return text;
+  };
+  */
+  const readDOCX = async (file) => {
+    const arrayBuffer = await file.arrayBuffer();
+    const { value: text } = await mammoth.extractRawText({ arrayBuffer });
+    return text;
+  };
+  
+  const readFileContent = async (file) => {
+    const buffer = await file.arrayBuffer();
+    const type = await fileTypeFromBuffer(buffer);
+  
+    if (type.mime === 'application/pdf') {
+      console.log('Reading PDF file...');
+      //return readPDF(file);
+    } else if (type.mime === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+      return readDOCX(file);
+    } else {
+      return file.text(); // Default to plain text or other text-based formats
+    }
+  };  
+  
   const handleSubmit = async () => {
     setIsLoading(true);
     setError('');
@@ -39,7 +74,12 @@ const QuizGenerator = () => {
     setResponseBuffer('');
     try {
       const thread = await createThread(assistantTitle);
-      const messageContent = text || (file && await file.text());
+      let messageContent = text;
+  
+      if (file) {
+        messageContent = await readFileContent(file);
+      }
+  
       await createMessage(thread.id, messageContent, assistantTitle);
       await createRun(thread.id, titleToAssistantIDMap[assistantTitle], handleMessage, handleError, assistantTitle);
     } catch (error) {
@@ -48,6 +88,7 @@ const QuizGenerator = () => {
       setIsLoading(false);
     }
   };
+  
 
   const handleMessage = (message) => {
     setResponseBuffer((prevAccumulated) => {
