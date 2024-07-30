@@ -3,9 +3,9 @@
     max-width: 800px;
     margin: 0 auto;
     padding: 20px;
-    background-color: #f9f9f9;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: beige;
 }
 
 h1 {
@@ -31,11 +31,12 @@ h1 {
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
+    background-color: beige;
 }
 
 .box {
-    background: #ddbd74;
-    border: 1px solid #ccc;
+    background: #dcca98;
+    border: 3px solid #144044;
     border-radius: 4px;
     padding: 20px;
     margin: 10px;
