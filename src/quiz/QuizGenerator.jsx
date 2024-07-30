@@ -346,7 +346,7 @@ const QuizGenerator = () => {
   return (
     <div className="quiz-generator-container">
       <header className="quiz-generator-header">
-        <h1>Islamic Studies Quiz Generator</h1>
+        <h1>Quiz Generator</h1>
         {quizData && (
           <button
             onClick={handleEditToggle}
