@@ -1,4 +1,3 @@
-// App.jsx
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { useAuthState } from 'react-firebase-hooks/auth';
@@ -44,9 +43,11 @@ const App = () => {
     return <div>Loading...</div>; // Render loading screen while checking auth state
   }
 
+  const showNavigation = ['/','/quran', '/login', '/pricing', '/payment-success'].includes(location.pathname) || /^\/quran\//.test(location.pathname);
+
   return (
     <div className="App">
-      {(location.pathname === '/' || location.pathname === '/quran' || location.pathname === '/login' || location.pathname === '/pricing' || location.pathname === '/payment-success') && <Navigation />} {/* Display Navigation only on Home, Login, Pricing, and Payment Success pages */}
+      {showNavigation && <Navigation />} {/* Display Navigation only on specified pages and /quran/* routes */}
       
       <Routes>
         <Route path="/" element={landingPageData ? <Home data={landingPageData} /> : <div>Loading...</div>} />

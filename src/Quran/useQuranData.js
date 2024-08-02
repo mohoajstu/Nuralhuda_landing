@@ -4,7 +4,7 @@ import surahData from '../data/quran_surah.json';
 import ayahData from '../data/quran_ayah.json';
 
 const useQuranData = () => {
-  const [data, setData] = useState({ juz: [], surahs: {}, ayahs: {} });
+  const [data, setData] = useState({ juz: {}, surahs: {}, ayahs: {} });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
