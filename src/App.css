@@ -117,8 +117,6 @@ hr {
   text-transform: uppercase;
 }
 
-
-
 #menu.navbar-default .navbar-nav > li {
   list-style: none;
   margin: 0 10px;
@@ -187,14 +185,32 @@ hr {
   }
 }
 
-.brand-title {
+.brand-title,
+.brand-subtitle {
   display: block;
+  line-height: 1; /* Ensure there is no extra space between lines */
 }
 
 .brand-subtitle {
-  display: block;
   font-size: 14px;
   color: #144c4c;
+}
+
+.brand-container {
+  display: flex;
+  align-items: center;
+}
+
+.brand-logo {
+  width: 50px; /* Adjust the size as needed */
+  height: auto;
+  margin-right: 10px; /* Space between logo and text */
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 @media (min-width: 768px) {
@@ -2339,4 +2355,97 @@ input[type="button"] {
 
 .modal-button:hover {
   background-color: #113737; /* Darker shade on hover */
+}
+
+.prompt-count-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #E8F0FE;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  font-size: 0.9em;
+  color: #333;
+  margin-top: 10px;
+}
+
+.prompt-count-text {
+  margin: 0;
+  font-weight: bold;
+}
+
+.upgrade-message {
+  background-color: #FFD700;
+  color: #222222;
+  padding: 5px 10px;
+  border-radius: 3px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.upgrade-message:hover {
+  background-color: #FFC107;
+}
+
+
+/* ContactForm.css */
+.contact-form-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(to right, #114040 0%, #144c4c 100%);
+}
+
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 2em;
+  background: #dcca98;
+  border-radius: 5px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  max-width: 600px;
+  width: 100%;
+}
+
+.contact-form h2 {
+  text-align: center;
+  color: #144c4c;
+  position: relative;
+}
+
+.contact-form h2::after {
+  content: "";
+  display: block;
+  width: 100px; 
+  height: 2px; 
+  background-color: #144c4c; 
+  margin: 8px auto 0; 
+}
+
+
+.contact-flex-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.contact-flex-item {
+  flex: 1;
+  margin-right: 10px;
+}
+
+.contact-flex-item:last-child {
+  margin-right: 0;
+}
+
+.textarea-group {
+  margin-bottom: 20px;
+}
+
+.contact-full-width {
+  width: 100%;
+  margin-bottom: 20px;
 }

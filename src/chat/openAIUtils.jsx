@@ -8,13 +8,13 @@ const assistantApiKeyMap = {
   'Iqra With Us': process.env.REACT_APP_OPENAI_API_KEY_IQRA_WITH_US,
   'AI for Islamic Research': process.env.REACT_APP_OPENAI_API_KEY_AI_FOR_ISLAMIC_RESEARCH,
   'Muslim Reference AI': process.env.REACT_APP_OPENAI_API_KEY_MUSLIM_REFERENCE_AI,
-  'PaliGPT': process.env.REACT_APP_OPENAI_API_KEY_PALIGPT
+  'PaliGPT': process.env.REACT_APP_OPENAI_API_KEY_PALIGPT,
+  'Quiz Generator': process.env.REACT_APP_OPENAI_API_KEY_NUR_ALHUDA,
 };
 
 // Function to initialize OpenAI client with the appropriate API key
 function initializeOpenAIClient(assistantTitle) {
   const apiKey = assistantApiKeyMap[assistantTitle] || assistantApiKeyMap.default;
-  console.log(`Initializing OpenAI client for ${assistantTitle} with API key: ${apiKey}`);
   return new OpenAI({
     apiKey: apiKey,
     dangerouslyAllowBrowser: true,
@@ -92,5 +92,6 @@ export const titleToAssistantIDMap = {
   'Islamic Socratic Method': "asst_nUrppuSP9pPPjRPHDD3l13bH",
   'Iqra With Us': "asst_NSjlngEyPNwU1PeAcmZZHC9K",
   'Muslim Reference AI': "asst_gJad0rJeSMH3s4Uo9oTWjE9y",
-  'PaliGPT': "asst_ShMxEdN8gnWONFOVVFv8dKTJ"
+  'PaliGPT': "asst_ShMxEdN8gnWONFOVVFv8dKTJ",
+  'Quiz Generator': "asst_paDb8Yr8jvqDUmFd2q4n1Fbi" 
 };
