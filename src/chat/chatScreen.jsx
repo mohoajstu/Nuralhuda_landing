@@ -7,6 +7,7 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth, db } from '../config/firebase-config';
 import { collection, addDoc, doc, getDoc, setDoc, increment, updateDoc, arrayUnion } from 'firebase/firestore';
 import Modal from './modal';
+import { LocalStorageStrategy, StorageManager } from '../storage';
 
 import nurAlHudaImg from '../img/about-nbg.png';
 import nurAlHudaForKidsImg from '../img/nuralhudaforkids.png';
@@ -38,6 +39,7 @@ const titleToImageMap = {
 const ChatScreen = () => {
   const { chatbotType } = useParams();
   const navigate = useNavigate();
+  const storageManager = new StorageManager(new LocalStorageStrategy());
   const [messages, setMessages] = useState([]);
   const [currentMessage, setCurrentMessage] = useState('');
   const [threadId, setThreadId] = useState(null);
@@ -56,8 +58,8 @@ const ChatScreen = () => {
   const [accumulatedMessage, setAccumulatedMessage] = useState('');
   const [reportFeedbackMessage, setReportFeedbackMessage] = useState('');
   const [reportedMessage, setReportedMessage] = useState('');
-  const [totalPromptCount, setTotalPromptCount] = useState(0);
-  const [lastResetDate, setLastResetDate] = useState(null);
+  const [totalPromptCount, setTotalPromptCount] = useState(storageManager.load('totalPromptCount') || 0);
+  const [lastResetDate, setLastResetDate] = useState(storageManager.load('lastResetDate') || null);
   const [accountType, setAccountType] = useState('');
   const [maxPrompts, setMaxPrompts] = useState(5);
 
@@ -82,21 +84,21 @@ const ChatScreen = () => {
 
   const checkAndResetPromptCount = async (userData) => {
     const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
 
-    const userLastResetDate = userData?.lastResetDate?.toDate() || null;
+    const userLastResetDate = userData?.lastResetDate?.toDate().toISOString() || storageManager.load('lastResetDate') || null;
 
-    if (userLastResetDate && userLastResetDate.toDateString() !== today.toDateString()) {
+    if (userLastResetDate && userLastResetDate !== today) {
       console.log('Resetting prompt count for the new day');
       if (user) {
         await setDoc(doc(db, 'users', user.uid), {
           totalPromptCount: 0,
-          lastResetDate: today
+          lastResetDate: now
         }, { merge: true });
       } else {
         setTotalPromptCount(0);
-        sessionStorage.setItem('totalPromptCount', '0');
-        sessionStorage.setItem('lastResetDate', today.toISOString());
+        storageManager.save('totalPromptCount', 0);
+        storageManager.save('lastResetDate', today);
       }
       setLastResetDate(today);
       setTotalPromptCount(0); // Ensure the local state is updated immediately
@@ -111,7 +113,7 @@ const ChatScreen = () => {
         const userData = userDoc.data();
         console.log('User data:', userData);
         setTotalPromptCount(userData.totalPromptCount || 0);
-        setLastResetDate(userData.lastResetDate ? userData.lastResetDate.toDate() : null);
+        setLastResetDate(userData.lastResetDate ? userData.lastResetDate.toDate().toISOString() : null);
         setAccountType(userData.account || '');
 
         const isNurAlHuda = chatbotType === 'nurAlHuda';
@@ -139,31 +141,31 @@ const ChatScreen = () => {
           lastResetDate: currentDate,
           account: ''
         });
-        setLastResetDate(currentDate);
+        setLastResetDate(currentDate.toISOString());
         setTotalPromptCount(0);
         setAccountType('');
       }
     } else {
-      const sessionPromptCount = sessionStorage.getItem('totalPromptCount');
-      const sessionLastResetDate = sessionStorage.getItem('lastResetDate');
-      let sessionAccountType = sessionStorage.getItem('account') || '';
+      const sessionPromptCount = storageManager.load('totalPromptCount');
+      const sessionLastResetDate = storageManager.load('lastResetDate');
+      let sessionAccountType = storageManager.load('account') || '';
 
       if (!sessionPromptCount) {
-        sessionStorage.setItem('totalPromptCount', '0');
+        storageManager.save('totalPromptCount', 0);
         setTotalPromptCount(0);
       } else {
-        setTotalPromptCount(parseInt(sessionPromptCount, 10));
+        setTotalPromptCount(sessionPromptCount);
       }
 
       if (!sessionLastResetDate) {
         const currentDate = new Date();
-        sessionStorage.setItem('lastResetDate', currentDate.toISOString());
-        setLastResetDate(currentDate);
+        storageManager.save('lastResetDate', currentDate.toISOString());
+        setLastResetDate(currentDate.toISOString());
       } else {
-        setLastResetDate(new Date(sessionLastResetDate));
+        setLastResetDate(sessionLastResetDate);
       }
 
-      sessionStorage.setItem('account', sessionAccountType);
+      storageManager.save('account', sessionAccountType);
 
       const isNurAlHuda = chatbotType === 'nurAlHuda';
       const isPaliGPT = chatbotType === 'paliGPT';
@@ -211,19 +213,22 @@ const ChatScreen = () => {
     const isPaliGPT = chatbotType === 'paliGPT';
 
     if (!user) {
+      // Handle user not logged in
+      /*
       if (!isPaliGPT && !currentPrompts.includes(currentMessage.trim())) {
         setModalMessage('Please log in to use this feature.');
         setIsModalOpen(true);
         return;
       }
-      
+      */
+      // Check if the user has reached the daily limit  
       if (!isPaliGPT && totalPromptCount >= maxPrompts) {
         setModalMessage(`You have reached the daily limit of ${maxPrompts} prompts. Please log in to continue using the service.`);
         setIsModalOpen(true);
         return;
       }
       setTotalPromptCount(prevCount => prevCount + 1);
-      sessionStorage.setItem('totalPromptCount', (totalPromptCount + 1).toString());
+      storageManager.save('totalPromptCount', totalPromptCount + 1);
     } else {
       // Fetch the latest prompt count from Firestore
       console.log('Fetching latest prompt count from Firestore');
