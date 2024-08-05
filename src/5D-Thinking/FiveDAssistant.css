@@ -1,0 +1,47 @@
+.five-d-assistant-container {
+    padding: 20px;
+  }
+  
+  .five-d-assistant-header {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .input-section {
+    margin-bottom: 20px;
+  }
+  
+  .input-section textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  
+  .input-section button {
+    padding: 10px 20px;
+  }
+  
+  .slide-content {
+    margin-top: 20px;
+  }
+  
+  .explore-content {
+    /* styles for Explore content */
+  }
+  
+  .compare-content {
+    /* styles for Compare content */
+  }
+  
+  .question-content {
+    /* styles for Question content */
+  }
+  
+  .connect-content {
+    /* styles for Connect content */
+  }
+  
+  .appreciate-content {
+    /* styles for Appreciate content */
+  }
+  

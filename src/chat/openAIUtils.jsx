@@ -10,6 +10,7 @@ const assistantApiKeyMap = {
   'Muslim Reference AI': process.env.REACT_APP_OPENAI_API_KEY_MUSLIM_REFERENCE_AI,
   'PaliGPT': process.env.REACT_APP_OPENAI_API_KEY_PALIGPT,
   'Quiz Generator': process.env.REACT_APP_OPENAI_API_KEY_NUR_ALHUDA,
+  '5D Thinking': process.env.REACT_APP_OPENAI_API_KEY_NUR_ALHUDA,
 };
 
 // Function to initialize OpenAI client with the appropriate API key
@@ -93,5 +94,6 @@ export const titleToAssistantIDMap = {
   'Iqra With Us': "asst_NSjlngEyPNwU1PeAcmZZHC9K",
   'Muslim Reference AI': "asst_gJad0rJeSMH3s4Uo9oTWjE9y",
   'PaliGPT': "asst_ShMxEdN8gnWONFOVVFv8dKTJ",
-  'Quiz Generator': "asst_paDb8Yr8jvqDUmFd2q4n1Fbi" 
+  'Quiz Generator': "asst_paDb8Yr8jvqDUmFd2q4n1Fbi",
+  '5D Thinking' : "asst_PoJUDpYdTz07claENutaHdoa"
 };
