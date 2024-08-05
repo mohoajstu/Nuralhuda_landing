@@ -1,6 +1,6 @@
 .slide {
     border: 1px solid #ddd;
-    border-radius: 10px;
+    border-radius: 20px;
     padding: 20px;
     margin-bottom: 20px;
     background-color: #fff;
@@ -10,7 +10,7 @@
   .slide h2 {
     text-align: center;
     font-size: 1.5em;
-    color: #2c3e50;
+    color: #222;
     margin-bottom: 15px;
   }
   
@@ -20,13 +20,13 @@
   
   .content-section h3 {
     font-size: 1.2em;
-    color: #34495e;
+    color: #222;
     margin-bottom: 10px;
   }
   
   .content-section p {
     font-size: 1em;
-    color: #7f8c8d;
+    color: #222;
   }
   
   .content-section ul {
@@ -36,7 +36,7 @@
   .content-section ul li {
     list-style-type: disc;
     font-size: 1em;
-    color: #7f8c8d;
+    color: #222;
   }
   
   /* Custom colors for each type of slide */
