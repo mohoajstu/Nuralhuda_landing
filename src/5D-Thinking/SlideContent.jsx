@@ -100,42 +100,69 @@ const QuestionContent = ({ questions = [], conclusion = '' }) => (
   </div>
 );
 
-const ConnectContent = ({ connections = '', allahNames = {} }) => (
-  <div className="slide connect-content">
-    <h2>Connect</h2>
-    {connections && (
-      <div className="content-section">
-        <h3>Connections</h3>
-        <p>{connections}</p>
-      </div>
-    )}
-    {allahNames.whatItTells?.length > 0 && allahNames.namesInEnglish?.length > 0 && allahNames.namesInArabic?.length > 0 && (
-      <div className="content-section">
-        <h3>Allah's Names</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>What it tells us about Allah</th>
-              <th>Names in English</th>
-              <th>Names in Arabic</th>
-            </tr>
-          </thead>
-          <tbody>
-            {allahNames.whatItTells.map((item, index) => (
-              <tr key={index}>
-                <td>{item}</td>
-                <td>{allahNames.namesInEnglish[index]}</td>
-                <td>{allahNames.namesInArabic[index]}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    )}
-  </div>
-);
 
-const AppreciateContent = ({ whatIfs = '', zikrFikrShukr = {}, characterLessons = '', connectWithQuranHadith = [] }) => (
+const ConnectContent = ({ connections = '', allahNames = {}, examples = [], questionsForDeeperConnection = [], contemplationAndAppreciation = '' }) => (
+    <div className="slide connect-content">
+      <h2>Connect</h2>
+      {connections && (
+        <div className="content-section">
+          <h3>Connections</h3>
+          <p>{connections}</p>
+        </div>
+      )}
+      {allahNames.whatItTells?.length > 0 && allahNames.namesInEnglish?.length > 0 && allahNames.namesInArabic?.length > 0 && (
+        <div className="content-section">
+          <h3>Allah's Names</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>What it tells us about Allah</th>
+                <th>Names in English</th>
+                <th>Names in Arabic</th>
+              </tr>
+            </thead>
+            <tbody>
+              {allahNames.whatItTells.map((item, index) => (
+                <tr key={index}>
+                  <td>{item}</td>
+                  <td>{allahNames.namesInEnglish[index]}</td>
+                  <td>{allahNames.namesInArabic[index]}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+      {examples.length > 0 && (
+        <div className="content-section">
+          <h3>Examples</h3>
+          <ul>
+            {examples.map((example, index) => (
+              <li key={index}>{example}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {questionsForDeeperConnection.length > 0 && (
+        <div className="content-section">
+          <h3>Questions for Deeper Connection</h3>
+          <ul>
+            {questionsForDeeperConnection.map((question, index) => (
+              <li key={index}>{question}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {contemplationAndAppreciation && (
+        <div className="content-section">
+          <h3>Contemplation and Appreciation</h3>
+          <p>{contemplationAndAppreciation}</p>
+        </div>
+      )}
+    </div>
+  );
+  
+  const AppreciateContent = ({ whatIfs = '', zikrFikrShukr = {}, characterLessons = '', characterQualities = [], connectWithQuranHadith = [] }) => (
     <div className="slide appreciate-content">
       <h2>Appreciate</h2>
       {whatIfs && (
@@ -173,21 +200,31 @@ const AppreciateContent = ({ whatIfs = '', zikrFikrShukr = {}, characterLessons 
           <p>{characterLessons}</p>
         </div>
       )}
+      {characterQualities.length > 0 && (
+        <div className="content-section">
+          <h3>Character Qualities</h3>
+          <ul>
+            {characterQualities.map((quality, index) => (
+              <li key={index}>{quality}</li>
+            ))}
+          </ul>
+        </div>
+      )}
       {Array.isArray(connectWithQuranHadith) && connectWithQuranHadith.length > 0 && (
-      <div className="content-section">
-        <h3>Connect with Quran or Hadith</h3>
-        {connectWithQuranHadith.map((item, index) => (
-          <div key={index}>
-            {item.includes('Quran') ? (
-              <p><strong>{item}</strong></p>
-            ) : (
-              <p><strong>Hadith:</strong> {item}</p>
-            )}
-          </div>
-        ))}
-      </div>
-    )}
-  </div>
-);
-
-export default SlideContent;
+        <div className="content-section">
+          <h3>Connect with Quran or Hadith</h3>
+          {connectWithQuranHadith.map((item, index) => (
+            <div key={index}>
+              {item.includes('Quran') ? (
+                <p><strong>{item}</strong></p>
+              ) : (
+                <p><strong>Hadith:</strong> {item}</p>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+  
+  export default SlideContent;

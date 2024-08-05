@@ -96,6 +96,6 @@ export const titleToAssistantIDMap = {
   'Muslim Reference AI': "asst_gJad0rJeSMH3s4Uo9oTWjE9y",
   'PaliGPT': "asst_ShMxEdN8gnWONFOVVFv8dKTJ",
   'Quiz Generator': "asst_paDb8Yr8jvqDUmFd2q4n1Fbi",
-  '5D Thinking' : "asst_PoJUDpYdTz07claENutaHdoa",
+  '5D Thinking' : "asst_7tVLODKXgClbyXhQCv89DW3w",
   '5D Thinking-1': "asst_zjjLJ9DjptDuCCgwA9uTO51z",
 };

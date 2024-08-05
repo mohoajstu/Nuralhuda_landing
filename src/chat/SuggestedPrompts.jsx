@@ -32,7 +32,19 @@ const titleToPromptMap = {
   'aiForIslamicResearch': ["Latest research on Islamic History", "AI and Quranic studies", "Islam and Science intersection", "Research Fact!"],
   'iqraWithUs': ["Surah Al-Fatiha", "Discuss Ayat Al-Kursi", "Surah Al-Ikhlas", "Surah Al-Mulk", "Surah Ar-Rahman", "Surah Al-Baqarah:286", "Surah Yasin:9", "Surah Al-Muzzammil:1-4", "Surah Al-Fil", "Surah Al-Asr"],
   'muslimReferenceAI': ["Find a Quranic verse about patience.", "Provide a Hadith on the importance of charity.", "Cite a classical Islamic text discussing Tawhid.", "What does the Quran say about justice?", "Locate a Hadith on the significance of fasting.", "Find a reference from Ghazzali on ethical behavior.", "Provide a Quranic verse about forgiveness.", "What does Sahih Bukhari say about prayer?", "Cite an Islamic scholar on the concept of Ummah.", "Find a Hadith from Sahih Muslim on kindness to neighbors."],
-  'paliGPT': ["Overview of Palestinian History", "Key Events in Palestinian Struggle", "Explain Nakba", "Cultural Heritage of Palestine", "Palestinian Cuisine", "Traditional Palestinian Dress", "Important Palestinian Figures", "Impact of Occupation", "Palestinian Refugee Crisis"]
+  'paliGPT': ["Overview of Palestinian History", "Key Events in Palestinian Struggle", "Explain Nakba", "Cultural Heritage of Palestine", "Palestinian Cuisine", "Traditional Palestinian Dress", "Important Palestinian Figures", "Impact of Occupation", "Palestinian Refugee Crisis"],
+  'fiveDThinking': [
+        "Explain the water cycle without attributing it solely to natural processes.",
+        "Compare the human eye to a camera to illustrate the intricate design.",
+        "Where did the detailed structure of DNA originate from?",
+        "Contemplate the interdependence of all life forms and what this signifies about their origin.",
+        "What does the lifecycle of a butterfly teach us about patience and transformation?",
+        "Describe the functions of the human brain while considering beyond material existence.",
+        "Explain the similarities between the ecosystem and a well-maintained garden.",
+        "Challenge the concept that the universe came from nothing.",
+        "Reflect on the precision of the Earth's distance from the sun and its implications.",
+        "How does the cooperation in an ant colony exemplify teamwork and diligence?"
+    ]
 };
 
 export const getPromptsForType = (chatbotType) => {
