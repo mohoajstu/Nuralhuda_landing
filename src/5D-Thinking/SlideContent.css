@@ -1,82 +1,111 @@
 /* SlideContent.css */
 
 .slide {
-    border: 1px solid #ddd;
-    border-radius: 20px;
-    padding: 20px;
-    margin-bottom: 20px;
-    background-color: #fff;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border: none;
+    border-radius: 15px;
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
   }
   
   .slide h2 {
     text-align: center;
-    font-size: 1.5em;
-    color: #222;
-    margin-bottom: 15px;
+    font-size: 2em;
+    color: #fff;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
   }
   
   .content-section {
-    margin-bottom: 15px;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
   }
   
   .content-section h3 {
-    font-size: 1.2em;
-    color: #222;
-    margin-bottom: 10px;
+    font-size: 1.4em;
+    color: #333;
+    margin-bottom: 15px;
+    border-bottom: 2px solid currentColor;
+    padding-bottom: 5px;
   }
   
-  .content-section p {
-    font-size: 1em;
-    color: #222;
+  .content-section p, .content-section li {
+    font-size: 1.1em;
+    color: #444;
+    line-height: 1.6;
   }
   
-  .content-section ul {
-    padding-left: 20px;
-  }
-  
-  .content-section ul li {
-    list-style-type: disc;
-    font-size: 1em;
-    color: #222;
-  }
-  
-  /* Custom colors for each type of slide */
+  /* Custom gradients for each type of slide based on the image colors */
   .explore-content {
-    background-color: #e0f7fa; /* Light cyan */
+    background: linear-gradient(135deg, #f4a460 0%, #ffd700 100%); /* Sandy brown to Gold */
   }
   
   .compare-content {
-    background-color: #fff9c4; /* Light yellow */
+    background: linear-gradient(135deg, #66cdaa 0%, #20b2aa 100%); /* Medium aquamarine to Light sea green */
   }
   
   .question-content {
-    background-color: #ffe0b2; /* Light orange */
+    background: linear-gradient(135deg, #f08080 0%, #ff6347 100%); /* Light coral to Tomato */
   }
   
   .connect-content {
-    background-color: #c8e6c9; /* Light green */
+    background: linear-gradient(135deg, #90ee90 0%, #32cd32 100%); /* Light green to Lime green */
   }
   
   .appreciate-content {
-    background-color: #f8bbd0; /* Light pink */
+    background: linear-gradient(135deg, #dda0dd 0%, #ba55d3 100%); /* Plum to Medium orchid */
   }
   
   table {
     width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 15px;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-bottom: 20px;
+    overflow: hidden;
+    border-radius: 10px;
   }
   
   table, th, td {
-    border: 1px solid #ddd;
+    border: none;
   }
   
   th, td {
-    padding: 8px;
+    padding: 15px;
     text-align: left;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
   }
   
   th {
-    background-color: #f2f2f2;
+    background-color: rgba(0,0,0,0.05);
+    font-weight: bold;
+    color: #333;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  
+  tr:last-child td {
+    border-bottom: none;
+  }
+  
+  /* Responsive design */
+  @media (max-width: 768px) {
+    .slide {
+      padding: 20px;
+    }
+    
+    .slide h2 {
+      font-size: 1.5em;
+    }
+    
+    .content-section h3 {
+      font-size: 1.2em;
+    }
+    
+    .content-section p, .content-section li {
+      font-size: 1em;
+    }
   }
