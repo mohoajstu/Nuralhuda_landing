@@ -24,25 +24,25 @@ const ExploreContent = ({ content = '', explanation = '', observations = '', fas
     {content && (
       <div className="content-section">
         <h3>Content</h3>
-        <p>{typeof content === 'string' ? content : JSON.stringify(content)}</p>
+        <p>{content}</p>
       </div>
     )}
     {explanation && (
       <div className="content-section">
         <h3>Explanation</h3>
-        <p>{typeof explanation === 'string' ? explanation : JSON.stringify(explanation)}</p>
+        <p>{explanation}</p>
       </div>
     )}
     {observations && (
       <div className="content-section">
         <h3>Observations</h3>
-        <p>{typeof observations === 'string' ? observations : JSON.stringify(observations)}</p>
+        <p>{observations}</p>
       </div>
     )}
     {fascinatingFacts && (
       <div className="content-section">
         <h3>Fascinating Facts</h3>
-        <p>{typeof fascinatingFacts === 'string' ? fascinatingFacts : JSON.stringify(fascinatingFacts)}</p>
+        <p>{fascinatingFacts}</p>
       </div>
     )}
   </div>
@@ -54,25 +54,25 @@ const CompareContent = ({ analogy = '', content = '', explanation = '', comparis
     {analogy && (
       <div className="content-section">
         <h3>Analogy</h3>
-        <ul>{typeof analogy === 'string' ? analogy : JSON.stringify(analogy)}</ul>
+        <p>{analogy}</p>
       </div>
     )}
     {content && (
       <div className="content-section">
         <h3>Content</h3>
-        <ul>{typeof content === 'string' ? content : JSON.stringify(content)}</ul>
+        <p>{content}</p>
       </div>
     )}
     {explanation && (
       <div className="content-section">
         <h3>Explanation</h3>
-        <ul>{typeof explanation === 'string' ? explanation : JSON.stringify(explanation)}</ul>
+        <p>{explanation}</p>
       </div>
     )}
     {comparison && (
       <div className="content-section">
         <h3>Comparison</h3>
-        <ul>{typeof comparison === 'string' ? comparison : JSON.stringify(comparison)}</ul>
+        <p>{comparison}</p>
       </div>
     )}
   </div>
@@ -81,12 +81,12 @@ const CompareContent = ({ analogy = '', content = '', explanation = '', comparis
 const QuestionContent = ({ questions = [], conclusion = '' }) => (
   <div className="slide question-content">
     <h2>Question</h2>
-    {questions && questions.length > 0 && (
+    {questions.length > 0 && (
       <div className="content-section">
         <h3>Questions</h3>
         <ul>
           {questions.map((question, index) => (
-            <li key={index}>{typeof question === 'string' ? question : JSON.stringify(question)}</li>
+            <li key={index}>{question}</li>
           ))}
         </ul>
       </div>
@@ -94,7 +94,7 @@ const QuestionContent = ({ questions = [], conclusion = '' }) => (
     {conclusion && (
       <div className="content-section">
         <h3>Conclusion</h3>
-        <p>{typeof conclusion === 'string' ? conclusion : JSON.stringify(conclusion)}</p>
+        <p>{conclusion}</p>
       </div>
     )}
   </div>
@@ -106,105 +106,85 @@ const ConnectContent = ({ connections = '', allahNames = {} }) => (
     {connections && (
       <div className="content-section">
         <h3>Connections</h3>
-        <p>{typeof connections === 'string' ? connections : JSON.stringify(connections)}</p>
+        <p>{connections}</p>
       </div>
     )}
-    {allahNames && (
+    {allahNames.whatItTells?.length > 0 && allahNames.namesInEnglish?.length > 0 && allahNames.namesInArabic?.length > 0 && (
       <div className="content-section">
         <h3>Allah's Names</h3>
-        <div>
-          {allahNames.whatItTells && (
-            <>
-              <h4>What it tells us about Allah</h4>
-              <ul>
-                {allahNames.whatItTells.map((item, index) => (
-                  <li key={index}>{typeof item === 'string' ? item : JSON.stringify(item)}</li>
-                ))}
-              </ul>
-            </>
-          )}
-          {allahNames.namesInEnglish && (
-            <>
-              <h4>Names in English</h4>
-              <ul>
-                {allahNames.namesInEnglish.map((item, index) => (
-                  <li key={index}>{typeof item === 'string' ? item : JSON.stringify(item)}</li>
-                ))}
-              </ul>
-            </>
-          )}
-          {allahNames.namesInArabic && (
-            <>
-              <h4>Names in Arabic</h4>
-              <ul>
-                {allahNames.namesInArabic.map((item, index) => (
-                  <li key={index}>{typeof item === 'string' ? item : JSON.stringify(item)}</li>
-                ))}
-              </ul>
-            </>
-          )}
-        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>What it tells us about Allah</th>
+              <th>Names in English</th>
+              <th>Names in Arabic</th>
+            </tr>
+          </thead>
+          <tbody>
+            {allahNames.whatItTells.map((item, index) => (
+              <tr key={index}>
+                <td>{item}</td>
+                <td>{allahNames.namesInEnglish[index]}</td>
+                <td>{allahNames.namesInArabic[index]}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     )}
   </div>
 );
 
-const AppreciateContent = ({ whatIfs = '', zikrFikrShukr = {}, characterLessons = '', connectWithQuranHadith = '' }) => (
-  <div className="slide appreciate-content">
-    <h2>Appreciate</h2>
-    {whatIfs && (
-      <div className="content-section">
-        <h3>What If's</h3>
-        <p>{typeof whatIfs === 'string' ? whatIfs : JSON.stringify(whatIfs)}</p>
-      </div>
-    )}
-    {zikrFikrShukr && (
-      <div className="content-section">
-        <h3>Zikr, Fikr, Shukr</h3>
-        <div>
-          {zikrFikrShukr.zikr && (
-            <>
-              <h4>Zikr</h4>
-              <ul>
-                {zikrFikrShukr.zikr.map((item, index) => (
-                  <li key={index}>{typeof item === 'string' ? item : JSON.stringify(item)}</li>
-                ))}
-              </ul>
-            </>
-          )}
-          {zikrFikrShukr.fikr && (
-            <>
-              <h4>Fikr</h4>
-              <ul>
-                {zikrFikrShukr.fikr.map((item, index) => (
-                  <li key={index}>{typeof item === 'string' ? item : JSON.stringify(item)}</li>
-                ))}
-              </ul>
-            </>
-          )}
-          {zikrFikrShukr.shukr && (
-            <>
-              <h4>Shukr</h4>
-              <ul>
-                {zikrFikrShukr.shukr.map((item, index) => (
-                  <li key={index}>{typeof item === 'string' ? item : JSON.stringify(item)}</li>
-                ))}
-              </ul>
-            </>
-          )}
+const AppreciateContent = ({ whatIfs = '', zikrFikrShukr = {}, characterLessons = '', connectWithQuranHadith = [] }) => (
+    <div className="slide appreciate-content">
+      <h2>Appreciate</h2>
+      {whatIfs && (
+        <div className="content-section">
+          <h3>What If's</h3>
+          <p>{whatIfs}</p>
         </div>
-      </div>
-    )}
-    {characterLessons && (
-      <div className="content-section">
-        <h3>Character Lessons</h3>
-        <p>{typeof characterLessons === 'string' ? characterLessons : JSON.stringify(characterLessons)}</p>
-      </div>
-    )}
-    {connectWithQuranHadith && (
+      )}
+      {zikrFikrShukr.zikr?.length > 0 && zikrFikrShukr.fikr?.length > 0 && zikrFikrShukr.shukr?.length > 0 && (
+        <div className="content-section">
+          <h3>Zikr, Fikr, Shukr</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Zikr</th>
+                <th>Fikr</th>
+                <th>Shukr</th>
+              </tr>
+            </thead>
+            <tbody>
+              {zikrFikrShukr.zikr.map((item, index) => (
+                <tr key={index}>
+                  <td>{item}</td>
+                  <td>{zikrFikrShukr.fikr[index]}</td>
+                  <td>{zikrFikrShukr.shukr[index]}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+      {characterLessons && (
+        <div className="content-section">
+          <h3>Character Lessons</h3>
+          <p>{characterLessons}</p>
+        </div>
+      )}
+      {Array.isArray(connectWithQuranHadith) && connectWithQuranHadith.length > 0 && (
       <div className="content-section">
         <h3>Connect with Quran or Hadith</h3>
-        <p>{typeof connectWithQuranHadith === 'string' ? connectWithQuranHadith : JSON.stringify(connectWithQuranHadith)}</p>
+        {connectWithQuranHadith.map((item, index) => (
+          <div key={index}>
+            {item.includes('Quran') ? (
+              <p><strong>{item}</strong></p>
+            ) : (
+              <p><strong>Hadith:</strong> {item}</p>
+            )}
+          </div>
+        ))}
       </div>
     )}
   </div>
