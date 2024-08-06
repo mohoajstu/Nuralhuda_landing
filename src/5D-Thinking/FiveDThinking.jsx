@@ -128,7 +128,7 @@ const FiveDAssistant = () => {
   return (
     <div className="five-d-assistant-container">
       <header className="five-d-assistant-header">
-        <h1>5D Assistant</h1>
+        <h1>5D Lesson Planner</h1>
       </header>
       <div className="input-section">
         <textarea
