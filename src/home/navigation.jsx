@@ -124,6 +124,9 @@ export const Navigation = (props) => {
               </a>
             </li>
             <li>
+              <Link to="/quran" onClick={() => handleNavigation('/quran')}> Quran</Link>
+            </li>
+            <li>
               <Link to="/pricing" onClick={() => handleNavigation('/pricing')}>Pricing</Link>
             </li>
             <li>

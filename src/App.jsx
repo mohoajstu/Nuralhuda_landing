@@ -17,6 +17,7 @@ import PaymentSuccess from './pricing/PaymentSuccess';
 import FAQ from './home/FAQ'; // Import FAQ component
 import QuizGenerator from './quiz/QuizGenerator';
 import FetchQuiz from './quiz/FetchQuiz'; // Import the component to fetch and display the quiz
+import Quran from './Quran/Quran'; // Import the new Quran page
 
 export const scroll = new SmoothScroll('a[href*="#"]', {
   speed: 1000,
@@ -45,6 +46,8 @@ const App = () => {
     return <div>Loading...</div>;
   }
 
+  const showNavigation = ['/','/quran', '/login', '/pricing', '/payment-success'].includes(location.pathname) || /^\/quran\//.test(location.pathname);
+
   return (
     <div className="App">
       {(location.pathname === '/' || location.pathname === '/login' || location.pathname === '/pricing' || location.pathname === '/payment-success' || location.pathname === '/contact-form' || location.pathname === '/quiz-generator') && <Navigation />}
@@ -59,6 +62,10 @@ const App = () => {
         <Route path="/faq" element={<FAQ />} /> {/* Add FAQ route */}
         <Route path="/quiz-generator" element={<QuizGenerator />} />
         <Route path="/quiz/:quizId" element={<FetchQuiz />} /> {/* Add this route */}
+        
+        {/* Quran route */}
+        <Route path="/quran/*" element={<Quran />} /> {/* Use wildcard to match nested routes */}
+        
         <Route path="*" element={<div>404 Not Found</div>} />
       </Routes>
     </div>
