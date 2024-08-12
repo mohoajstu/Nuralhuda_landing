@@ -17,6 +17,8 @@ import paliGPTImg from '../img/PaliGPT.png';
 import muslimReferenceAIIMG from '../img/muslimReferenceAI.png';
 import fiveDThinkingImg from '../img/5dlogotransparent.png';
 
+import './chatScreen.css';
+
 const titleToChatbotTypeMap = {
   'Nur Al Huda': 'nurAlHuda',
   'Nur Al Huda For Kids': 'nurAlHudaForKids',
@@ -53,6 +55,7 @@ const ChatScreen = () => {
   const chatbotImage = titleToImageMap[assistantTitle];
   const assistantId = titleToAssistantIDMap[assistantTitle];
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const [windowHeight, setWindowHeight] = useState(window.innerHeight);
   const [user] = useAuthState(auth);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalOpenReport, setIsModalOpenReport] = useState(false);
@@ -69,13 +72,17 @@ const ChatScreen = () => {
   useEffect(() => {
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
+      setWindowHeight(window.innerHeight);
     };
 
     window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+    window.addEventListener('orientationchange', handleResize);
 
-  const titleSize = windowWidth >= 1200 ? '3em' : windowWidth >= 992 ? '2.5em' : windowWidth >= 768 ? '2em' : '1.5em';
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('orientationchange', handleResize);
+    };
+  }, []);
 
   useEffect(() => {
     scrollViewRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -388,7 +395,7 @@ const ChatScreen = () => {
   };
 
   return (
-    <div className="chatscreen-container">
+    <div className="chatscreen-container" style={{ height: `${windowHeight}px` }}>
       <Modal 
         isOpen={isModalOpen}
         onClose={handleModalClose}
@@ -425,7 +432,7 @@ const ChatScreen = () => {
         <button className="chatscreen-home-button" onClick={handleGoToHome}>
           Home
         </button>
-        <div className="chatscreen-header-title" style={{ fontSize: titleSize }}>
+        <div className="chatscreen-header-title">
           {assistantTitle}
         </div>
       </div>

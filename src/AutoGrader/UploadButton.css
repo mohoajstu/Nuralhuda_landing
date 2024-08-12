@@ -1,0 +1,13 @@
+#uploadButton {
+    background-color: #114040;
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    margin: 10px;
+}
+
+input[type="file"] {
+    margin: 10px;
+}
