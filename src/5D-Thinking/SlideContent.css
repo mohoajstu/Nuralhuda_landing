@@ -1,14 +1,14 @@
 /* SlideContent.css */
 
-.slide {
+.slide-container .slide {
     border: none;
     border-radius: 15px;
     padding: 30px;
     margin-bottom: 30px;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-  }
+}
   
-  .slide h2 {
+.slide-container .slide h2 {
     text-align: center;
     font-size: 2em;
     color: #fff;
@@ -16,96 +16,96 @@
     text-transform: uppercase;
     letter-spacing: 2px;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-  }
+}
   
-  .content-section {
+.slide-container .content-section {
     background-color: rgba(255, 255, 255, 0.9);
     border-radius: 10px;
     padding: 20px;
     margin-bottom: 20px;
-  }
+}
   
-  .content-section h3 {
+.slide-container .content-section h3 {
     font-size: 1.4em;
     color: #333;
     margin-bottom: 15px;
     border-bottom: 2px solid currentColor;
     padding-bottom: 5px;
-  }
+}
   
-  .content-section p, .content-section li {
+.slide-container .content-section p, .slide-container .content-section li {
     font-size: 1.1em;
     color: #444;
     line-height: 1.6;
-  }
+}
   
-  /* Custom gradients for each type of slide based on the image colors */
-  .explore-content {
+/* Custom gradients for each type of slide based on the image colors */
+.slide-container .explore-content {
     background: linear-gradient(135deg, #f4a460 0%, #ffd700 100%); /* Sandy brown to Gold */
-  }
+}
   
-  .compare-content {
+.slide-container .compare-content {
     background: linear-gradient(135deg, #66cdaa 0%, #20b2aa 100%); /* Medium aquamarine to Light sea green */
-  }
+}
   
-  .question-content {
+.slide-container .question-content {
     background: linear-gradient(135deg, #f08080 0%, #ff6347 100%); /* Light coral to Tomato */
-  }
+}
   
-  .connect-content {
+.slide-container .connect-content {
     background: linear-gradient(135deg, #90ee90 0%, #32cd32 100%); /* Light green to Lime green */
-  }
+}
   
-  .appreciate-content {
+.slide-container .appreciate-content {
     background: linear-gradient(135deg, #dda0dd 0%, #ba55d3 100%); /* Plum to Medium orchid */
-  }
+}
   
-  table {
+.slide-container table {
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
     margin-bottom: 20px;
     overflow: hidden;
     border-radius: 10px;
-  }
+}
   
-  table, th, td {
+.slide-container table, .slide-container th, .slide-container td {
     border: none;
-  }
+}
   
-  th, td {
+.slide-container th, .slide-container td {
     padding: 15px;
     text-align: left;
     border-bottom: 1px solid rgba(0,0,0,0.1);
-  }
+}
   
-  th {
+.slide-container th {
     background-color: rgba(0,0,0,0.05);
     font-weight: bold;
     color: #333;
     text-transform: uppercase;
     letter-spacing: 1px;
-  }
+}
   
-  tr:last-child td {
+.slide-container tr:last-child td {
     border-bottom: none;
-  }
+}
   
-  /* Responsive design */
-  @media (max-width: 768px) {
-    .slide {
-      padding: 20px;
+/* Responsive design */
+@media (max-width: 768px) {
+    .slide-container .slide {
+        padding: 20px;
     }
     
-    .slide h2 {
-      font-size: 1.5em;
+    .slide-container .slide h2 {
+        font-size: 1.5em;
     }
     
-    .content-section h3 {
-      font-size: 1.2em;
+    .slide-container .content-section h3 {
+        font-size: 1.2em;
     }
     
-    .content-section p, .content-section li {
-      font-size: 1em;
+    .slide-container .content-section p, .slide-container .content-section li {
+        font-size: 1em;
     }
-  }
+}
