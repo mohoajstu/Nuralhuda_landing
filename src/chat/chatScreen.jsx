@@ -15,6 +15,7 @@ import islamicSocraticMethodImg from '../img/islamic_socratic_method.png';
 import iqraWithUsImg from '../img/Nuralhuda-applogo.png';
 import paliGPTImg from '../img/PaliGPT.png';
 import muslimReferenceAIIMG from '../img/muslimReferenceAI.png';
+import fiveDThinkingImg from '../img/5dlogotransparent.png';
 
 import './chatScreen.css';
 
@@ -26,6 +27,7 @@ const titleToChatbotTypeMap = {
   'Iqra With Us': 'iqraWithUs',
   'Muslim Reference AI': 'muslimReferenceAI',
   'PaliGPT': 'paliGPT',
+  '5D Thinking': 'fiveDThinking',
   default: 'default',
 };
 
@@ -36,6 +38,7 @@ const titleToImageMap = {
   'Iqra With Us': iqraWithUsImg,
   'Muslim Reference AI': muslimReferenceAIIMG,
   'PaliGPT': paliGPTImg,
+  '5D Thinking': fiveDThinkingImg,
 };
 
 const ChatScreen = () => {

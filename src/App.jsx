@@ -20,6 +20,7 @@ import FetchQuiz from './quiz/FetchQuiz'; // Import the component to fetch and d
 import AutograderPage from './AutoGrader/AutGraderPage';
 import Onboarding from './AutoGrader/onboarding';
 
+import FiveDThinking from './5D-Thinking/FiveDThinking'; // Import the 5D Assistant component
 
 export const scroll = new SmoothScroll('a[href*="#"]', {
   speed: 1000,
@@ -50,7 +51,7 @@ const App = () => {
 
   return (
     <div className="App">
-      {(location.pathname === '/' || location.pathname === '/login' || location.pathname === '/pricing' || location.pathname === '/payment-success' || location.pathname === '/contact-form' || location.pathname === '/quiz-generator') && <Navigation />}
+      {(location.pathname === '/' || location.pathname === '/login' || location.pathname === '/pricing' || location.pathname === '/payment-success' || location.pathname === '/contact-form' || location.pathname === '/quiz-generator' || location.pathname === '/five-d-assistant') && <Navigation />}
       <Routes>
         <Route path="/" element={landingPageData ? <Home data={landingPageData} /> : <div>Loading...</div>} />
         <Route path="/login" element={<Login />} />
@@ -64,6 +65,7 @@ const App = () => {
         <Route path="/quiz/:quizId" element={<FetchQuiz />} /> {/* Add this route */}
         <Route path="/autograder" element={<AutograderPage />} />
         <Route path="/onboarding" element={<Onboarding />} />
+        <Route path="/5dthinking" element={<FiveDThinking />} /> {/* Add 5D Assistant route */}
         <Route path="*" element={<div>404 Not Found</div>} />
       </Routes>
     </div>
