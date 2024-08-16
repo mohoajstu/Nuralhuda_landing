@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { doc, getDoc } from 'firebase/firestore';
-import { db } from '../config/firebase-config';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { auth, db } from '../config/firebase-config'; // Ensure auth is imported
 import { QuizQuestion, MultipleChoice, TrueFalse, FillInTheBlank, Matching, Explanation, ShortAnswer } from './QuizComponents';
 import './FetchQuiz.css';
 
 const FetchQuiz = () => {
   const { quizId } = useParams();
+  const [user, loading] = useAuthState(auth); // Retrieve the authenticated user
   const [quizData, setQuizData] = useState(null);
   const [userAnswers, setUserAnswers] = useState({});
   const [submitted, setSubmitted] = useState(false);
@@ -47,7 +49,12 @@ const FetchQuiz = () => {
     setUserAnswers((prev) => ({ ...prev, [questionIndex]: answer }));
   };
 
-  const handleQuizSubmit = () => {
+  const handleQuizSubmit = async () => {
+    if (!user) {
+      alert("You need to be signed in to submit the quiz.");
+      return;
+    }
+
     const unansweredQuestions = quizData.questions.some((question, index) => {
       if (question.type === 'matching') {
         return !userAnswers[index] || userAnswers[index].length === 0;
@@ -80,8 +87,23 @@ const FetchQuiz = () => {
         newScore++;
       }
     });
+
+    // Ensure the score is set before writing to Firebase
     setScore(newScore);
     setSubmitted(true);
+
+    try {
+      // Save to user's QuizzesSubmitted
+      const userSubmissionRef = doc(db, "users", user.uid, "QuizzesSubmitted", quizId);
+      await setDoc(userSubmissionRef, { quizId, score: newScore, answers: userAnswers });
+
+      // Save to Quiz's Submissions subcollection
+      const quizSubmissionRef = doc(db, "quizzes", quizId, "Submissions", user.uid);
+      await setDoc(quizSubmissionRef, { userId: user.uid, score: newScore, answers: userAnswers });
+    } catch (error) {
+      console.error("Error submitting quiz:", error);
+      setError('An error occurred while submitting the quiz. Please try again.');
+    }
   };
 
   const isCorrect = (questionIndex) => {
