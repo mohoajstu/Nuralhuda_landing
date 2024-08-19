@@ -19,7 +19,7 @@ import QuizGenerator from './quiz/QuizGenerator';
 import FetchQuiz from './quiz/FetchQuiz'; // Import the component to fetch and display the quiz
 import AutograderPage from './AutoGrader/AutGraderPage';
 import Onboarding from './AutoGrader/onboarding';
-
+import Dashboard from './Dashboard/dashboard';
 import FiveDThinking from './5D-Thinking/FiveDThinking'; // Import the 5D Assistant component
 
 export const scroll = new SmoothScroll('a[href*="#"]', {
@@ -66,6 +66,7 @@ const App = () => {
         <Route path="/autograder" element={<AutograderPage />} />
         <Route path="/onboarding" element={<Onboarding />} />
         <Route path="/5dthinking" element={<FiveDThinking />} /> {/* Add 5D Assistant route */}
+        <Route path="/dashboard" element={<Dashboard />} /> {/* Add 5D Assistant route */}
         <Route path="*" element={<div>404 Not Found</div>} />
       </Routes>
     </div>
