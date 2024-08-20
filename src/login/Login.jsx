@@ -4,6 +4,7 @@ import { getFirestore, doc, setDoc, getDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 import googleLogo from '../img/Google-Icon.png'; // Make sure you have a Google logo image
 import { auth } from '../config/firebase-config'; // Ensure path accuracy
+import './Login.css';
 
 const provider = new GoogleAuthProvider();
 
