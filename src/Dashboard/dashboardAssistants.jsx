@@ -1,6 +1,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { titleToChatbotTypeMap, titleToImageMap } from '../assistantMapping'; // Adjust the import path as needed
+import { titleToChatbotTypeMap, titleToImageMap, titleToDescriptionMap } from '../assistantMapping'; // Adjust the import path as needed
+
+import './CSS/dashboardAssistants.css';
 
 const DashboardAssistants = () => {
   const navigate = useNavigate();
@@ -10,22 +12,24 @@ const DashboardAssistants = () => {
   );
 
   return (
-    <div className="dashboard-assistants">
+    <div className="dashboard-assistants-container">
       {assistants.map((title) => (
         <div
           key={title}
           className="assistant-box"
-          onClick={() => navigate(`/chat/${titleToChatbotTypeMap[title]}`)}
+          onClick={() => navigate(`/chat/${titleToChatbotTypeMap[title]}`)} // Corrected this line
         >
           <div className="assistant-image-container">
             <img
               src={titleToImageMap[title]}
               alt={title}
               className="assistant-image"
-              style={{ maxWidth: '100%', maxHeight: '160px', objectFit: 'contain' }}
             />
           </div>
-          <button className="assistant-button">{title}</button>
+          <div className="assistant-content">
+            <h5>{title}</h5>
+            <p>{titleToDescriptionMap[title]}</p>
+          </div>
         </div>
       ))}
     </div>

@@ -1,51 +1,83 @@
-.dashboard-assistants {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
+.dashboard-assistants-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
     padding: 20px;
-    justify-items: center;
-  }
-  
-  .assistant-box {
-    width: 200px;
-    height: 280px;
+}
+
+.assistant-box {
+    background-color: #144040;
+    color: white;
+    padding: 15px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s, box-shadow 0.2s;
+    margin: 10px;
+    flex: 1 1 30%; /* Allow boxes to take up about 30% of the row width */
+    max-width: 300px; /* Ensure a max width */
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 10px;
-    border: 2px solid #144040;
-    border-radius: 10px;
-    background-color: #144040;
-    cursor: pointer;
-    transition: transform 0.2s;
-  }
-  
-  .assistant-box:hover {
+    justify-content: space-between;
+}
+
+.assistant-box:hover {
     transform: scale(1.05);
-  }
-  
-  .assistant-image-container {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.assistant-image-container {
     flex-grow: 1;
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: 10px;
-  }
-  
-  .assistant-image {
-    max-width: 100%;
-    max-height: 160px;
+}
+
+.assistant-image {
+    width: 150px; /* Set a fixed width */
+    height: 150px; /* Set a fixed height */
     object-fit: contain;
-  }
-  
-  .assistant-button {
-    padding: 8px 16px;
-    background-color: #144040;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+    border-radius: 10px; /* Adds round edges to the image */
+}
+
+.assistant-content h5 {
+    margin-top: 10px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.assistant-content p {
     font-size: 14px;
-    text-align: center;
-  }
+    color: #Dcca98;
+}
+
+/* Media Queries for Responsiveness */
+
+/* Large screens (desktops, 1200px and up) */
+@media (min-width: 1200px) {
+    .assistant-box {
+        flex: 1 1 23%; /* 4 items per row */
+    }
+}
+
+/* Medium screens (tablets, 768px to 1199px) */
+@media (min-width: 768px) and (max-width: 1199px) {
+    .assistant-box {
+        flex: 1 1 48%; /* 2 items per row */
+    }
+}
+
+/* Small screens (phones, 576px to 767px) */
+@media (min-width: 576px) and (max-width: 767px) {
+    .assistant-box {
+        flex: 1 1 100%; /* 1 item per row */
+    }
+}
+
+/* Extra small screens (less than 576px) */
+@media (max-width: 575px) {
+    .assistant-box {
+        flex: 1 1 100%; /* 1 item per row */
+    }
+}
