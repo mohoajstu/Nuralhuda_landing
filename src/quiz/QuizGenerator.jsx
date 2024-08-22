@@ -8,16 +8,17 @@ import mammoth from 'mammoth';
 import { fileTypeFromBuffer } from 'file-type';
 import { exportToPDF } from './QuizExport';
 
+
 const QuizGenerator = () => {
   const [text, setText] = useState('');
   const [file, setFile] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
   const [quizData, setQuizData] = useState(null);
   const [userAnswers, setUserAnswers] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const [score, setScore] = useState(0);
   const [responseBuffer, setResponseBuffer] = useState('');
-  const [error, setError] = useState('');
   const [exportWithAnswers, setExportWithAnswers] = useState('questions');
   const [quizLink, setQuizLink] = useState('');
   const [isEditing, setIsEditing] = useState(false);
@@ -297,7 +298,71 @@ const QuizGenerator = () => {
       setError('An error occurred while updating the quiz. Please try again.');
     }
   };
-
+  const exportToGoogleForm = async (quizData) => {
+    setIsLoading(true);
+  
+    try {
+      const accessToken = 'YOUR_ACCESS_TOKEN'; // Replace with the actual OAuth 2.0 token
+      const apiUrl = 'https://forms.googleapis.com/v1/forms';
+  
+      // Construct the body for the Google Forms API request
+      const formBody = {
+        info: {
+          title: quizData.title || 'Untitled Quiz',
+        },
+        items: quizData.questions.map((question) => {
+          const item = {
+            title: question.question,
+            questionItem: {
+              question: {
+                required: true,
+              },
+            },
+          };
+  
+          if (question.type === 'multiple-choice') {
+            item.questionItem.question.choiceQuestion = {
+              type: 'RADIO',
+              options: question.options.map((option) => ({ value: option })),
+            };
+          } else if (question.type === 'short-answer') {
+            item.questionItem.question.textQuestion = {};
+          }
+  
+          // Add more question types as needed
+          return item;
+        }),
+      };
+  
+      // Make the POST request to Google Forms API
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formBody),
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok) {
+        console.log('Google Form created successfully:', data);
+        alert('Google Form created successfully!');
+        window.open(`https://docs.google.com/forms/d/e/${data.formId}/viewform`, '_blank');
+      } else {
+        console.error('Failed to create Google Form:', data);
+        setError('Failed to create Google Form. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error exporting to Google Form:', error);
+      setError('An error occurred while exporting to Google Form. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  
   return (
     <div className="quiz-generator-container">
       <header className="quiz-generator-header">
@@ -549,6 +614,13 @@ const QuizGenerator = () => {
             >
               Export Quiz Link
             </button>
+            <button 
+          onClick={() => exportToGoogleForm(quizData)} 
+          className="export-button"
+          disabled={isLoading}
+        >
+          {isLoading ? 'Exporting...' : 'Export to Google Form'}
+        </button>
           </div>
         </div>
       )}
