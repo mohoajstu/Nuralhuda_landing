@@ -308,55 +308,74 @@ const QuizGenerator = () => {
   
     setIsLoading(true);
     setError('');
-    
+  
     const accessToken = sessionStorage.getItem('googleAuthToken');
-    
+  
     if (!accessToken) {
       setError('Access token not found. Please authenticate with Google.');
       setIsLoading(false);
       return;
     }
   
-    try {
-      // Create the form
-      const createFormResponse = await fetch(
-        'https://forms.googleapis.com/v1/forms',
-        {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            info: {
-              title: quizData.title || 'New Quiz',
+    const maxRetries = 3; // Number of retries
+    let attempt = 0;
+    let success = false;
+  
+    while (attempt < maxRetries && !success) {
+      try {
+        attempt++;
+        console.log(`Attempt ${attempt} to create Google Form...`);
+  
+        // Create the form
+        const createFormResponse = await fetch(
+          'https://forms.googleapis.com/v1/forms',
+          {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              'Content-Type': 'application/json',
             },
-          }),
+            body: JSON.stringify({
+              info: {
+                title: quizData.title || 'New Quiz',
+              },
+            }),
+          }
+        );
+  
+        if (!createFormResponse.ok) {
+          throw new Error(`Error creating form: ${createFormResponse.statusText}`);
         }
-      );
   
-      if (!createFormResponse.ok) {
-        throw new Error(`Error creating form: ${createFormResponse.statusText}`);
+        const createFormData = await createFormResponse.json();
+        const formId = createFormData.formId;
+  
+        // Update the form settings with quiz settings
+        console.log("Trying to update form settings");
+        await updateQuizSettings(formId, accessToken);
+  
+        // Add questions to the form
+        console.log("Trying to add questions");
+        await addQuestionsToGoogleForm(formId, accessToken);
+  
+        // Get the form's URL
+        const formUrl = `https://docs.google.com/forms/d/${formId}/edit`;
+  
+        setQuizLink(formUrl);
+        alert('Google Form created successfully!');
+        success = true;
+      } catch (error) {
+        console.error('Error creating Google Form:', error);
+        if (attempt >= maxRetries) {
+          setError('Failed to create Google Form after multiple attempts. Please check your permissions and try again.');
+        } else {
+          console.log('Retrying...');
+        }
       }
-  
-      const createFormData = await createFormResponse.json();
-      const formId = createFormData.formId;
-  
-      // Add questions to the form
-      await addQuestionsToGoogleForm(formId, accessToken);
-  
-      // Get the form's URL
-      const formUrl = `https://docs.google.com/forms/d/${formId}/edit`;
-  
-      setQuizLink(formUrl);
-      alert('Google Form created successfully!');
-    } catch (error) {
-      console.error('Error creating Google Form:', error);
-      setError('Failed to create Google Form. Please check your permissions and try again.');
-    } finally {
-      setIsLoading(false);
     }
-  };
+  
+    setIsLoading(false);
+  };  
   
 
   const addQuestionsToGoogleForm = async (formId, accessToken) => {
@@ -475,18 +494,10 @@ const QuizGenerator = () => {
               updateSettings: {
                 settings: {
                   quizSettings: {
-                    isQuiz: true,
-                    releaseGrades: {
-                      whenToRelease: 'LATER_AFTER_MANUAL_REVIEW',
-                    },
-                    respondentSettings: {
-                      showCorrectAnswers: true,
-                      showMissedQuestions: true,
-                      showPointValues: true,
-                    },
+                    isQuiz: true,                  
                   },
                 },
-                updateMask: "quizSettings.isQuiz,quizSettings.releaseGrades,quizSettings.respondentSettings",
+                updateMask: "quizSettings.isQuiz",
               }
             }
           ],
