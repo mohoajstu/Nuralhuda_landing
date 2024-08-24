@@ -380,104 +380,144 @@ const QuizGenerator = () => {
 
   const addQuestionsToGoogleForm = async (formId, accessToken) => {
     const requests = quizData.questions.map((q, index) => {
-      let item = {
-        title: q.question,
-      };
-  
-      switch (q.type) {
-        case 'multiple-choice':
-          item.questionItem = {
-            question: {
-              required: true,
-              choiceQuestion: {
-                type: 'RADIO',
-                options: q.options.map(option => ({ value: option })),
-                shuffle: true,
-              },
-            },
-          };
-          break;
-        case 'true-false':
-          item.questionItem = {
-            question: {
-              required: true,
-              choiceQuestion: {
-                type: 'RADIO',
-                options: [
-                  { value: 'True' },
-                  { value: 'False' },
-                ],
-                shuffle: false,
-              },
-            },
-          };
-          break;
-        case 'fill-in-the-blank':
-        case 'short-answer':
-          item.questionItem = {
-            question: {
-              required: true,
-              textQuestion: {
-                paragraph: false,
-              },
-            },
-          };
-          break;
-        case 'matching':
-          item.questionGroupItem = {
-            grid: {
-              columns: {
-                type: 'RADIO',
-                options: q.columnB.map(option => ({ value: option })),
-              },
-              shuffleQuestions: false,
-            },
-            questions: q.columnA.map(columnAItem => ({
-              rowQuestion: {
-                title: columnAItem,
-              },
-            })),
-          };
-          break;
-        default:
-          console.warn(`Unhandled question type: ${q.type}`);
-          return null;
-      }
-  
-      return {
-        createItem: {
-          item,
-          location: {
-            index,
-          },
-        },
-      };
-    }).filter(request => request !== null);
-  
-    try {
-      const response = await fetch(
-        `https://forms.googleapis.com/v1/forms/${formId}:batchUpdate`,
-        {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            requests,
-          }),
+        let item = {
+            title: q.question,
+        };
+
+        switch (q.type) {
+            case 'multiple-choice':
+                item.questionItem = {
+                    question: {
+                        required: true,
+                        choiceQuestion: {
+                            type: 'RADIO',
+                            options: q.options.map(option => ({ value: option })),
+                            shuffle: true,
+                        },
+                        grading: {
+                            pointValue: 1,  // Set the point value
+                            correctAnswers: {
+                                answers: [
+                                    {
+                                        value: q.options[q.correctAnswer]  // Assign the correct answer
+                                    }
+                                ]
+                            },
+                            whenRight: {
+                                text: "Correct!",  // Optional: Feedback for correct answer
+                            },
+                            whenWrong: {
+                                text: "Incorrect. Please try again.",  // Optional: Feedback for wrong answer
+                            }
+                        }
+                    },
+                };
+                break;
+            case 'true-false':
+                item.questionItem = {
+                    question: {
+                        required: true,
+                        choiceQuestion: {
+                            type: 'RADIO',
+                            options: [
+                                { value: 'True' },
+                                { value: 'False' },
+                            ],
+                            shuffle: false,
+                        },
+                        grading: {
+                            pointValue: 1,  // Set the point value
+                            correctAnswers: {
+                                answers: [
+                                    {
+                                        value: q.correctAnswer ? 'True' : 'False'  // Assign the correct answer
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                };
+                break;
+            case 'fill-in-the-blank':
+            case 'short-answer':
+                item.questionItem = {
+                    question: {
+                        required: true,
+                        textQuestion: {
+                            paragraph: false,
+                        },
+                        grading: {
+                            pointValue: 1,  // Set the point value
+                            correctAnswers: {
+                                answers: [
+                                    {
+                                        value: q.correctAnswer  // Assign the correct answer
+                                    }
+                                ]
+                            },
+                            generalFeedback: {
+                                text: "Your response has been recorded and will be reviewed.",  // Optional: General feedback
+                            }
+                        }
+                    },
+                };
+                break;
+            case 'matching':
+                item.questionGroupItem = {
+                    grid: {
+                        columns: {
+                            type: 'RADIO',
+                            options: q.columnB.map(option => ({ value: option })),
+                        },
+                        shuffleQuestions: false,
+                    },
+                    questions: q.columnA.map(columnAItem => ({
+                        rowQuestion: {
+                            title: columnAItem,
+                        },
+                    })),
+                };
+                // Note: Matching questions do not have native grading support in Google Forms.
+                break;
+            default:
+                console.warn(`Unhandled question type: ${q.type}`);
+                return null;
         }
-      );
-  
-      if (!response.ok) {
-        throw new Error(`Error adding questions: ${response.statusText}`);
-      }
+
+        return {
+            createItem: {
+                item,
+                location: {
+                    index,
+                },
+            },
+        };
+    }).filter(request => request !== null);
+
+    try {
+        const response = await fetch(
+            `https://forms.googleapis.com/v1/forms/${formId}:batchUpdate`,
+            {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    requests,
+                }),
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error(`Error adding questions: ${response.statusText}`);
+        }
     } catch (error) {
-      console.error('Error adding questions to Google Form:', error);
-      throw error;
+        console.error('Error adding questions to Google Form:', error);
+        throw error;
     }
-  };
-  
+};
+
   const updateQuizSettings = async (formId, accessToken) => {
   try {
     const response = await fetch(
