@@ -10,6 +10,7 @@ import { exportToPDF } from './QuizExport';
 
 
 const QuizGenerator = () => {
+  const token = sessionStorage.getItem('googleAuthToken');
   const [text, setText] = useState('');
   const [file, setFile] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -35,6 +36,17 @@ const QuizGenerator = () => {
   const handleFileChange = (e) => setFile(e.target.files[0]);
   const handleExportChange = (e) => setExportWithAnswers(e.target.value);
 
+  const readDOCX = async (file) => {
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+      const { value: text } = await mammoth.extractRawText({ arrayBuffer });
+      return text;
+    } catch (error) {
+      console.error("Error reading DOCX file:", error);
+      setError('Failed to read the DOCX file. Please try again.');
+    }
+  };
+
   /*
   const readPDF = async (file) => {
     const arrayBuffer = await file.arrayBuffer();
@@ -48,16 +60,6 @@ const QuizGenerator = () => {
     return text;
   };
   */
-  const readDOCX = async (file) => {
-    try {
-      const arrayBuffer = await file.arrayBuffer();
-      const { value: text } = await mammoth.extractRawText({ arrayBuffer });
-      return text;
-    } catch (error) {
-      console.error("Error reading DOCX file:", error);
-      setError('Failed to read the DOCX file. Please try again.');
-    }
-  };
   
   const readFileContent = async (file) => {
     try {
@@ -66,7 +68,6 @@ const QuizGenerator = () => {
   
       if (type.mime === 'application/pdf') {
         console.log('Reading PDF file...');
-        // PDF reading functionality would go here
       } else if (type.mime === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
         return await readDOCX(file);
       } else {
@@ -298,71 +299,214 @@ const QuizGenerator = () => {
       setError('An error occurred while updating the quiz. Please try again.');
     }
   };
-  const exportToGoogleForm = async (quizData) => {
+
+  const createGoogleForm = async () => {
+    if (!quizData) {
+      alert('Please generate a quiz first.');
+      return;
+    }
+  
     setIsLoading(true);
+    setError('');
+    
+    const accessToken = sessionStorage.getItem('googleAuthToken');
+    
+    if (!accessToken) {
+      setError('Access token not found. Please authenticate with Google.');
+      setIsLoading(false);
+      return;
+    }
   
     try {
-      const accessToken = 'YOUR_ACCESS_TOKEN'; // Replace with the actual OAuth 2.0 token
-      const apiUrl = 'https://forms.googleapis.com/v1/forms';
-  
-      // Construct the body for the Google Forms API request
-      const formBody = {
-        info: {
-          title: quizData.title || 'Untitled Quiz',
-        },
-        items: quizData.questions.map((question) => {
-          const item = {
-            title: question.question,
-            questionItem: {
-              question: {
-                required: true,
-              },
+      // Create the form
+      const createFormResponse = await fetch(
+        'https://forms.googleapis.com/v1/forms',
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            info: {
+              title: quizData.title || 'New Quiz',
             },
-          };
+          }),
+        }
+      );
   
-          if (question.type === 'multiple-choice') {
-            item.questionItem.question.choiceQuestion = {
-              type: 'RADIO',
-              options: question.options.map((option) => ({ value: option })),
-            };
-          } else if (question.type === 'short-answer') {
-            item.questionItem.question.textQuestion = {};
-          }
-  
-          // Add more question types as needed
-          return item;
-        }),
-      };
-  
-      // Make the POST request to Google Forms API
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formBody),
-      });
-  
-      const data = await response.json();
-  
-      if (response.ok) {
-        console.log('Google Form created successfully:', data);
-        alert('Google Form created successfully!');
-        window.open(`https://docs.google.com/forms/d/e/${data.formId}/viewform`, '_blank');
-      } else {
-        console.error('Failed to create Google Form:', data);
-        setError('Failed to create Google Form. Please try again.');
+      if (!createFormResponse.ok) {
+        throw new Error(`Error creating form: ${createFormResponse.statusText}`);
       }
+  
+      const createFormData = await createFormResponse.json();
+      const formId = createFormData.formId;
+  
+      // Add questions to the form
+      await addQuestionsToGoogleForm(formId, accessToken);
+  
+      // Get the form's URL
+      const formUrl = `https://docs.google.com/forms/d/${formId}/edit`;
+  
+      setQuizLink(formUrl);
+      alert('Google Form created successfully!');
     } catch (error) {
-      console.error('Error exporting to Google Form:', error);
-      setError('An error occurred while exporting to Google Form. Please try again.');
+      console.error('Error creating Google Form:', error);
+      setError('Failed to create Google Form. Please check your permissions and try again.');
     } finally {
       setIsLoading(false);
     }
   };
   
+
+  const addQuestionsToGoogleForm = async (formId, accessToken) => {
+    const requests = quizData.questions.map((q, index) => {
+      let item = {
+        title: q.question,
+      };
   
+      switch (q.type) {
+        case 'multiple-choice':
+          item.questionItem = {
+            question: {
+              required: true,
+              choiceQuestion: {
+                type: 'RADIO',
+                options: q.options.map(option => ({ value: option })),
+                shuffle: true,
+              },
+            },
+          };
+          break;
+        case 'true-false':
+          item.questionItem = {
+            question: {
+              required: true,
+              choiceQuestion: {
+                type: 'RADIO',
+                options: [
+                  { value: 'True' },
+                  { value: 'False' },
+                ],
+                shuffle: false,
+              },
+            },
+          };
+          break;
+        case 'fill-in-the-blank':
+        case 'short-answer':
+          item.questionItem = {
+            question: {
+              required: true,
+              textQuestion: {
+                paragraph: false,
+              },
+            },
+          };
+          break;
+        case 'matching':
+          item.questionGroupItem = {
+            grid: {
+              columns: {
+                type: 'RADIO',
+                options: q.columnB.map(option => ({ value: option })),
+              },
+              shuffleQuestions: false,
+            },
+            questions: q.columnA.map(columnAItem => ({
+              rowQuestion: {
+                title: columnAItem,
+              },
+            })),
+          };
+          break;
+        default:
+          console.warn(`Unhandled question type: ${q.type}`);
+          return null;
+      }
+  
+      return {
+        createItem: {
+          item,
+          location: {
+            index,
+          },
+        },
+      };
+    }).filter(request => request !== null);
+  
+    try {
+      const response = await fetch(
+        `https://forms.googleapis.com/v1/forms/${formId}:batchUpdate`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            requests,
+          }),
+        }
+      );
+  
+      if (!response.ok) {
+        throw new Error(`Error adding questions: ${response.statusText}`);
+      }
+    } catch (error) {
+      console.error('Error adding questions to Google Form:', error);
+      throw error;
+    }
+  };
+  
+  const updateQuizSettings = async (formId, accessToken) => {
+  try {
+    const response = await fetch(
+      `https://forms.googleapis.com/v1/forms/${formId}:batchUpdate`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          requests: [
+            {
+              updateSettings: {
+                settings: {
+                  quizSettings: {
+                    isQuiz: true,
+                    releaseGrades: {
+                      whenToRelease: 'LATER_AFTER_MANUAL_REVIEW',
+                    },
+                    respondentSettings: {
+                      showCorrectAnswers: true,
+                      showMissedQuestions: true,
+                      showPointValues: true,
+                    },
+                  },
+                },
+                updateMask: "quizSettings.isQuiz,quizSettings.releaseGrades,quizSettings.respondentSettings",
+              }
+            }
+          ],
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Error updating quiz settings: ${response.statusText}`);
+    }
+
+    console.log('Quiz settings updated successfully');
+  } catch (error) {
+    console.error('Error updating quiz settings:', error);
+    throw error;
+  }
+};
+
+  
+
   return (
     <div className="quiz-generator-container">
       <header className="quiz-generator-header">
@@ -615,12 +759,12 @@ const QuizGenerator = () => {
               Export Quiz Link
             </button>
             <button 
-          onClick={() => exportToGoogleForm(quizData)} 
-          className="export-button"
-          disabled={isLoading}
-        >
-          {isLoading ? 'Exporting...' : 'Export to Google Form'}
-        </button>
+              onClick={createGoogleForm} 
+              className="export-button"
+              disabled={isLoading}
+            >
+              {isLoading ? 'Exporting...' : 'Export to Google Form'}
+            </button>
           </div>
         </div>
       )}
