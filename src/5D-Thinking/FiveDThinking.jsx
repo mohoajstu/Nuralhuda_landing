@@ -1,7 +1,16 @@
 import React, { useState } from 'react';
+import PptxGenJS from 'pptxgenjs';
 import { createThread, createMessage, createRun, titleToAssistantIDMap } from '../chat/openAIUtils';
 import SlideContent from './SlideContent';
 import './FiveDAssistant.css';
+
+const titleSubtopicMap = {
+  Explore: ['Content', 'Explanation', 'Observations', 'Fascinating Facts'],
+  Compare: ['Analogy', 'Content', 'Explanation', 'Comparison'],
+  Question: ['Questions', 'Conclusion'],
+  Connect: ['Connections', "Allah's Names", 'Analogical Reflection', 'Questions For Deeper Connection', 'Contemplation And Appreciation'],
+  Appreciate: ['What ifs', 'Zikr Fikr Shukr', 'Character Lessons', 'Connect With Quran', 'Connect With Hadith']
+};
 
 const FiveDAssistant = () => {
   const [text, setText] = useState('');
@@ -30,24 +39,19 @@ const FiveDAssistant = () => {
         await fetchContentForDimension(thread.id, dimension, text, assistantTitle);
       }
     } catch (error) {
-      console.error("Error generating slides:", error);
-      setError('An error occurred while generating the slides. Please try again.');
-      setIsLoading(false);
+      handleError(error);
     }
   };
 
   const fetchContentForDimension = async (threadId, dimension, inputText, assistantTitle) => {
     const prompt = `${inputText}\n\nFocus only on creating a comprehensive ${dimension.title} thinking response.`;
-    setResponseBuffer(''); // Clear the response buffer for the new dimension
     return new Promise((resolve, reject) => {
       createMessage(threadId, prompt, assistantTitle)
         .then(() => {
           createRun(threadId, titleToAssistantIDMap[assistantTitle], (message) => handleMessage(message, dimension.name, resolve), handleError, assistantTitle);
         })
         .catch(error => {
-          console.error(`Error generating content for ${dimension.name}:`, error);
-          setError(`An error occurred while generating the ${dimension.title} slides. Please try again.`);
-          setIsLoading(false);
+          handleError(error);
           reject(error);
         });
     });
@@ -76,6 +80,7 @@ const FiveDAssistant = () => {
 
   const createSlidesFromResponse = (response, dimension) => {
     const slides = [];
+  
     if (dimension === 'Explore') {
       slides.push({ dimension: 'Explore', content: response.content });
       slides.push({ dimension: 'Explore', explanation: response.explanation });
@@ -96,12 +101,11 @@ const FiveDAssistant = () => {
         allahNames: {
           whatItTells: response.allahNames.whatItTells,
           namesInEnglish: response.allahNames.namesInEnglish,
-          namesInArabic: response.allahNames.namesInArabic
+          namesInArabic: response.allahNames.namesInArabic,
         },
-        reflection: response.reflection,
         analogicalReflection: response.analogicalReflection,
         questionsForDeeperConnection: response.questionsForDeeperConnection,
-        contemplationAndAppreciation: response.contemplationAndAppreciation
+        contemplationAndAppreciation: response.contemplationAndAppreciation,
       });
     } else if (dimension === 'Appreciate') {
       slides.push({ dimension: 'Appreciate', whatIfs: response.whatIfs });
@@ -110,18 +114,309 @@ const FiveDAssistant = () => {
         zikrFikrShukr: {
           zikr: response.zikrFikrShukr.zikr,
           fikr: response.zikrFikrShukr.fikr,
-          shukr: response.zikrFikrShukr.shukr
-        }
+          shukr: response.zikrFikrShukr.shukr,
+        },
       });
       slides.push({ dimension: 'Appreciate', characterLessons: response.characterLessons });
-      slides.push({ dimension: 'Appreciate', connectWithQuranHadith: response.connectWithQuranHadith });
+      slides.push({ dimension: 'Appreciate', connectWithQuran: response.connectWithQuran });
+      slides.push({ dimension: 'Appreciate', connectWithHadith: response.connectWithHadith });
     }
+  
     return slides;
   };
+  
+
+
+  const exportSlidesAsPptx = () => {
+    const pptx = new PptxGenJS();
+  
+    // Initialize subtopicIndex to 0 for each dimension
+    const subtopicIndexes = {
+      Explore: 0,
+      Compare: 0,
+      Question: 0,
+      Connect: 0,
+      Appreciate: 0,
+    };
+  
+    slides.forEach((slideContent) => {
+      const slide = pptx.addSlide();
+      const dimension = slideContent.dimension;
+  
+      // Get the current subtopic index for this dimension
+      const subtopicIndex = subtopicIndexes[dimension];
+  
+      // Get the corresponding subtopic title
+      const subtopic = titleSubtopicMap[dimension][subtopicIndex];
+  
+      // Increment the subtopic index for the next slide in this dimension
+      subtopicIndexes[dimension]++;
+  
+      // Add title centered at the top
+      slide.addText(`${dimension} - ${subtopic}`, {
+        x: 0.5,
+        y: 0.5,
+        w: '90%',
+        fontSize: 30,
+        bold: true,
+        color: 'ffffff',
+        align: 'center',
+      });
+  
+      // Add the content based on the subtopic and dimension
+      switch (dimension) {
+        case 'Explore':
+          if (subtopic === 'Content' && slideContent.content) {
+            slide.addText(slideContent.content, {
+              x: '10%',
+              y: '50%',
+              w: '80%',
+              fontSize: 24,
+              color: 'ffffff',
+              align: 'center',
+              valign: 'middle',
+            });
+          } else if (subtopic === 'Explanation' && slideContent.explanation) {
+            slide.addText(slideContent.explanation, {
+              x: '10%',
+              y: '50%',
+              w: '80%',
+              fontSize: 20,
+              color: 'ffffff',
+              align: 'center',
+              valign: 'middle',
+            });
+          } else if (subtopic === 'Observations' && slideContent.observations) {
+            slide.addText(slideContent.observations, {
+              x: '10%',
+              y: '50%',
+              w: '80%',
+              fontSize: 20,
+              color: 'ffffff',
+              align: 'center',
+              valign: 'middle',
+            });
+          } else if (subtopic === 'Fascinating Facts' && slideContent.fascinatingFacts) {
+            slide.addText(slideContent.fascinatingFacts, {
+              x: '10%',
+              y: '50%',
+              w: '80%',
+              fontSize: 20,
+              color: 'ffffff',
+              align: 'center',
+              valign: 'middle',
+            });
+          }
+          slide.background = { fill: "f4a460" };
+          break;
+  
+        case 'Compare':
+          if (subtopic === 'Analogy' && slideContent.analogy) {
+            slide.addText(slideContent.analogy, {
+              x: '10%',
+              y: '50%',
+              w: '80%',
+              fontSize: 24,
+              color: 'ffffff',
+              align: 'center',
+              valign: 'middle',
+            });
+          } else if (subtopic === 'Content' && slideContent.content) {
+            slide.addText(slideContent.content, {
+              x: '10%',
+              y: '50%',
+              w: '80%',
+              fontSize: 20,
+              color: 'ffffff',
+              align: 'center',
+              valign: 'middle',
+            });
+          } else if (subtopic === 'Explanation' && slideContent.explanation) {
+            slide.addText(slideContent.explanation, {
+              x: '10%',
+              y: '50%',
+              w: '80%',
+              fontSize: 20,
+              color: 'ffffff',
+              align: 'center',
+              valign: 'middle',
+            });
+          } else if (subtopic === 'Comparison' && slideContent.comparison) {
+            slide.addText(slideContent.comparison, {
+              x: '10%',
+              y: '50%',
+              w: '80%',
+              fontSize: 20,
+              color: 'ffffff',
+              align: 'center',
+              valign: 'middle',
+            });
+          }
+          slide.background = { fill: "66cdaa" };
+          break;
+  
+        case 'Question':
+          if (subtopic === 'Questions' && slideContent.questions && slideContent.questions.length > 0) {
+            slide.addText(slideContent.questions.join('\n'), {
+              x: '10%',
+              y: '50%',
+              w: '80%',
+              fontSize: 20,
+              color: 'ffffff',
+              align: 'center',
+              valign: 'middle',
+            });
+          } else if (subtopic === 'Conclusion' && slideContent.conclusion) {
+            slide.addText(slideContent.conclusion, {
+              x: '10%',
+              y: '50%',
+              w: '80%',
+              fontSize: 20,
+              color: 'ffffff',
+              align: 'center',
+              valign: 'middle',
+            });
+          }
+          slide.background = { fill: "f08080" };
+          break;
+  
+        case 'Connect':
+          if (subtopic === 'Connections' && slideContent.connections) {
+            slide.addText(slideContent.connections, {
+              x: '10%',
+              y: '50%',
+              w: '80%',
+              fontSize: 24,
+              color: 'ffffff',
+              align: 'center',
+              valign: 'middle',
+            });
+          } else if (subtopic === "Allah's Names" && slideContent.allahNames && slideContent.allahNames.whatItTells) {
+            slide.addTable([
+              [
+                { text: 'What it tells us about Allah', options: { bold: true, color: 'ffffff' } },
+                { text: 'Names in English', options: { bold: true, color: 'ffffff' } },
+                { text: 'Names in Arabic', options: { bold: true, color: 'ffffff' } }
+              ],
+              ...(slideContent.allahNames.whatItTells.map((item, index) => [
+                item || '',  // Ensuring no undefined values are passed
+                slideContent.allahNames.namesInEnglish[index] || '',
+                slideContent.allahNames.namesInArabic[index] || ''
+              ]) || [])
+            ], {
+              x: '10%',
+              y: '20%',
+              w: '80%',
+              fontSize: 12,
+              color: 'ffffff',
+            });
+          } else if (subtopic === 'Analogical Reflection' && slideContent.analogicalReflection) {
+            slide.addText(slideContent.analogicalReflection, {
+              x: '10%',
+              y: '50%',
+              w: '80%',
+              fontSize: 24,
+              color: 'ffffff',
+              align: 'center',
+              valign: 'middle',
+            });
+          } else if (subtopic === 'Questions For Deeper Connection' && slideContent.questionsForDeeperConnection) {
+            slide.addText(slideContent.questionsForDeeperConnection.join('\n'), {
+              x: '10%',
+              y: '50%',
+              w: '80%',
+              fontSize: 24,
+              color: 'ffffff',
+              align: 'center',
+              valign: 'middle',
+            });
+          } else if (subtopic === 'Contemplation And Appreciation' && slideContent.contemplationAndAppreciation) {
+            slide.addText(slideContent.contemplationAndAppreciation, {
+              x: '10%',
+              y: '50%',
+              w: '80%',
+              fontSize: 24,
+              color: 'ffffff',
+              align: 'center',
+              valign: 'middle',
+            });
+          }
+          slide.background = { fill: "90ee90" };
+          break;
+  
+        case 'Appreciate':
+          if (subtopic === 'What ifs' && slideContent.whatIfs) {
+            slide.addText(slideContent.whatIfs, {
+              x: '10%',
+              y: '50%',
+              w: '80%',
+              fontSize: 24,
+              color: 'ffffff',
+              align: 'center',
+              valign: 'middle',
+            });
+          } else if (subtopic === 'Zikr Fikr Shukr' && slideContent.zikrFikrShukr && slideContent.zikrFikrShukr.zikr) {
+            slide.addTable([
+              [
+                { text: 'Zikr', options: { bold: true, color: 'ffffff' } },
+                { text: 'Fikr', options: { bold: true, color: 'ffffff' } },
+                { text: 'Shukr', options: { bold: true, color: 'ffffff' } }
+              ],
+              ...(slideContent.zikrFikrShukr.zikr.map((item, index) => [
+                item || '',
+                slideContent.zikrFikrShukr.fikr[index] || '',
+                slideContent.zikrFikrShukr.shukr[index] || ''
+              ]) || [])
+            ], {
+              x: '10%',
+              y: '30%',
+              w: '80%',
+              fontSize: 14,
+              color: 'ffffff',
+            });
+          } else if (subtopic === 'Character Lessons' && slideContent.characterLessons) {
+            slide.addText(slideContent.characterLessons, {
+              x: '10%',
+              y: '50%',
+              w: '80%',
+              fontSize: 20,
+              color: 'ffffff',
+              align: 'center',
+              valign: 'middle',
+            });
+          } else if (subtopic === 'Connect With Quran' && slideContent.connectWithQuran) {
+            slide.addText(slideContent.connectWithQuran, {
+              x: '10%',
+              y: '50%',
+              w: '80%',
+              fontSize: 20,
+              color: 'ffffff',
+              align: 'center',
+              valign: 'middle',
+            });
+          } else if (subtopic === 'Connect With Hadith' && slideContent.connectWithHadith) {
+            slide.addText(slideContent.connectWithHadith, {
+              x: '10%',
+              y: '50%',
+              w: '80%',
+              fontSize: 20,
+              color: 'ffffff',
+              align: 'center',
+              valign: 'middle',
+            });
+          }
+          slide.background = { fill: "dda0dd" };
+          break;
+      }
+    });
+  
+    pptx.writeFile({ fileName: '5D_Lesson_Plan.pptx' });
+  };
+  
 
   const handleError = (error) => {
-    console.error("Error handling message:", error);
-    setError('An error occurred while handling the response. Please try again.');
+    console.error("Error occurred:", error);
+    setError('An error occurred. Please try again.');
     setIsLoading(false);
   };
 
@@ -151,6 +446,7 @@ const FiveDAssistant = () => {
           {slides.map((slide, index) => (
             <SlideContent key={index} slide={slide} />
           ))}
+          <button className="export-button" onClick={exportSlidesAsPptx}>Export as Powerpoint</button>
         </div>
       )}
     </div>
