@@ -77,12 +77,12 @@ const FetchQuiz = () => {
       }
       return userAnswers[index] === undefined || userAnswers[index] === '';
     });
-
+  
     if (unansweredQuestions) {
       alert('Please answer all questions before submitting.');
       return;
     }
-
+  
     let newScore = 0;
     quizData.questions.forEach((question, index) => {
       if (question.type === 'matching') {
@@ -105,23 +105,32 @@ const FetchQuiz = () => {
     });
     setScore(newScore);
     setSubmitted(true);
-
+  
+    const timestamp = new Date().toLocaleString();
+    const email = user ? user.email : 'Anonymous';
+  
+    const submissionData = {
+      timestamp,
+      email,
+      score: `${newScore} / ${quizData.questions.length}`,
+    };
+  
+    quizData.questions.forEach((question, index) => {
+      submissionData[`Q${index + 1}`] = userAnswers[index] || 'No answer';
+    });
+  
     if (user && !proceedWithoutSignIn) {
       try {
         // Save to user's QuizzesSubmitted
         await setDoc(doc(db, "users", user.uid, "QuizzesSubmitted", quizId), {
+          ...submissionData,
           quizId,
-          score: newScore,
           answers: userAnswers
         });
-
+  
         // Save to Quiz's Submissions subcollection
-        await setDoc(doc(db, "quizzes", quizId, "Submissions", user.uid), {
-          userId: user.uid,
-          score: newScore,
-          answers: userAnswers
-        });
-
+        await setDoc(doc(db, "quizzes", quizId, "Submissions", user.uid), submissionData);
+  
         console.log("Quiz results saved successfully");
       } catch (error) {
         console.error("Error saving quiz results:", error);
@@ -131,7 +140,7 @@ const FetchQuiz = () => {
       console.log("Quiz results not saved - user not signed in or chose to proceed without signing in");
     }
   };
-
+  
   const isCorrect = (questionIndex) => {
     const question = quizData.questions[questionIndex];
     if (question.type === 'matching') {
