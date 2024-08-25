@@ -75,13 +75,13 @@
   }
   
   .google-login-button {
-    background-color: #4285f4;
-    color: white;
+    background-color: white;
+    color: black;
     margin-top: 10px;
   }
   
   .google-login-button:hover {
-    background-color: #357ae8;
+    background-color: grey;
   }
   
   .google-logo {
@@ -98,6 +98,51 @@
   .modal-content p:hover {
     text-decoration: underline;
   }
+
+
+.sign-in-prompt {
+    background-color: #e0dac0;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    max-width: 400px;
+    margin: 100px auto;
+    font-family: 'Roboto', sans-serif;
+  }
+  
+  .sign-in-prompt h2 {
+    color: #144040;
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  
+  .sign-in-prompt p {
+    font-size: 16px;
+    margin-bottom: 30px;
+    color: #333;
+  }
+  
+  .sign-in-prompt button {
+    background-color: #144040;
+    color: #fff;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    margin: 10px;
+    transition: background-color 0.3s;
+  }
+  
+  .sign-in-prompt button:hover {
+    background-color: #0f3030;
+  }
+  
+  .sign-in-prompt button:focus {
+    outline: none;
+  }
+  
   
   .close-button {
     position: absolute;
