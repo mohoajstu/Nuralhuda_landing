@@ -12,11 +12,11 @@ import { exportToPDF } from './QuizExport';
 
 
 const QuizGenerator = () => {
-<<<<<<< HEAD
+
   const [user, loading] = useAuthState(auth); // Get the authenticated user
-=======
+
   const token = sessionStorage.getItem('googleAuthToken');
->>>>>>> 8e8c94d4d0a1a200cf11a96e1d24bbcc6f4a083f
+
   const [text, setText] = useState('');
   const [file, setFile] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
