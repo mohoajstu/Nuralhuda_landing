@@ -381,7 +381,7 @@ const QuizGenerator = () => {
   const addQuestionsToGoogleForm = async (formId, accessToken) => {
     const requests = quizData.questions.map((q, index) => {
         let item = {
-            title: q.question,
+            title: q.question || q.instructions,  // Use instructions for matching type
         };
 
         switch (q.type) {
@@ -463,21 +463,28 @@ const QuizGenerator = () => {
                 };
                 break;
             case 'matching':
-                item.questionGroupItem = {
-                    grid: {
-                        columns: {
-                            type: 'RADIO',
-                            options: q.columnB.map(option => ({ value: option })),
+                item.questionItem = {
+                    question: {
+                        required: true,
+                        choiceQuestion: {
+                            type: 'GRID',
+                            rows: q.columnA.map(item => ({ value: item })),  // Row titles from columnA
+                            columns: q.columnB.map(option => ({ value: option })),  // Column titles from columnB
+                            grading: {
+                                pointValue: q.columnA.length,  // Total points equal to the number of matches
+                                correctAnswers: {
+                                    answers: q.columnA.map((item, rowIndex) => ({
+                                        row: { value: item },  // Identify the row
+                                        column: { value: q.columnB[q.correctMatches[rowIndex]] }  // Correct column based on correctMatches
+                                    }))
+                                }
+                            }
                         },
-                        shuffleQuestions: false,
+                        generalFeedback: {
+                            text: q.explanation  // Optional: Explanation for the correct answers
+                        }
                     },
-                    questions: q.columnA.map(columnAItem => ({
-                        rowQuestion: {
-                            title: columnAItem,
-                        },
-                    })),
                 };
-                // Note: Matching questions do not have native grading support in Google Forms.
                 break;
             default:
                 console.warn(`Unhandled question type: ${q.type}`);
@@ -517,6 +524,7 @@ const QuizGenerator = () => {
         throw error;
     }
 };
+
 
   const updateQuizSettings = async (formId, accessToken) => {
   try {
