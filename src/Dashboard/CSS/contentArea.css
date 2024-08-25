@@ -2,6 +2,8 @@
   margin-left: 250px;
   padding: 20px;
   transition: margin-left 0.3s ease-in-out;
+  background: linear-gradient(to bottom right, #f7e3b1, #dbb78c);
+
 }
 
 .content-area.sidebar-closed {

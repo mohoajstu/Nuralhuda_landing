@@ -78,7 +78,7 @@ const Login = () => {
             await signInWithEmailAndPassword(auth, email, password);
             setEmail('');
             setPassword('');
-            navigate('/');
+            navigate('/dashboard');
         } catch (error) {
             console.error(error);
             setError("Failed to log in. Check your email and password.");
@@ -135,7 +135,7 @@ const Login = () => {
                 });
             }
 
-            navigate('/');
+            navigate('/dashboard');
         } catch (error) {
             console.error(error);
             setError("Failed to log in with Google.");

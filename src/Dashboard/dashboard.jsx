@@ -17,6 +17,7 @@ const Dashboard = () => {
                 setActiveContent={setActiveContent} 
                 isOpen={isSidebarOpen}
                 toggleSidebar={toggleSidebar}
+                activeButton={activeContent}
             />
             <ContentArea 
                 activeContent={activeContent} 
