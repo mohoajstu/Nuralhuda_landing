@@ -1,4 +1,3 @@
-// src/App.jsx
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { useAuthState } from 'react-firebase-hooks/auth';
@@ -19,8 +18,8 @@ import QuizGenerator from './quiz/QuizGenerator';
 import FetchQuiz from './quiz/FetchQuiz'; // Import the component to fetch and display the quiz
 import AutograderPage from './AutoGrader/AutGraderPage';
 import Onboarding from './AutoGrader/onboarding';
-
 import FiveDThinking from './5D-Thinking/FiveDThinking'; // Import the 5D Assistant component
+import ProtectedRoute from './ProtectedRoute'; // Import the ProtectedRoute component
 
 export const scroll = new SmoothScroll('a[href*="#"]', {
   speed: 1000,
@@ -60,12 +59,12 @@ const App = () => {
         <Route path="/contact-form" element={<Contact />} />
         <Route path="/payment-success/:accountToken" element={<PaymentSuccess />} />
         <Route path="/chat/:chatbotType" element={<ChatScreen />} />
-        <Route path="/faq" element={<FAQ />} /> {/* Add FAQ route */}
-        <Route path="/quiz-generator" element={<QuizGenerator />} />
-        <Route path="/quiz/:quizId" element={<FetchQuiz />} /> {/* Add this route */}
-        <Route path="/autograder" element={<AutograderPage />} />
-        <Route path="/onboarding" element={<Onboarding />} />
-        <Route path="/5dthinking" element={<FiveDThinking />} /> {/* Add 5D Assistant route */}
+        <Route path="/faq" element={<FAQ />} />
+        <Route path="/quiz-generator" element={<ProtectedRoute element={QuizGenerator} />} />
+        <Route path="/quiz/:quizId" element={<FetchQuiz />} />
+        <Route path="/autograder" element={<ProtectedRoute element={AutograderPage} />} />
+        <Route path="/onboarding" element={<ProtectedRoute element={Onboarding} />} />
+        <Route path="/5dthinking" element={<ProtectedRoute element={FiveDThinking} />} />
         <Route path="*" element={<div>404 Not Found</div>} />
       </Routes>
     </div>

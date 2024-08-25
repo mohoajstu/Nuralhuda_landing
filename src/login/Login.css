@@ -1,0 +1,214 @@
+/* Login.css */
+.login-container {
+    position: relative; /* Add this line */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    padding-top: 100px;
+    /*background-color: #114040;  Updated background color */
+    background: linear-gradient(to right, #114040 0%, #144c4c 100%); /* Updated gradient background */
+  }
+  
+  .login-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 2em;
+    background: #dcca98; /* Light background for form */
+    border-radius: 5px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Slightly stronger shadow */
+    max-width: 600px; /* Larger max-width for larger screens */
+    width: 50%; /* Set to 50% for larger screens */
+    margin: auto; /* Center the form in the available space */
+  }
+  
+  .login-form h2 {
+    text-align: center;
+    margin-bottom: 1em;
+    color: #144c4c; /* Header color */
+  }
+  
+  @media (max-width: 1024px) {
+    .login-form {
+      width: 70%; /* Set to 70% for medium screens */
+    }
+  }
+  
+  @media (max-width: 600px) {
+    .login-form {
+      width: 90%; /* Set to 90% for small screens */
+      padding: 1em;
+    }
+  
+    .input-group input,
+    .login-button,
+    .logout-button {
+      padding: 0.5em;
+    }
+  }
+  
+  .input-group {
+    margin-bottom: 1.5em; /* Increased margin for better spacing */
+  }
+  
+  
+  .input-group label {
+    display: block;
+    margin-bottom: 0.5em;
+    color: #144c4c; /* Label color */
+  }
+  
+  .input-group input {
+    width: 100%;
+    padding: 0.75em;
+    border: 1px solid #114040; /* Border color */
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+  
+  .login-button {
+    width: 100%;
+    padding: 1em;
+    background-color: #144c4c; /* Primary button color */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s; /* Smooth transition for hover effect */
+  }
+  
+  .login-button:hover {
+    background-color: #114040; /* Darker shade on hover */
+  }
+  
+  .logout-button {
+    width: 100%;
+    padding: 1em;
+    margin-top: 1em; /* Added margin for spacing */
+    background-color: #ccc; /* Neutral logout button */
+    color: #333;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.3s;
+  }
+  
+  .logout-button:hover {
+    background-color: #bbb;
+  }
+  
+  @media (max-width: 600px) {
+    .login-form {
+      padding: 1em;
+    }
+  
+    .input-group input,
+    .login-button,
+    .logout-button {
+      padding: 0.5em;
+    }
+  }
+  
+  /* Password Reset Form Styles */
+  .password-reset-form {
+    margin-top: 2em; /* Space from the login form */
+    text-align: center;
+  }
+  
+  .password-reset-input {
+    padding: 0.75em;
+    margin-bottom: 1em; /* Space between input and button */
+    width: 100%; /* Full width of the form */
+    border: 1px solid #114040; /* Consistent with other inputs */
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+  
+  .password-reset-button {
+    width: 100%;
+    padding: 1em;
+    background-color: #dcca98; /* Light background to match the form */
+    color: #144c4c; /* Text color to match headings */
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s; /* Smooth transition for hover effect */
+  }
+  
+  .password-reset-button:hover {
+    background-color: #bbaa88; /* Darker shade on hover */
+  }
+  
+  .reset-toggle {
+    background: none;
+    border: none;
+    color: #144c4c; /* Match link color */
+    padding: 0.5em;
+    margin-top: 1em;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+  
+  .password-reset-form {
+    margin-top: 1em; /* Space from the toggle link */
+  }
+  
+  .password-reset-button {
+    background-color: #dcca98;
+    color: #144c4c;
+    border: none;
+    padding: 0.75em;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 0.5em;
+  }
+  
+  .reset-toggle {
+    background: none;
+    border: none;
+    color: #144c4c;
+    padding: 0.5em;
+    margin-top: 1em;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+  
+  .form-toggle {
+    color: #144c4c; /* Dark color for contrast */
+    cursor: pointer; /* Make it obvious it's clickable */
+    text-align: center; /* Center align the text */
+    margin-top: 1em; /* Space from the button */
+    text-decoration: underline; /* Underline to indicate it's clickable */
+  }
+  
+  
+  .google-login-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #144040; /* Updated background color to match theme */
+    color: #dcca98; /* Text color matching the theme */
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+    margin-top: 1em;
+    transition: background-color 0.3s;
+  }
+  
+  .google-login-button:hover {
+    background-color: #113737; /* Slightly darker shade on hover */
+  }
+  
+  .google-logo {
+    height: 50px;
+    width: 50px;
+    margin-right: 8px;
+  }
+  
+  

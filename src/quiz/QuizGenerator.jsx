@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { auth } from '../config/firebase-config';
 import { createThread, createMessage, createRun, titleToAssistantIDMap } from '../chat/openAIUtils';
 import { QuizQuestion, MultipleChoice, TrueFalse, FillInTheBlank, Matching, Explanation, ShortAnswer } from './QuizComponents';
 import { db } from '../config/firebase-config';
-import { collection, addDoc, doc, updateDoc } from 'firebase/firestore';
+import { collection, addDoc, doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
 import './QuizGenerator.css';
 import mammoth from 'mammoth';
 import { fileTypeFromBuffer } from 'file-type';
@@ -10,7 +12,11 @@ import { exportToPDF } from './QuizExport';
 
 
 const QuizGenerator = () => {
+
+  const [user, loading] = useAuthState(auth); // Get the authenticated user
+
   const token = sessionStorage.getItem('googleAuthToken');
+
   const [text, setText] = useState('');
   const [file, setFile] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -109,7 +115,7 @@ const QuizGenerator = () => {
         try {
           const response = JSON.parse(prevAccumulated);
           setQuizData(response);
-          saveQuizToFirestore(response);
+          saveQuizToFirestore(response, user.uid); // Pass user ID here
         } catch (error) {
           console.error("Error parsing response:", error);
           setError('An error occurred while parsing the quiz data. Please try again.');
@@ -127,7 +133,7 @@ const QuizGenerator = () => {
     setIsLoading(false);
   };
 
-  const saveQuizToFirestore = async (quiz) => {
+  const saveQuizToFirestore = async (quiz, userId) => {
     try {
       const stringifiedQuiz = JSON.stringify(quiz);
       const docRef = await addDoc(collection(db, "quizzes"), { data: stringifiedQuiz });
@@ -135,6 +141,17 @@ const QuizGenerator = () => {
       setQuizDocId(docRef.id);
       const newQuizLink = `${window.location.origin}/quiz/${docRef.id}`;
       setQuizLink(newQuizLink);
+
+      // Ensure the user's document exists and add quiz to QuizzesOwned
+      const userDocRef = doc(db, "users", userId);  // Use the actual user ID
+      const userDoc = await getDoc(userDocRef);
+      if (!userDoc.exists()) {
+        await setDoc(userDocRef, {});  // Initialize user document if it doesn't exist
+      }
+
+      // Add quiz to the QuizzesOwned subcollection
+      const userQuizRef = doc(db, "users", userId, "QuizzesOwned", docRef.id);
+      await setDoc(userQuizRef, { quizId: docRef.id, title: quiz.title });
     } catch (error) {
       console.error("Error saving quiz: ", error);
       setError('An error occurred while saving the quiz. Please try again.');
@@ -145,7 +162,7 @@ const QuizGenerator = () => {
     setUserAnswers((prev) => ({ ...prev, [questionIndex]: answer }));
   };
 
-  const handleQuizSubmit = () => {
+  const handleQuizSubmit = async () => {
     try {
       const unansweredQuestions = quizData.questions.some((question, index) => {
         if (question.type === 'matching') {
@@ -181,6 +198,14 @@ const QuizGenerator = () => {
       });
       setScore(newScore);
       setSubmitted(true);
+
+      // Save to user's QuizzesSubmitted
+      const userSubmissionRef = doc(db, "users", user.uid, "QuizzesSubmitted", quizDocId);  // Use the actual user ID
+      await setDoc(userSubmissionRef, { quizId: quizDocId, score, answers: userAnswers });
+
+      // Save to Quiz's Submissions subcollection
+      const quizSubmissionRef = doc(db, "quizzes", quizDocId, "Submissions", user.uid);  // Use the actual user ID
+      await setDoc(quizSubmissionRef, { userId: user.uid, score, answers: userAnswers });
     } catch (error) {
       console.error("Error submitting quiz:", error);
       setError('An error occurred while submitting the quiz. Please try again.');
@@ -226,6 +251,7 @@ const QuizGenerator = () => {
       setEditedQuizData(JSON.parse(JSON.stringify(quizData)));
     }
   };
+
   const handleQuestionEdit = (index, field, value) => {
     setEditedQuizData(prevData => {
       const newData = { ...prevData };
