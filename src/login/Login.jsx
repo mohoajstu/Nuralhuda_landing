@@ -81,7 +81,7 @@ const Login = () => {
             await signInWithEmailAndPassword(auth, email, password);
             setEmail('');
             setPassword('');
-            navigate('/');
+            navigate('/dashboard');
         } catch (error) {
             console.error(error);
             setError("Failed to log in. Check your email and password.");
@@ -141,7 +141,10 @@ const Login = () => {
             // Store the token in session storage
             sessionStorage.setItem('googleAuthToken', token);
 
-            navigate('/');
+            // Store the token in session storage
+            sessionStorage.setItem('googleAuthToken', token);
+
+            navigate('/dashboard');
         } catch (error) {
             console.error(error);
             setError("Failed to log in with Google.");
