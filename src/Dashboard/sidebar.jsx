@@ -1,16 +1,15 @@
-// Sidebar.jsx
 import React from 'react';
 import './CSS/sidebar.css';
 import { useNavigate } from 'react-router-dom';
 import logo from '../img/about-nbg.png';
 
-const Sidebar = ({ isOpen, toggleSidebar, setActiveContent, activeButton }) => {
+const Sidebar = ({ isOpen, toggleSidebar, setActiveContent, activeButton, hasNavbar }) => {
     const navigate = useNavigate();
     
     return (
-        <div className={`sidebar-container ${isOpen ? 'open' : 'closed'}`}>
+        <div className={`sidebar-container ${isOpen ? 'open' : 'closed'} ${hasNavbar ? 'with-navbar' : ''}`}>
             <div className="sidebar">
-                <a href="/">
+                <a href="/dashboard">
                     <div className="dashbrand-container">
                         <img src={logo} alt="Nur Al Huda Logo" className="dashbrand-logo" />
                         <div>
@@ -42,7 +41,7 @@ const Sidebar = ({ isOpen, toggleSidebar, setActiveContent, activeButton }) => {
                             <button className="sub-button">Preferences</button>
                             <button className="sub-button">Billing</button>
                         </div> */}
-                        
+
                         <button className={`main-button underline-effect ${activeButton === 'tools' ? 'active' : ''}`} onClick={() => setActiveContent('tools')}>
                             Tools
                         </button>

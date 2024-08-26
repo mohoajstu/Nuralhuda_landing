@@ -21,9 +21,10 @@ import Onboarding from './AutoGrader/onboarding';
 import FiveDThinking from './5D-Thinking/FiveDThinking';
 import ProtectedRoute from './ProtectedRoute';
 import Dashboard from './Dashboard/dashboard';
-// Import the new components
 import PrivacyPolicyPage from './home/PrivacyPolicyPage';
 import TermsOfUsePage from './home/TermsOfUsePage';
+// Import the Sidebar component
+import Sidebar from './Dashboard/sidebar';
 
 export const scroll = new SmoothScroll('a[href*="#"]', {
   speed: 1000,
@@ -34,6 +35,14 @@ const App = () => {
   const location = useLocation();
   const [user, loading] = useAuthState(auth);
   const [landingPageData, setLandingPageData] = useState(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+  // Determine if the navbar should be shown based on the current route
+  const shouldShowNavbar = location.pathname === '/' || 
+                           location.pathname === '/login' || 
+                           location.pathname === '/pricing' || 
+                           location.pathname === '/payment-success' || 
+                           location.pathname === '/contact-form';
 
   useEffect(() => {
     setLandingPageData(JsonData);
@@ -48,13 +57,18 @@ const App = () => {
     }
   }, [location]);
 
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
   if (loading) {
     return <div>Loading...</div>;
   }
 
   return (
     <div className="App">
-      {(location.pathname === '/' || location.pathname === '/login' || location.pathname === '/pricing' || location.pathname === '/payment-success' || location.pathname === '/contact-form' || location.pathname === '/quiz-generator' || location.pathname === '/five-d-assistant') && <Navigation />}
+      {user && <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} hasNavbar={shouldShowNavbar} />}
+      {shouldShowNavbar && <Navigation />}
       <Routes>
         <Route path="/" element={landingPageData ? <Home data={landingPageData} /> : <div>Loading...</div>} />
         <Route path="/login" element={<Login />} />
@@ -69,10 +83,9 @@ const App = () => {
         <Route path="/autograder" element={<ProtectedRoute element={AutograderPage} />} />
         <Route path="/onboarding" element={<ProtectedRoute element={Onboarding} />} />
         <Route path="/5dthinking" element={<ProtectedRoute element={FiveDThinking} />} />
-        {/* Add the routes for Privacy Policy and Terms of Use */}
         <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
         <Route path="/terms-of-use" element={<TermsOfUsePage />} />
-        <Route path="/dashboard" element={<Dashboard />} /> {/* Add 5D Assistant route */}
+        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="*" element={<div>404 Not Found</div>} />
       </Routes>
     </div>
