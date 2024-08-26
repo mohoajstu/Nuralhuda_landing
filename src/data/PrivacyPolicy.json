@@ -1,0 +1,46 @@
+{
+  "title": "Privacy Policy",
+  "effective_date": "August 20, 2024",
+  "sections": [
+    {
+      "heading": "Introduction",
+      "content": "At Nur Al Huda, we respect your privacy and are committed to protecting your personal information. This Privacy Policy outlines how we collect, use, and disclose your personal data when you interact with our services, including our website, applications, and any related services (collectively, 'Services'). This policy does not apply to data we process on behalf of customers of our business offerings, such as our API. Our use of that data is governed by our customer agreements covering access to and use of those offerings."
+    },
+    {
+      "heading": "Personal Information We Collect",
+      "content": "We collect personal information ('Personal Information') relating to you in the following ways:\n\n- Account Information: When you create an account with us, we collect information associated with your account, such as your name, email address, and account credentials.\n- User Content: We collect Personal Information included in the input, file uploads, or feedback you provide to our Services.\n- Communication Information: If you communicate with us, we collect your name, contact information, and the content of your messages.\n- Social Media Information: When you interact with our social media pages, we collect the information you provide, such as your contact details.\n- Technical Information: We collect data automatically when you interact with our Services, including log data, usage data, device information, and cookies."
+    },
+    {
+      "heading": "How We Use Personal Information",
+      "content": "We use Personal Information for purposes including:\n\n- Providing and maintaining our Services;\n- Improving our Services and conducting research;\n- Communicating with you about our Services;\n- Preventing fraud, protecting security, and complying with legal obligations;\n- Aggregating or de-identifying data for research and analytics."
+    },
+    {
+      "heading": "Disclosure of Personal Information",
+      "content": "We may disclose your Personal Information to:\n\n- Service Providers: For assistance in providing and maintaining our Services;\n- Business Transfers: In connection with mergers, acquisitions, or other corporate transactions;\n- Legal Obligations: To comply with legal requirements or protect our rights and users;\n- Affiliates: For uses consistent with this Privacy Policy."
+    },
+    {
+      "heading": "Your Rights",
+      "content": "Depending on your location, you may have the right to:\n\n- Access your Personal Information;\n- Request deletion or correction of your Personal Information;\n- Object to the processing of your Personal Information;\n- Withdraw consent where processing is based on consent.\n\nYou can exercise these rights by contacting us at [contact information]."
+    },
+    {
+      "heading": "Security and Retention",
+      "content": "We use commercially reasonable security measures to protect your Personal Information. We retain your Personal Information only as long as necessary to fulfill the purposes outlined in this policy or as required by law."
+    },
+    {
+      "heading": "Children’s Privacy",
+      "content": "Our Services are not directed to children under 13, and we do not knowingly collect Personal Information from children under 13. If we learn that we have collected such information, we will take steps to delete it."
+    },
+    {
+      "heading": "International Users",
+      "content": "By using our Services, you understand that your Personal Information may be processed and stored in our facilities in the United States or other jurisdictions. We ensure appropriate safeguards for transferring Personal Information internationally."
+    },
+    {
+      "heading": "Changes to the Privacy Policy",
+      "content": "We may update this Privacy Policy from time to time. When we do, we will post the updated version on this page."
+    },
+    {
+      "heading": "How to Contact Us",
+      "content": "If you have any questions or concerns about this Privacy Policy, please contact us at <a href='https://nuralhuda.ca/contact-form'>our contact form</a>."
+    }
+  ]
+}

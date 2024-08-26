@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { auth } from './config/firebase-config'; // Ensure path accuracy
-import { Navigation } from './home/navigation'; // Adjust according to your structure
+import { auth } from './config/firebase-config';
+import { Navigation } from './home/navigation';
 import Home from './home/Home';
 import Login from './login/Login';
 import ChatScreen from './chat/chatScreen';
@@ -13,13 +13,17 @@ import Pricing from './pricing/Pricing';
 import Contact from './pricing/ContactForm';
 import AccountSetup from './pricing/AccountSetup';
 import PaymentSuccess from './pricing/PaymentSuccess';
-import FAQ from './home/FAQ'; // Import FAQ component
+import FAQ from './home/FAQ';
 import QuizGenerator from './quiz/QuizGenerator';
-import FetchQuiz from './quiz/FetchQuiz'; // Import the component to fetch and display the quiz
+import FetchQuiz from './quiz/FetchQuiz';
 import AutograderPage from './AutoGrader/AutGraderPage';
 import Onboarding from './AutoGrader/onboarding';
-import FiveDThinking from './5D-Thinking/FiveDThinking'; // Import the 5D Assistant component
-import ProtectedRoute from './ProtectedRoute'; // Import the ProtectedRoute component
+import FiveDThinking from './5D-Thinking/FiveDThinking';
+import ProtectedRoute from './ProtectedRoute';
+
+// Import the new components
+import PrivacyPolicyPage from './home/PrivacyPolicyPage';
+import TermsOfUsePage from './home/TermsOfUsePage';
 
 export const scroll = new SmoothScroll('a[href*="#"]', {
   speed: 1000,
@@ -65,6 +69,9 @@ const App = () => {
         <Route path="/autograder" element={<ProtectedRoute element={AutograderPage} />} />
         <Route path="/onboarding" element={<ProtectedRoute element={Onboarding} />} />
         <Route path="/5dthinking" element={<ProtectedRoute element={FiveDThinking} />} />
+        {/* Add the routes for Privacy Policy and Terms of Use */}
+        <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+        <Route path="/terms-of-use" element={<TermsOfUsePage />} />
         <Route path="*" element={<div>404 Not Found</div>} />
       </Routes>
     </div>
