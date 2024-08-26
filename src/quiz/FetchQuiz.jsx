@@ -1,65 +1,88 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { doc, getDoc } from 'firebase/firestore';
-import { db } from '../config/firebase-config';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { db, auth } from '../config/firebase-config';
+import { useAuthState } from 'react-firebase-hooks/auth';
 import { QuizQuestion, MultipleChoice, TrueFalse, FillInTheBlank, Matching, Explanation, ShortAnswer } from './QuizComponents';
+import LoginModal from '../login/LoginModal';
 import './FetchQuiz.css';
 
 const FetchQuiz = () => {
   const { quizId } = useParams();
+  const [user, loading, error] = useAuthState(auth); // Destructuring loading and error as well
   const [quizData, setQuizData] = useState(null);
   const [userAnswers, setUserAnswers] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const [score, setScore] = useState(0);
-  const [error, setError] = useState('');
+  const [quizError, setQuizError] = useState('');
+  const [proceedWithoutSignIn, setProceedWithoutSignIn] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   useEffect(() => {
+    console.log('User:', user);
+    console.log('ProceedWithoutSignIn:', proceedWithoutSignIn);
+
     const fetchQuiz = async () => {
-      console.log("Quiz ID from URL:", quizId);
       if (!quizId) {
         console.error('Quiz ID is not defined');
-        setError('Quiz ID is not defined');
+        setQuizError('Quiz ID is not defined');
         return;
       }
 
       try {
+        console.log('Fetching quiz data for ID:', quizId);
         const quizDoc = await getDoc(doc(db, 'quizzes', quizId));
         if (quizDoc.exists()) {
           const retrievedData = quizDoc.data();
-          console.log('Retrieved data:', retrievedData);
           const parsedData = JSON.parse(retrievedData.data);
-          console.log('Parsed data:', parsedData);
+          console.log('Quiz data fetched successfully:', parsedData);
           setQuizData(parsedData);
         } else {
           console.error('No such document!');
-          setError('No quiz found with this ID.');
+          setQuizError('No quiz found with this ID.');
         }
       } catch (err) {
         console.error('Error fetching document:', err);
-        setError('An error occurred while fetching the quiz.');
+        setQuizError('An error occurred while fetching the quiz.');
       }
     };
 
     fetchQuiz();
-  }, [quizId]);
+  }, [quizId, user, proceedWithoutSignIn]);
+
+  const handleSignIn = () => {
+    console.log('Opening login modal');
+    setShowLoginModal(true);
+  };
+
+  const handleProceedWithoutSignIn = () => {
+    console.log('Proceeding without sign-in');
+    setProceedWithoutSignIn(true);
+  };
+
+  const handleLoginSuccess = () => {
+    console.log('Login successful');
+    setProceedWithoutSignIn(false);
+    setShowLoginModal(false); // Close the modal on successful login
+  };
 
   const handleAnswerChange = (questionIndex, answer) => {
     setUserAnswers((prev) => ({ ...prev, [questionIndex]: answer }));
   };
 
-  const handleQuizSubmit = () => {
+  const handleQuizSubmit = async () => {
     const unansweredQuestions = quizData.questions.some((question, index) => {
       if (question.type === 'matching') {
         return !userAnswers[index] || userAnswers[index].length === 0;
       }
       return userAnswers[index] === undefined || userAnswers[index] === '';
     });
-
+  
     if (unansweredQuestions) {
       alert('Please answer all questions before submitting.');
       return;
     }
-
+  
     let newScore = 0;
     quizData.questions.forEach((question, index) => {
       if (question.type === 'matching') {
@@ -82,8 +105,42 @@ const FetchQuiz = () => {
     });
     setScore(newScore);
     setSubmitted(true);
+  
+    const timestamp = new Date().toLocaleString();
+    const email = user ? user.email : 'Anonymous';
+  
+    const submissionData = {
+      timestamp,
+      email,
+      score: `${newScore} / ${quizData.questions.length}`,
+    };
+  
+    quizData.questions.forEach((question, index) => {
+      submissionData[`Q${index + 1}`] = userAnswers[index] || 'No answer';
+    });
+  
+    if (user && !proceedWithoutSignIn) {
+      try {
+        // Save to user's QuizzesSubmitted
+        await setDoc(doc(db, "users", user.uid, "QuizzesSubmitted", quizId), {
+          ...submissionData,
+          quizId,
+          answers: userAnswers
+        });
+  
+        // Save to Quiz's Submissions subcollection
+        await setDoc(doc(db, "quizzes", quizId, "Submissions", user.uid), submissionData);
+  
+        console.log("Quiz results saved successfully");
+      } catch (error) {
+        console.error("Error saving quiz results:", error);
+        setQuizError('An error occurred while submitting the quiz. Please try again.');
+      }
+    } else {
+      console.log("Quiz results not saved - user not signed in or chose to proceed without signing in");
+    }
   };
-
+  
   const isCorrect = (questionIndex) => {
     const question = quizData.questions[questionIndex];
     if (question.type === 'matching') {
@@ -98,14 +155,44 @@ const FetchQuiz = () => {
     return userAnswers[questionIndex] === question.correctAnswer;
   };
 
-  if (error) {
-    return <p className="error-message">{error}</p>;
-  }
-
-  if (!quizData) {
+  if (loading) {
     return <div>Loading...</div>;
   }
 
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
+
+  if (!user && !proceedWithoutSignIn) {
+    console.log('Rendering sign-in prompt');
+    return (
+      <div className="sign-in-prompt">
+        <h2>Sign In to Save Your Progress</h2>
+        <p>Sign in to save your quiz progress and scores, or proceed without signing in.</p>
+        <button onClick={handleSignIn}>Sign In</button>
+        <button onClick={handleProceedWithoutSignIn}>Proceed Without Signing In</button>
+        {showLoginModal && (
+          <LoginModal 
+            isOpen={showLoginModal} 
+            onClose={() => setShowLoginModal(false)} 
+            onLogin={handleLoginSuccess}
+          />
+        )}
+      </div>
+    );
+  }
+
+  if (quizError) {
+    console.log('Rendering error state:', quizError);
+    return <p className="error-message">{quizError}</p>;
+  }
+
+  if (!quizData) {
+    console.log('Rendering loading quiz data state');
+    return <div>Loading quiz data...</div>;
+  }
+
+  console.log('Rendering quiz content');
   return (
     <div className="quiz-generator-container">
       <div className="quiz-content">
@@ -179,6 +266,11 @@ const FetchQuiz = () => {
           <div className="score-section">
             <h3>Your Score: {score} / {quizData.questions.length}</h3>
             <h3>Note: Short answer questions will be manually graded.</h3>
+            {!user || proceedWithoutSignIn ? (
+              <p>Your results were not saved. Sign in next time to save your progress!</p>
+            ) : (
+              <p>Your results have been saved.</p>
+            )}
           </div>
         )}
       </div>

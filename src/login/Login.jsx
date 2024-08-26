@@ -4,8 +4,11 @@ import { getFirestore, doc, setDoc, getDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 import googleLogo from '../img/Google-Icon.png'; // Make sure you have a Google logo image
 import { auth } from '../config/firebase-config'; // Ensure path accuracy
+import './Login.css';
 
+// Initialize the GoogleAuthProvider and add the necessary scopes
 const provider = new GoogleAuthProvider();
+provider.addScope('https://www.googleapis.com/auth/forms.body'); // Add the Google Forms scope
 
 const db = getFirestore();
 
@@ -134,6 +137,12 @@ const Login = () => {
                     lastResetDate: new Date(),
                 });
             }
+
+            // Store the token in session storage
+            sessionStorage.setItem('googleAuthToken', token);
+
+            // Store the token in session storage
+            sessionStorage.setItem('googleAuthToken', token);
 
             navigate('/dashboard');
         } catch (error) {
