@@ -4,7 +4,6 @@ import ContentArea from './contentArea';
 import './CSS/dashboard.css';
 
 const Dashboard = () => {
-    const [activeContent, setActiveContent] = useState('assistants');
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
     const toggleSidebar = () => {
@@ -13,16 +12,8 @@ const Dashboard = () => {
 
     return (
         <div className="main-layout">
-            <Sidebar 
-                setActiveContent={setActiveContent} 
-                isOpen={isSidebarOpen}
-                toggleSidebar={toggleSidebar}
-                activeButton={activeContent}
-            />
-            <ContentArea 
-                activeContent={activeContent} 
-                isSidebarOpen={isSidebarOpen}
-            />
+            {/* Ensure Sidebar is only included if not already included in App.jsx */}
+            <ContentArea isSidebarOpen={isSidebarOpen} />
         </div>
     );
 };

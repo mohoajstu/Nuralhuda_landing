@@ -1,9 +1,27 @@
 .content-area {
-  margin-left: 250px;
+  transition: margin-left 0.3s ease;
   padding: 20px;
-  transition: margin-left 0.3s ease-in-out;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-.content-area.sidebar-closed {
+/* Adjust the content area when the sidebar is open */
+.sidebar-open {
+  margin-left: 250px; /* Adjust this based on your sidebar's width */
+}
+
+/* Adjust the content area when the sidebar is closed */
+.sidebar-closed {
   margin-left: 0;
+}
+
+.section {
+  margin-bottom: 40px;
+}
+
+.section h2 {
+  margin-bottom: 20px;
+  color: #144040;
+  font-size: 24px;
+  font-weight: bold;
 }

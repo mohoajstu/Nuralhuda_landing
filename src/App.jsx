@@ -23,6 +23,7 @@ import ProtectedRoute from './ProtectedRoute';
 import Dashboard from './Dashboard/dashboard';
 import PrivacyPolicyPage from './home/PrivacyPolicyPage';
 import TermsOfUsePage from './home/TermsOfUsePage';
+
 // Import the Sidebar component
 import Sidebar from './Dashboard/sidebar';
 
@@ -78,14 +79,14 @@ const App = () => {
         <Route path="/payment-success/:accountToken" element={<PaymentSuccess />} />
         <Route path="/chat/:chatbotType" element={<ChatScreen />} />
         <Route path="/faq" element={<FAQ />} />
-        <Route path="/quiz-generator" element={<ProtectedRoute element={QuizGenerator} />} />
+        <Route path="/tools/quiz-generator" element={<ProtectedRoute element={QuizGenerator} />} />
         <Route path="/quiz/:quizId" element={<FetchQuiz />} />
-        <Route path="/autograder" element={<ProtectedRoute element={AutograderPage} />} />
+        <Route path="/tools/autograder" element={<ProtectedRoute element={AutograderPage} />} />
         <Route path="/onboarding" element={<ProtectedRoute element={Onboarding} />} />
-        <Route path="/5dthinking" element={<ProtectedRoute element={FiveDThinking} />} />
+        <Route path="/tools/5dthinking" element={<ProtectedRoute element={FiveDThinking} />} />
         <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
         <Route path="/terms-of-use" element={<TermsOfUsePage />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/dashboard" element={<ProtectedRoute element={Dashboard} />} />
         <Route path="*" element={<div>404 Not Found</div>} />
       </Routes>
     </div>

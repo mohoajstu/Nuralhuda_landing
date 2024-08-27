@@ -3,9 +3,14 @@ import './CSS/sidebar.css';
 import { useNavigate } from 'react-router-dom';
 import logo from '../img/about-nbg.png';
 
-const Sidebar = ({ isOpen, toggleSidebar, setActiveContent, activeButton, hasNavbar }) => {
+const Sidebar = ({ isOpen, toggleSidebar, hasNavbar }) => {
     const navigate = useNavigate();
-    
+
+    const handleNavigation = (path) => {
+        navigate(path);
+        window.location.reload(); // Force a full page reload
+    };
+
     return (
         <div className={`sidebar-container ${isOpen ? 'open' : 'closed'} ${hasNavbar ? 'with-navbar' : ''}`}>
             <div className="sidebar">
@@ -20,19 +25,18 @@ const Sidebar = ({ isOpen, toggleSidebar, setActiveContent, activeButton, hasNav
                 </a>
                 <div className="sidebar-content">
                     <div className="main-buttons">
-                        <button className={`main-button underline-effect ${activeButton === 'assistants' ? 'active' : ''}`} onClick={() => setActiveContent('assistants')}>
-                            Assistants
-                        </button>
+                        <div className="main-button underline-effect" onClick={() => handleNavigation('/dashboard')}>Assistants</div>
                         <div className="sub-buttons">
-                            <button className="sub-button" onClick={() => navigate('/chat/nurAlHuda')}>Nur Al Huda</button>
-                            <button className="sub-button" onClick={() => navigate('/chat/nurAlHudaForKids')}>Nur Al Huda For Kids</button>
-                            <button className="sub-button" onClick={() => navigate('/chat/islamicSocraticMethod')}>Islamic Socratic Method</button>
-                            <button className="sub-button" onClick={() => navigate('/chat/iqraWithUs')}>Iqra With Us</button>
-                            <button className="sub-button" onClick={() => navigate('/chat/muslimReferenceAI')}>Muslim Reference AI</button>
-                            <button className="sub-button" onClick={() => navigate('/chat/paliGPT')}>PaliGPT</button>
-                            <button className="sub-button" onClick={() => navigate('/chat/fiveDThinking')}>5D Thinking</button>
+                            <button className="sub-button" onClick={() => handleNavigation('/chat/nurAlHuda')}>Nur Al Huda</button>
+                            <button className="sub-button" onClick={() => handleNavigation('/chat/nurAlHudaForKids')}>Nur Al Huda For Kids</button>
+                            <button className="sub-button" onClick={() => handleNavigation('/chat/islamicSocraticMethod')}>Islamic Socratic Method</button>
+                            <button className="sub-button" onClick={() => handleNavigation('/chat/iqraWithUs')}>Iqra With Us</button>
+                            {/* Uncomment the following lines if you want to include more assistants */}
+                            {/* <button className="sub-button" onClick={() => handleNavigation('/chat/muslimReferenceAI')}>Muslim Reference AI</button>
+                            <button className="sub-button" onClick={() => handleNavigation('/chat/paliGPT')}>PaliGPT</button>
+                            <button className="sub-button" onClick={() => handleNavigation('/chat/fiveDThinking')}>5D Thinking</button> */}
                         </div>
-                        
+
                         {/* <button className={`main-button underline-effect ${activeButton === 'settings' ? 'active' : ''}`} onClick={() => setActiveContent('settings')}>
                             Settings
                         </button>
@@ -42,20 +46,19 @@ const Sidebar = ({ isOpen, toggleSidebar, setActiveContent, activeButton, hasNav
                             <button className="sub-button">Billing</button>
                         </div> */}
 
-                        <button className={`main-button underline-effect ${activeButton === 'tools' ? 'active' : ''}`} onClick={() => setActiveContent('tools')}>
-                            Tools
-                        </button>
+                        <button className="main-button underline-effect" onClick={() => handleNavigation('/dashboard')}>Tools</button>
                         <div className="sub-buttons">
-                            <button className="sub-button">Automatic Grader</button>
-                            <button className="sub-button">AI Quiz Generator</button>
-                            <button className="sub-button">5D Lesson Planner</button>
+                            <button className="sub-button" onClick={() => handleNavigation('/tools/autograder')}>Automatic Grader</button>
+                            <button className="sub-button" onClick={() => handleNavigation('/tools/quiz-generator')}>AI Quiz Generator</button>
+                            <button className="sub-button" onClick={() => handleNavigation('/tools/5dthinking')}>5D Lesson Planner</button>
                         </div>
                     </div>
                 
                     <div className="footer-buttons">
+                        {/* Uncomment the following lines if you want to include Terms of Service and Privacy Policy */}
                         {/* <button className="footer-button">Terms of Service</button> 
                         <button className="footer-button">Privacy Policy</button> */}
-                        <button className="footer-button" onClick={() => navigate('/contact-form')}>Contact Us</button>
+                        <button className="footer-button" onClick={() => handleNavigation('/contact-form')}>Contact Us</button>
                         <p className="footer-text">© 2024 Nur Al Huda. All rights reserved.</p>
                     </div>
                 </div>
