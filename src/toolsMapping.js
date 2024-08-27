@@ -6,7 +6,7 @@ import fiveDThinkingImg from './img/5dlogotransparent.png';
 
 export const titleToToolTypeMap = {
     'GraderBot': 'graderbot',
-    'AI Quiz Generator': 'quiz-generator',
+    'Quiz Generator': 'quiz-generator',
     '5D Lesson Planner': '5dthinking',
 };
 
