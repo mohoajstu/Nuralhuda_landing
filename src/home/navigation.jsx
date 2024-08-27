@@ -1,10 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { auth } from '../config/firebase-config';
 import logo from '../img/about-nbg.png';
 
 export const Navigation = (props) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [navbarOpen, setNavbarOpen] = useState(false);
+  const [user] = useAuthState(auth); // Get the current user
   const navigate = useNavigate();
   const navbarRef = useRef(null);
 
@@ -129,6 +132,11 @@ export const Navigation = (props) => {
             <li>
               <Link to="/login" onClick={() => handleNavigation('/login')}>Login</Link>  
             </li>
+            {user && (
+              <li>
+                <Link to="/dashboard" onClick={() => handleNavigation('/dashboard')}>Dashboard</Link>
+              </li>
+            )}
           </ul>
         </div>
       </div>

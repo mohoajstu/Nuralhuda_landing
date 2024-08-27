@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import './CSS/sidebar.css';
 import { useNavigate } from 'react-router-dom';
 import logo from '../img/about-nbg.png';
+import { SidebarContext } from '../SidebarContext'; // Import SidebarContext
 
-const Sidebar = ({ isOpen, toggleSidebar, hasNavbar }) => {
+const Sidebar = ({ hasNavbar }) => {
     const navigate = useNavigate();
+    const { isSidebarOpen, toggleSidebar } = useContext(SidebarContext); // Access sidebar state and toggle function
 
     const handleNavigation = (path) => {
         navigate(path);
@@ -12,7 +14,7 @@ const Sidebar = ({ isOpen, toggleSidebar, hasNavbar }) => {
     };
 
     return (
-        <div className={`sidebar-container ${isOpen ? 'open' : 'closed'} ${hasNavbar ? 'with-navbar' : ''}`}>
+        <div className={`sidebar-container ${isSidebarOpen ? 'open' : 'closed'} ${hasNavbar ? 'with-navbar' : ''}`}>
             <div className="sidebar">
                 <a href="/dashboard">
                     <div className="dashbrand-container">
@@ -48,8 +50,8 @@ const Sidebar = ({ isOpen, toggleSidebar, hasNavbar }) => {
 
                         <button className="main-button underline-effect" onClick={() => handleNavigation('/dashboard')}>Tools</button>
                         <div className="sub-buttons">
-                            <button className="sub-button" onClick={() => handleNavigation('/tools/autograder')}>Automatic Grader</button>
-                            <button className="sub-button" onClick={() => handleNavigation('/tools/quiz-generator')}>AI Quiz Generator</button>
+                            <button className="sub-button" onClick={() => handleNavigation('/tools/graderbot')}>GraderBot</button>
+                            <button className="sub-button" onClick={() => handleNavigation('/tools/quiz-generator')}>Quiz Generator</button>
                             <button className="sub-button" onClick={() => handleNavigation('/tools/5dthinking')}>5D Lesson Planner</button>
                         </div>
                     </div>
@@ -64,7 +66,7 @@ const Sidebar = ({ isOpen, toggleSidebar, hasNavbar }) => {
                 </div>
             </div>
             <div className="drawer-handle" onClick={toggleSidebar}>
-                <div className="drawer-icon">{isOpen ? '◀' : '▶'}</div>
+                <div className="drawer-icon">{isSidebarOpen ? '◀' : '▶'}</div>
             </div>
         </div>
     );

@@ -1,4 +1,22 @@
 .main-layout {
-    display: flex;
-    height: 100vh;
-  }
+  display: flex;
+  height: 100vh;
+  transition: margin-left 0.3s ease;
+}
+
+.sidebar-open {
+  margin-left: 250px; /* Adjust based on sidebar width */
+}
+
+.sidebar-closed {
+  margin-left: 0;
+}
+
+.sidebar {
+  width: 250px; /* Adjust based on desired sidebar width */
+  transition: transform 0.3s ease;
+}
+
+.sidebar.closed {
+  transform: translateX(-100%);
+}

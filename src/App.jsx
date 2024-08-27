@@ -23,9 +23,8 @@ import ProtectedRoute from './ProtectedRoute';
 import Dashboard from './Dashboard/dashboard';
 import PrivacyPolicyPage from './home/PrivacyPolicyPage';
 import TermsOfUsePage from './home/TermsOfUsePage';
-
-// Import the Sidebar component
 import Sidebar from './Dashboard/sidebar';
+import { SidebarProvider } from './SidebarContext'; // Import SidebarContext
 
 export const scroll = new SmoothScroll('a[href*="#"]', {
   speed: 1000,
@@ -36,9 +35,7 @@ const App = () => {
   const location = useLocation();
   const [user, loading] = useAuthState(auth);
   const [landingPageData, setLandingPageData] = useState(null);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
-  // Determine if the navbar should be shown based on the current route
   const shouldShowNavbar = location.pathname === '/' || 
                            location.pathname === '/login' || 
                            location.pathname === '/pricing' || 
@@ -58,38 +55,36 @@ const App = () => {
     }
   }, [location]);
 
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
-
   if (loading) {
     return <div>Loading...</div>;
   }
 
   return (
-    <div className="App">
-      {user && <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} hasNavbar={shouldShowNavbar} />}
-      {shouldShowNavbar && <Navigation />}
-      <Routes>
-        <Route path="/" element={landingPageData ? <Home data={landingPageData} /> : <div>Loading...</div>} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/pricing" element={<Pricing />} />
-        <Route path="/account-setup" element={<AccountSetup />} />
-        <Route path="/contact-form" element={<Contact />} />
-        <Route path="/payment-success/:accountToken" element={<PaymentSuccess />} />
-        <Route path="/chat/:chatbotType" element={<ChatScreen />} />
-        <Route path="/faq" element={<FAQ />} />
-        <Route path="/tools/quiz-generator" element={<ProtectedRoute element={QuizGenerator} />} />
-        <Route path="/quiz/:quizId" element={<FetchQuiz />} />
-        <Route path="/tools/autograder" element={<ProtectedRoute element={AutograderPage} />} />
-        <Route path="/onboarding" element={<ProtectedRoute element={Onboarding} />} />
-        <Route path="/tools/5dthinking" element={<ProtectedRoute element={FiveDThinking} />} />
-        <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
-        <Route path="/terms-of-use" element={<TermsOfUsePage />} />
-        <Route path="/dashboard" element={<ProtectedRoute element={Dashboard} />} />
-        <Route path="*" element={<div>404 Not Found</div>} />
-      </Routes>
-    </div>
+    <SidebarProvider>
+      <div className="App">
+        {user && <Sidebar />}
+        {shouldShowNavbar && <Navigation />}
+        <Routes>
+          <Route path="/" element={landingPageData ? <Home data={landingPageData} /> : <div>Loading...</div>} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/pricing" element={<Pricing />} />
+          <Route path="/account-setup" element={<AccountSetup />} />
+          <Route path="/contact-form" element={<Contact />} />
+          <Route path="/payment-success/:accountToken" element={<PaymentSuccess />} />
+          <Route path="/chat/:chatbotType" element={<ChatScreen />} />
+          <Route path="/faq" element={<FAQ />} />
+          <Route path="/tools/quiz-generator" element={<ProtectedRoute element={QuizGenerator} />} />
+          <Route path="/quiz/:quizId" element={<FetchQuiz />} />
+          <Route path="/tools/graderbot" element={<ProtectedRoute element={AutograderPage} />} />
+          <Route path="/onboarding" element={<ProtectedRoute element={Onboarding} />} />
+          <Route path="/tools/5dthinking" element={<FiveDThinking /> }/>
+          <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+          <Route path="/terms-of-use" element={<TermsOfUsePage />} />
+          <Route path="/dashboard" element={<ProtectedRoute element={<Dashboard />} />} />
+          <Route path="*" element={<div>404 Not Found</div>} />
+        </Routes>
+      </div>
+    </SidebarProvider>
   );
 };
 

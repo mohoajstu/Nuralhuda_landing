@@ -1,19 +1,14 @@
-import React, { useState } from 'react';
-import Sidebar from './sidebar';
+import React, { useContext } from 'react';
 import ContentArea from './contentArea';
 import './CSS/dashboard.css';
+import { SidebarContext } from '../SidebarContext'; // Import SidebarContext
 
 const Dashboard = () => {
-    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-
-    const toggleSidebar = () => {
-        setIsSidebarOpen(!isSidebarOpen);
-    };
+    const { isSidebarOpen } = useContext(SidebarContext); // Access sidebar state
 
     return (
-        <div className="main-layout">
-            {/* Ensure Sidebar is only included if not already included in App.jsx */}
-            <ContentArea isSidebarOpen={isSidebarOpen} />
+        <div className={`main-layout ${isSidebarOpen ? 'sidebar-open' : 'sidebar-closed'}`}>
+            <ContentArea />
         </div>
     );
 };
