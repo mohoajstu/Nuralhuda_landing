@@ -2,6 +2,7 @@ import { useState } from "react";
 import emailjs from "emailjs-com";
 import React from "react";
 import SimpleModal from './SimpleModal.jsx';
+import { Link } from 'react-router-dom'; // Import Link from react-router-dom
 
 const initialState = {
   name: "",
@@ -166,6 +167,10 @@ export const Contact = (props) => {
             (Islamic jurisprudence). Your journey of understanding and knowledge
             is important to us, and we are committed to supporting it with the
             most accurate and helpful information possible.
+          </p>
+          <p>
+            <Link to="/privacy-policy">Privacy Policy</Link> |{" "}
+            <Link to="/terms-of-use">Terms of Use</Link>
           </p>
         </div>
       </div>
