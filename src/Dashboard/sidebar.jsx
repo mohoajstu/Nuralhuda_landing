@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import logo from '../img/about-nbg.png';
 import { SidebarContext } from '../SidebarContext'; // Import SidebarContext
 
-const Sidebar = ({ hasNavbar }) => {
+const Sidebar = ({ hasNavbar, user }) => {  // Accept user prop
     const navigate = useNavigate();
     const { isSidebarOpen, toggleSidebar } = useContext(SidebarContext); // Access sidebar state and toggle function
 
@@ -48,12 +48,16 @@ const Sidebar = ({ hasNavbar }) => {
                             <button className="sub-button">Billing</button>
                         </div> */}
 
-                        <button className="main-button underline-effect" onClick={() => handleNavigation('/dashboard')}>Tools</button>
-                        <div className="sub-buttons">
-                            <button className="sub-button" onClick={() => handleNavigation('/tools/graderbot')}>GraderBot</button>
-                            <button className="sub-button" onClick={() => handleNavigation('/tools/quiz-generator')}>Quiz Generator</button>
-                            <button className="sub-button" onClick={() => handleNavigation('/tools/5dthinking')}>5D Lesson Planner</button>
-                        </div>
+                        {user?.enterprise && (
+                            <>
+                                <button className="main-button underline-effect" onClick={() => handleNavigation('/dashboard')}>Tools</button>
+                                <div className="sub-buttons">
+                                    <button className="sub-button" onClick={() => handleNavigation('/tools/graderbot')}>GraderBot</button>
+                                    <button className="sub-button" onClick={() => handleNavigation('/tools/quiz-generator')}>Quiz Generator</button>
+                                    <button className="sub-button" onClick={() => handleNavigation('/tools/5dthinking')}>5D Lesson Planner</button>
+                                </div>
+                            </>
+                        )}
                     </div>
                 
                     <div className="footer-buttons">

@@ -19,7 +19,8 @@ import FetchQuiz from './quiz/FetchQuiz';
 import AutograderPage from './AutoGrader/AutGraderPage';
 import Onboarding from './AutoGrader/onboarding';
 import FiveDThinking from './5D-Thinking/FiveDThinking';
-import ProtectedRoute from './ProtectedRoute';
+import ProtectedRoute from './routing/ProtectedRoute';
+import EnterpriseProtectedRoute from './routing/EnterpriseProtectedRoute'; // Import EnterpriseProtectedRoute
 import Dashboard from './Dashboard/dashboard';
 import PrivacyPolicyPage from './home/PrivacyPolicyPage';
 import TermsOfUsePage from './home/TermsOfUsePage';
@@ -62,7 +63,7 @@ const App = () => {
   return (
     <SidebarProvider>
       <div className="App">
-        {user && <Sidebar />}
+        {user && <Sidebar user={user} />} {/* Pass user to Sidebar */}
         {shouldShowNavbar && <Navigation />}
         <Routes>
           <Route path="/" element={landingPageData ? <Home data={landingPageData} /> : <div>Loading...</div>} />
@@ -73,11 +74,11 @@ const App = () => {
           <Route path="/payment-success/:accountToken" element={<PaymentSuccess />} />
           <Route path="/chat/:chatbotType" element={<ChatScreen />} />
           <Route path="/faq" element={<FAQ />} />
-          <Route path="/tools/quiz-generator" element={<ProtectedRoute element={QuizGenerator} />} />
+          <Route path="/tools/quiz-generator" element={<EnterpriseProtectedRoute element={QuizGenerator} />} />
           <Route path="/quiz/:quizId" element={<FetchQuiz />} />
-          <Route path="/tools/graderbot" element={<ProtectedRoute element={AutograderPage} />} />
-          <Route path="/onboarding" element={<ProtectedRoute element={Onboarding} />} />
-          <Route path="/tools/5dthinking" element={<FiveDThinking /> }/>
+          <Route path="/tools/graderbot" element={<EnterpriseProtectedRoute element={AutograderPage} />} />
+          <Route path="/onboarding" element={<EnterpriseProtectedRoute element={Onboarding} />} />
+          <Route path="/tools/5dthinking" element={<EnterpriseProtectedRoute element={FiveDThinking} />} />
           <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
           <Route path="/terms-of-use" element={<TermsOfUsePage />} />
           <Route path="/dashboard" element={<ProtectedRoute element={<Dashboard />} />} />
