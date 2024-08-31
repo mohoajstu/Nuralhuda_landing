@@ -16,7 +16,7 @@ const Home = ({ data }) => {
       <Features data={data?.Features} />
       <About data={data?.About} />
       <FAQ /> 
-      <Team data={data?.Team} />
+      {/*<Team data={data?.Team} />*/}
       <Contact data={data?.Contact} />
     </div>
   );
