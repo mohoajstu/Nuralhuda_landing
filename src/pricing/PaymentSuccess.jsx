@@ -45,8 +45,8 @@ const PaymentSuccess = () => {
     updatePaymentStatus();
   }, [navigate, accountToken]);
 
-  const handleGoToHome = () => {
-    navigate('/'); // Adjust the path to your dashboard
+  const handleGoToDashboard = () => {
+    navigate('/dashboard'); 
   };
 
   if (loading) {
@@ -72,7 +72,7 @@ const PaymentSuccess = () => {
           <h2>Payment Successful!</h2>
           <p>{getMessage()}</p>
           <div className="button-container">
-            <button onClick={handleGoToHome}>Go Home</button>
+            <button onClick={handleGoToDashboard}>Go Home</button>
           </div>
         </>
       )}
