@@ -36,6 +36,9 @@ const App = () => {
   const [user, loading] = useAuthState(auth);
   const [landingPageData, setLandingPageData] = useState(null);
 
+  // Define which paths should not show the sidebar
+  const shouldShowSidebar = user && location.pathname !== '/';
+
   const shouldShowNavbar = location.pathname === '/' || 
                            location.pathname === '/login' || 
                            location.pathname === '/pricing' || 
@@ -62,7 +65,8 @@ const App = () => {
   return (
     <SidebarProvider>
       <div className="App">
-        {user && <Sidebar />}
+        {/* Conditionally render Sidebar */}
+        {shouldShowSidebar && <Sidebar />}
         {shouldShowNavbar && <Navigation />}
         <Routes>
           <Route path="/" element={landingPageData ? <Home data={landingPageData} /> : <div>Loading...</div>} />
