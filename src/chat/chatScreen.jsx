@@ -7,7 +7,7 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth, db } from '../config/firebase-config';
 import { collection, addDoc, doc, getDoc, setDoc, increment, updateDoc, arrayUnion } from 'firebase/firestore';
 import Modal from './modal';
-import { LocalStorageStrategy, StorageManager } from '../storage';
+import { StorageManager, LocalStorageStrategy } from '../storage';
 
 import nurAlHudaImg from '../img/about-nbg.png';
 import nurAlHudaForKidsImg from '../img/nuralhudaforkids.png';
@@ -41,17 +41,20 @@ const titleToImageMap = {
   '5D Thinking': fiveDThinkingImg,
 };
 
+const storageManager = new StorageManager(new LocalStorageStrategy()); // Initialize storage manager
+
 const ChatScreen = () => {
   const { chatbotType } = useParams();
   const navigate = useNavigate();
-  const storageManager = new StorageManager(new LocalStorageStrategy());
   const [messages, setMessages] = useState([]);
   const [currentMessage, setCurrentMessage] = useState('');
   const [threadId, setThreadId] = useState(null);
   const [isSending, setIsSending] = useState(false);
   const [showImage, setShowImage] = useState(true);
   const scrollViewRef = useRef(null);
-  const assistantTitle = Object.keys(titleToChatbotTypeMap).find(key => titleToChatbotTypeMap[key] === chatbotType);
+  const assistantTitle = Object.keys(titleToChatbotTypeMap).find(
+    (key) => titleToChatbotTypeMap[key] === chatbotType
+  );
   const chatbotImage = titleToImageMap[assistantTitle];
   const assistantId = titleToAssistantIDMap[assistantTitle];
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -64,8 +67,8 @@ const ChatScreen = () => {
   const [accumulatedMessage, setAccumulatedMessage] = useState('');
   const [reportFeedbackMessage, setReportFeedbackMessage] = useState('');
   const [reportedMessage, setReportedMessage] = useState('');
-  const [totalPromptCount, setTotalPromptCount] = useState(storageManager.load('totalPromptCount') || 0);
-  const [lastResetDate, setLastResetDate] = useState(storageManager.load('lastResetDate') || null);
+  const [totalPromptCount, setTotalPromptCount] = useState(0);
+  const [lastResetDate, setLastResetDate] = useState(null);
   const [accountType, setAccountType] = useState('');
   const [maxPrompts, setMaxPrompts] = useState(5);
 
@@ -94,17 +97,26 @@ const ChatScreen = () => {
 
   const checkAndResetPromptCount = async (userData) => {
     const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
+    const today = now.toDateString();
 
-    const userLastResetDate = userData?.lastResetDate?.toDate().toISOString() || storageManager.load('lastResetDate') || null;
+    let userLastResetDate = null;
+    if (userData && userData.lastResetDate) {
+      userLastResetDate = userData.lastResetDate.toDate().toDateString();
+    } else {
+      userLastResetDate = storageManager.load('lastResetDate') || null;
+    }
 
-    if (userLastResetDate && userLastResetDate !== today) {
+    if (userLastResetDate !== today) {
       console.log('Resetting prompt count for the new day');
       if (user) {
-        await setDoc(doc(db, 'users', user.uid), {
-          totalPromptCount: 0,
-          lastResetDate: now
-        }, { merge: true });
+        await setDoc(
+          doc(db, 'users', user.uid),
+          {
+            totalPromptCount: 0,
+            lastResetDate: now,
+          },
+          { merge: true }
+        );
       } else {
         setTotalPromptCount(0);
         storageManager.save('totalPromptCount', 0);
@@ -112,36 +124,24 @@ const ChatScreen = () => {
       }
       setLastResetDate(today);
       setTotalPromptCount(0); // Ensure the local state is updated immediately
+    } else {
+      // If it's the same day, set the lastResetDate to today
+      setLastResetDate(today);
     }
   };
 
   const fetchUserData = async () => {
+    let userData = null;
+    let sessionPromptCount = 0;
+    let sessionLastResetDate = new Date().toDateString();
+    let sessionAccountType = '';
+  
     if (user) {
       console.log(`Fetching data for user: ${user.uid}`);
       const userDoc = await getDoc(doc(db, 'users', user.uid));
       if (userDoc.exists()) {
-        const userData = userDoc.data();
+        userData = userDoc.data();
         console.log('User data:', userData);
-        setTotalPromptCount(userData.totalPromptCount || 0);
-        setLastResetDate(userData.lastResetDate ? userData.lastResetDate.toDate().toISOString() : null);
-        setAccountType(userData.account || '');
-
-        const isNurAlHuda = chatbotType === 'nurAlHuda';
-        const isPaliGPT = chatbotType === 'paliGPT';
-
-        // Set maxPrompts based on user account type and chatbot type
-        if (isPaliGPT) {
-          setMaxPrompts(Infinity);
-        } else if (userData.account === 'premium') {
-          setMaxPrompts(40);
-        } else if (userData.account === 'basic' && isNurAlHuda) {
-          setMaxPrompts(40);
-        } else {
-          setMaxPrompts(5);
-        }
-
-        // Check and reset prompt count if needed
-        await checkAndResetPromptCount(userData);
       } else {
         // If the user document doesn't exist, create it
         console.log('User document does not exist, creating a new one');
@@ -149,50 +149,48 @@ const ChatScreen = () => {
         await setDoc(doc(db, 'users', user.uid), {
           totalPromptCount: 0,
           lastResetDate: currentDate,
-          account: ''
+          account: '',
         });
-        setLastResetDate(currentDate.toISOString());
-        setTotalPromptCount(0);
-        setAccountType('');
+        userData = { totalPromptCount: 0, lastResetDate: currentDate, account: '' };
       }
+  
+      await checkAndResetPromptCount(userData);
+  
+      sessionPromptCount = userData.totalPromptCount || 0;
+      sessionLastResetDate = userData.lastResetDate ? userData.lastResetDate.toDate().toDateString() : new Date().toDateString();
+      sessionAccountType = userData.account || '';
     } else {
-      const sessionPromptCount = storageManager.load('totalPromptCount');
-      const sessionLastResetDate = storageManager.load('lastResetDate');
-      let sessionAccountType = storageManager.load('account') || '';
-
-      if (!sessionPromptCount) {
-        storageManager.save('totalPromptCount', 0);
-        setTotalPromptCount(0);
-      } else {
-        setTotalPromptCount(sessionPromptCount);
-      }
-
-      if (!sessionLastResetDate) {
-        const currentDate = new Date();
-        storageManager.save('lastResetDate', currentDate.toISOString());
-        setLastResetDate(currentDate.toISOString());
-      } else {
-        setLastResetDate(sessionLastResetDate);
-      }
-
-      storageManager.save('account', sessionAccountType);
-
-      const isNurAlHuda = chatbotType === 'nurAlHuda';
-      const isPaliGPT = chatbotType === 'paliGPT';
-
-      // Set maxPrompts based on user type and chatbot type
-      if (isPaliGPT) {
-        setMaxPrompts(Infinity);
-      } else if (isNurAlHuda && sessionAccountType !== '') {
-        setMaxPrompts(40);
-      } else {
-        setMaxPrompts(5);
-      }
-
-      // Check and reset prompt count if needed
+      // For non-logged-in users
+      sessionPromptCount = storageManager.load('totalPromptCount') || 0;
+      sessionLastResetDate = storageManager.load('lastResetDate') || new Date().toDateString();
+      sessionAccountType = storageManager.load('account') || '';
+  
       await checkAndResetPromptCount();
     }
-  };
+  
+    // Update state with user or session data
+    setTotalPromptCount(sessionPromptCount);
+    setLastResetDate(sessionLastResetDate);
+    setAccountType(sessionAccountType);
+  
+    // Define chatbot type flags
+    const isNurAlHuda = chatbotType === 'nurAlHuda';
+    const isNurAlHudaForKids = chatbotType === 'nurAlHudaForKids';
+    const isPaliGPT = chatbotType === 'paliGPT';
+  
+    // Set maxPrompts based on user account type and chatbot type
+    if (isPaliGPT) {
+      setMaxPrompts(Infinity);
+    } else if (sessionAccountType === 'premium' || sessionAccountType === 'enterprise') {
+      setMaxPrompts(40);
+    } else if (sessionAccountType === 'hybrid' && (isNurAlHuda || isNurAlHudaForKids)) {
+      setMaxPrompts(40);
+    } else if (sessionAccountType === 'basic' && isNurAlHuda) {
+      setMaxPrompts(40);
+    } else {
+      setMaxPrompts(5);
+    }
+  };  
 
   useEffect(() => {
     fetchUserData();
@@ -231,13 +229,16 @@ const ChatScreen = () => {
         return;
       }
       */
-      // Check if the user has reached the daily limit  
+      // Check if the user has reached the daily limit
       if (!isPaliGPT && totalPromptCount >= maxPrompts) {
-        setModalMessage(`You have reached the daily limit of ${maxPrompts} prompts. Please log in to continue using the service.`);
+        setModalMessage(
+          `You have reached the daily limit of ${maxPrompts} prompts. Please log in to continue using the service.`
+        );
         setIsModalOpen(true);
         return;
       }
-      setTotalPromptCount(prevCount => prevCount + 1);
+      // Increment prompt count for non-logged-in users
+      setTotalPromptCount((prevCount) => prevCount + 1);
       storageManager.save('totalPromptCount', totalPromptCount + 1);
     } else {
       // Fetch the latest prompt count from Firestore
@@ -247,12 +248,15 @@ const ChatScreen = () => {
       const currentPromptCount = userData.totalPromptCount || 0;
       const userAccount = userData.account || '';
       const isNurAlHuda = chatbotType === 'nurAlHuda';
+      const isNurAlHudaForKids = chatbotType === 'nurAlHudaForKids';
 
       // Set userMaxPrompts based on user account type and chatbot type
       let userMaxPrompts = maxPrompts;
       if (isPaliGPT) {
         userMaxPrompts = Infinity;
-      } else if (userAccount === 'premium') {
+      } else if (userAccount === 'premium'||userAccount === 'enterprise') {
+        userMaxPrompts = 40;
+      } else if (userAccount === 'hybrid' && (isNurAlHuda || isNurAlHudaForKids)) {
         userMaxPrompts = 40;
       } else if (userAccount === 'basic' && isNurAlHuda) {
         userMaxPrompts = 40;
@@ -261,19 +265,26 @@ const ChatScreen = () => {
       }
 
       if (currentPromptCount >= userMaxPrompts) {
-        setModalMessage(`You have reached the daily limit of ${userMaxPrompts} prompts. ${userAccount === 'premium' ? 'Wait until tomorrow to learn more!' : 'Upgrade to a premium account for more prompts!'}`);
+        setModalMessage(
+          `You have reached the daily limit of ${userMaxPrompts} prompts. ${
+            (userAccount === 'premium' || userAccount === 'enterprise')
+              ? 'Wait until tomorrow to learn more!'
+              : 'Upgrade to a premium or enterprise account for more prompts!'
+          }`
+        );
         setIsModalOpen(true);
         return;
-      }
+      }      
 
       // Increment total prompt count using Firebase increment
       console.log('Incrementing total prompt count');
-      await setDoc(doc(db, 'users', user.uid), {
-        totalPromptCount: increment(1)
-      }, { merge: true });
+      await updateDoc(doc(db, 'users', user.uid), {
+        totalPromptCount: increment(1),
+      });
 
-      // Update local state
-      setTotalPromptCount(prevCount => prevCount + 1);
+      // Update local state and local storage
+      setTotalPromptCount((prevCount) => prevCount + 1);
+      storageManager.save('totalPromptCount', totalPromptCount + 1);
     }
 
     setIsSending(true);
@@ -294,14 +305,14 @@ const ChatScreen = () => {
           if (user) {
             const userRef = doc(db, 'users', user.uid);
             await updateDoc(userRef, {
-              [`${assistantTitle}.Threads`]: arrayUnion(localThreadId)
+              [`${assistantTitle}.Threads`]: arrayUnion(localThreadId),
             });
           }
         } else {
           throw new Error('Thread creation failed: No ID returned');
         }
       } catch (error) {
-        console.error("Error creating thread:", error);
+        console.error('Error creating thread:', error);
         setIsSending(false);
         return;
       }
@@ -311,7 +322,7 @@ const ChatScreen = () => {
       await createMessage(localThreadId, currentMessage, assistantTitle);
       createRun(localThreadId, assistantId, handleNewMessage, handleError, assistantTitle);
     } catch (error) {
-      console.error("Communication error:", error);
+      console.error('Communication error:', error);
     } finally {
       setIsSending(false);
     }
@@ -319,14 +330,22 @@ const ChatScreen = () => {
 
   const handleSelectPrompt = (prompt) => {
     if (totalPromptCount >= maxPrompts) {
-      setModalMessage(`You have reached the daily limit of ${maxPrompts} prompts.`);
+      let message = '';
+  
+      if (accountType === 'premium' || accountType === 'enterprise') {
+        message = `You have reached the daily limit of ${maxPrompts} prompts. Wait until tomorrow to learn more!`;
+      } else {
+        message = `You have reached the daily limit of ${maxPrompts} prompts. Upgrade to a premium or enterprise account for more prompts!`;
+      }
+  
+      setModalMessage(message);
       setIsModalOpen(true);
       return;
     }
-
+  
     setCurrentMessage(prompt);
     handleSendMessage();
-  };
+  };  
 
   const scrollToBottom = useCallback(() => {
     if (scrollViewRef.current) {
@@ -342,22 +361,18 @@ const ChatScreen = () => {
     navigate('/');
   };
 
-  const handleModalConfirm = () => {
-    navigate('/');
-  };
-
   const handleModalClose = () => {
     setIsModalOpen(false);
   };
 
   const sendNegativeReport = (msgReported) => {
-    console.log("Negative Report Clicked", msgReported);
+    console.log('Negative Report Clicked', msgReported);
     setReportedMessage(msgReported);
     setIsModalOpenReport(true);
   };
 
   const sendPositiveReport = async (reportedMessage) => {
-    console.log("Positive Report Clicked", reportedMessage);
+    console.log('Positive Report Clicked', reportedMessage);
     if (user) {
       try {
         await addDoc(collection(db, 'positiveReviews'), {
@@ -375,7 +390,7 @@ const ChatScreen = () => {
   };
 
   const handleReportSubmit = async () => {
-    console.log("Message reported\n", reportedMessage, reportFeedbackMessage);
+    console.log('Message reported\n', reportedMessage, reportFeedbackMessage);
     setIsModalOpenReport(false);
     if (user) {
       try {
@@ -396,11 +411,11 @@ const ChatScreen = () => {
 
   return (
     <div className="chatscreen-container" style={{ height: `${windowHeight}px` }}>
-      <Modal 
+      <Modal
         isOpen={isModalOpen}
         onClose={handleModalClose}
-        onConfirm={handleModalConfirm}
-        confirmLabel="Go Home"
+        onConfirm={handleGoToHome}
+        confirmLabel="Home"
         closeLabel="Close"
         message={<p className="modal-message">{modalMessage}</p>}
       />
@@ -411,12 +426,10 @@ const ChatScreen = () => {
         onConfirm={handleReportSubmit}
         confirmLabel="Submit"
         closeLabel="Cancel"
-        message={(
+        message={
           <>
             <p className="modal-message">Report this message:</p>
-            <div className="modal-submessage-container">
-              {reportedMessage}
-            </div>
+            <div className="modal-submessage-container">{reportedMessage}</div>
             <textarea
               className="modal-textarea"
               onChange={(e) => setReportFeedbackMessage(e.target.value)}
@@ -425,31 +438,41 @@ const ChatScreen = () => {
               cols="50"
             />
           </>
-        )}
+        }
       />
 
       <div className="chatscreen-header-container">
         <button className="chatscreen-home-button" onClick={handleGoToHome}>
           Home
         </button>
-        <div className="chatscreen-header-title">
-          {assistantTitle}
-        </div>
+        <div className="chatscreen-header-title">{assistantTitle}</div>
       </div>
       <div ref={scrollViewRef} className="chatscreen-messages-container">
         {messages.map((message, index) => (
           <React.Fragment key={index}>
-            <div className={`chatscreen-message-wrapper ${message.sender === 'user' ? 'user-message-wrapper' : 'bot-message-wrapper'}`}>
+            <div
+              className={`chatscreen-message-wrapper ${
+                message.sender === 'user' ? 'user-message-wrapper' : 'bot-message-wrapper'
+              }`}
+            >
               {message.sender !== 'user' && (
                 <div className="bot-profile-and-actions">
                   <img src={chatbotImage} alt="Bot" className="chatbot-profile-image" />
                   <div className="bot-actions">
-                    <button className="thumb-button" onClick={() => sendPositiveReport(message.text)}>👍</button>
-                    <button className="thumb-button" onClick={() => sendNegativeReport(message.text)}>👎</button>
+                    <button className="thumb-button" onClick={() => sendPositiveReport(message.text)}>
+                      👍
+                    </button>
+                    <button className="thumb-button" onClick={() => sendNegativeReport(message.text)}>
+                      👎
+                    </button>
                   </div>
                 </div>
               )}
-              <div className={`chatscreen-message-container ${message.sender === 'user' ? 'chatscreen-user-message' : 'chatscreen-bot-message'}`}>
+              <div
+                className={`chatscreen-message-container ${
+                  message.sender === 'user' ? 'chatscreen-user-message' : 'chatscreen-bot-message'
+                }`}
+              >
                 <RenderMarkdown markdown={message.text} />
               </div>
             </div>
@@ -477,22 +500,32 @@ const ChatScreen = () => {
           </React.Fragment>
         ))}
       </div>
-  
+
       {showImage && chatbotImage && (
         <div className="chatscreen-message-image">
-          <img src={chatbotImage} alt={assistantTitle + " Image"} />
+          <img src={chatbotImage} alt={`${assistantTitle} Image`} />
         </div>
       )}
-  
-      <SuggestedPrompts onSelectPrompt={handleSelectPrompt} isSending={isSending} chatbotType={chatbotType} />
+
+      <SuggestedPrompts
+        onSelectPrompt={handleSelectPrompt}
+        isSending={isSending}
+        chatbotType={chatbotType}
+      />
 
       {maxPrompts - totalPromptCount < 5 && (
         <div className="prompt-count-info">
           <p className="prompt-count-text">
-            Prompts used today: {totalPromptCount > maxPrompts ? `${maxPrompts}/${maxPrompts}` : `${totalPromptCount}/${maxPrompts}`}
+            Prompts used today:{' '}
+            {totalPromptCount > maxPrompts
+              ? `${maxPrompts}/${maxPrompts}`
+              : `${totalPromptCount}/${maxPrompts}`}
           </p>
           {accountType !== 'premium' && totalPromptCount >= maxPrompts && (
-            <span className="upgrade-message" onClick={() => navigate('/pricing')}> Upgrade for more prompts!</span>
+            <span className="upgrade-message" onClick={() => navigate('/pricing')}>
+              {' '}
+              Upgrade for more prompts!
+            </span>
           )}
         </div>
       )}
@@ -503,19 +536,17 @@ const ChatScreen = () => {
           value={currentMessage}
           onChange={(e) => setCurrentMessage(e.target.value)}
           placeholder="Type your message..."
-          onKeyDown={(e) => { if (e.key === 'Enter' && !isSending) handleSendMessage(); }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && !isSending) handleSendMessage();
+          }}
           disabled={isSending}
         />
-        <button
-          className="chatscreen-send-button"
-          onClick={handleSendMessage}
-          disabled={isSending}
-        >
+        <button className="chatscreen-send-button" onClick={handleSendMessage} disabled={isSending}>
           Send
         </button>
       </div>
     </div>
-  );  
+  );
 };
 
 export default ChatScreen;
