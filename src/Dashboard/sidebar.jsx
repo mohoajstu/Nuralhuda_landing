@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import logo from '../img/about-nbg.png';
 import { SidebarContext } from '../SidebarContext'; // Import SidebarContext
 
-const Sidebar = ({ hasNavbar }) => {
+const Sidebar = ({ hasNavbar, accountType }) => {
     const navigate = useNavigate();
     const { isSidebarOpen, toggleSidebar } = useContext(SidebarContext); // Access sidebar state and toggle function
 
@@ -33,12 +33,26 @@ const Sidebar = ({ hasNavbar }) => {
                             <button className="sub-button" onClick={() => handleNavigation('/chat/nurAlHudaForKids')}>Nur Al Huda For Kids</button>
                             <button className="sub-button" onClick={() => handleNavigation('/chat/islamicSocraticMethod')}>Islamic Socratic Method</button>
                             <button className="sub-button" onClick={() => handleNavigation('/chat/iqraWithUs')}>Iqra With Us</button>
-                            {/* Uncomment the following lines if you want to include more assistants */}
-                            {/* <button className="sub-button" onClick={() => handleNavigation('/chat/muslimReferenceAI')}>Muslim Reference AI</button>
-                            <button className="sub-button" onClick={() => handleNavigation('/chat/paliGPT')}>PaliGPT</button>
-                            <button className="sub-button" onClick={() => handleNavigation('/chat/fiveDThinking')}>5D Thinking</button> */}
-                        </div>
 
+                            {/* commented assistants 
+                            <button className="sub-button" onClick={() => handleNavigation('/chat/muslimReferenceAI')}>Muslim Reference AI</button>
+                            <button className="sub-button" onClick={() => handleNavigation('/chat/paliGPT')}>PaliGPT</button>
+                            <button className="sub-button" onClick={() => handleNavigation('/chat/fiveDThinking')}>5D Thinking</button>
+                            */}
+                            </div>
+
+                        {/* Conditionally render Tools section for enterprise users */}
+                        {accountType === 'enterprise' && (
+                          <div>
+                            <div className="main-button underline-effect" onClick={() => handleNavigation('/dashboard')}>Tools</div>
+                            <div className="sub-buttons">
+                                <button className="sub-button" onClick={() => navigate('/tools/graderbot')}>GraderBot</button>
+                                <button className="sub-button" onClick={() => navigate('/tools/quiz-generator')}>Quiz Generator</button>
+                                <button className="sub-button" onClick={() => navigate('/tools/5dthinking')}>5D Lesson Planner</button>
+                            </div>
+                          </div>
+                        )}
+                    </div>
                         {/* <button className={`main-button underline-effect ${activeButton === 'settings' ? 'active' : ''}`} onClick={() => setActiveContent('settings')}>
                             Settings
                         </button>
@@ -47,20 +61,11 @@ const Sidebar = ({ hasNavbar }) => {
                             <button className="sub-button">Preferences</button>
                             <button className="sub-button">Billing</button>
                         </div> */}
-
-                        <button className="main-button underline-effect" onClick={() => handleNavigation('/dashboard')}>Tools</button>
-                        <div className="sub-buttons">
-                            <button className="sub-button" onClick={() => handleNavigation('/tools/graderbot')}>GraderBot</button>
-                            <button className="sub-button" onClick={() => handleNavigation('/tools/quiz-generator')}>Quiz Generator</button>
-                            <button className="sub-button" onClick={() => handleNavigation('/tools/5dthinking')}>5D Lesson Planner</button>
-                        </div>
-                    </div>
-                
                     <div className="footer-buttons">
-                        {/* Uncomment the following lines if you want to include Terms of Service and Privacy Policy */}
-                        {/* <button className="footer-button">Terms of Service</button> 
-                        <button className="footer-button">Privacy Policy</button> */}
-                        <button className="footer-button" onClick={() => handleNavigation('/contact-form')}>Contact Us</button>
+                        {/* Uncommented footer buttons */}
+                        <button className="footer-button" onClick={()=> navigate('/terms-of-use')}>Terms of Use</button> 
+                        <button className="footer-button" onClick={()=> navigate('/privacy-policy')}>Privacy Policy</button> 
+                        <button className="footer-button" onClick={() => navigate('/contact-form')}>Contact Us</button>
                         <p className="footer-text">© 2024 Nur Al Huda. All rights reserved.</p>
                     </div>
                 </div>
