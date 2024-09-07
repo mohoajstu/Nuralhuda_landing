@@ -78,15 +78,39 @@ const Login = () => {
     const handleLogin = async (event) => {
         event.preventDefault();
         try {
-            await signInWithEmailAndPassword(auth, email, password);
-            setEmail('');
-            setPassword('');
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
+    
+            const userDocRef = doc(db, 'users', user.uid);
+            const userDoc = await getDoc(userDocRef);
+    
+            let accountType = '';
+    
+            if (userDoc.exists()) {
+                // Get accountType from Firebase if the user document exists
+                const userData = userDoc.data();
+                accountType = userData.account || ''; // Default to '' if not set
+            } else {
+                // If user document does not exist, create it and set accountType to ''
+                await setDoc(userDocRef, {
+                    email: user.email,
+                    paymentStatus: 'unpaid',
+                    account: '',
+                    lastResetDate: new Date(),
+                });
+                accountType = '';
+            }
+    
+            // Store accountType in local storage
+            localStorage.setItem('accountType', accountType);
+    
+            // Navigate to dashboard
             navigate('/dashboard');
         } catch (error) {
             console.error(error);
             setError("Failed to log in. Check your email and password.");
         }
-    };
+    };    
 
     const handleSignup = async (event) => {
         event.preventDefault();
@@ -125,31 +149,48 @@ const Login = () => {
             const credential = GoogleAuthProvider.credentialFromResult(result);
             const token = credential.accessToken;
             const user = result.user;
-
+    
             const userDocRef = doc(db, 'users', user.uid);
             const userDoc = await getDoc(userDocRef);
-
-            if (!userDoc.exists()) {
+    
+            let accountType = '';
+    
+            if (userDoc.exists()) {
+                // Get accountType from Firebase if the user document exists
+                const userData = userDoc.data();
+                accountType = userData.account || ''; // Default to '' if not set
+            } else {
+                // If user document does not exist, create it and set accountType to ''
                 await setDoc(userDocRef, {
                     email: user.email,
                     paymentStatus: 'unpaid',
                     account: '',
                     lastResetDate: new Date(),
                 });
+                accountType = '';
+            }
+    
+            // Store accountType in local storage
+            localStorage.setItem('accountType', accountType);
+    
+            // Store the Google token in session storage
+            sessionStorage.setItem('googleAuthToken', token);
+    
+            if(accountType=='')
+            {
+                navigate('/pricing')
+            }
+            else{
+            // Navigate to dashboard
+            navigate('/dashboard');
             }
 
-            // Store the token in session storage
-            sessionStorage.setItem('googleAuthToken', token);
-
-            // Store the token in session storage
-            sessionStorage.setItem('googleAuthToken', token);
-
-            navigate('/dashboard');
         } catch (error) {
             console.error(error);
             setError("Failed to log in with Google.");
         }
     };
+    
 
     return (
         <div className="login-container">

@@ -35,6 +35,7 @@ const App = () => {
   const location = useLocation();
   const [user, loading] = useAuthState(auth);
   const [landingPageData, setLandingPageData] = useState(null);
+  const [accountType, setAccountType] = useState(''); // Add accountType state
 
   // Define which paths should not show the sidebar
   const shouldShowSidebar = user && location.pathname !== '/';
@@ -58,6 +59,12 @@ const App = () => {
     }
   }, [location]);
 
+  // Fetch accountType from local storage when the app loads
+  useEffect(() => {
+    const storedAccountType = localStorage.getItem('accountType') || '';
+    setAccountType(storedAccountType);
+  }, []);
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -65,8 +72,8 @@ const App = () => {
   return (
     <SidebarProvider>
       <div className="App">
-        {/* Conditionally render Sidebar */}
-        {shouldShowSidebar && <Sidebar />}
+        {/* Conditionally render Sidebar and pass accountType */}
+        {shouldShowSidebar && <Sidebar accountType={accountType} />} {/* Pass accountType as a prop */}
         {shouldShowNavbar && <Navigation />}
         <Routes>
           <Route path="/" element={landingPageData ? <Home data={landingPageData} /> : <div>Loading...</div>} />
@@ -81,10 +88,10 @@ const App = () => {
           <Route path="/quiz/:quizId" element={<FetchQuiz />} />
           <Route path="/tools/graderbot" element={<ProtectedRoute element={AutograderPage} />} />
           <Route path="/onboarding" element={<ProtectedRoute element={Onboarding} />} />
-          <Route path="/tools/5dthinking" element={<FiveDThinking /> }/>
+          <Route path="/tools/5dthinking" element={<FiveDThinking />} />
           <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
           <Route path="/terms-of-use" element={<TermsOfUsePage />} />
-          <Route path="/dashboard" element={<ProtectedRoute element={<Dashboard />} />} />
+          <Route path="/dashboard" element={<ProtectedRoute element={<Dashboard accountType={accountType} />} />} /> {/* Pass accountType to Dashboard */}
           <Route path="*" element={<div>404 Not Found</div>} />
         </Routes>
       </div>
