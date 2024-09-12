@@ -1421,13 +1421,13 @@ label {
 }
 
 .enterprise-title {
-  font-size: 2rem;
+  font-size: 3rem;
   margin-bottom: 1rem;
   color: var(--primary-color);
 }
 
 .enterprise-description {
-  font-size: 1.25rem;
+  font-size: 2rem;
   margin-bottom: 1.5rem;
   color: var(--primary-color);
 }
@@ -1557,7 +1557,7 @@ label {
 
 .container {
   max-width: 1200px;
-  margin: 0 auto;
+  margin-bottom: 10;
   gap: 16px; /* Adjust the gap between items as needed */
 }
 

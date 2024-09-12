@@ -3,13 +3,18 @@ import React, { useState, useEffect } from 'react';
 const slides = [
     {
         title: "Basic Plan",
-        description: "Nur Al Huda for $15 per month.",
+        description: "Nur Al Huda for $9.99 per month.",
         image: "./img/about-nbg.png",
     },
     {
+        title: "Hybrid Plan",
+        description: "Nur Al Huda And Nur Al Huda for Kids for $16.99 per month.",
+        image: "./img/NAHandK.png",
+    },
+    {
         title: "Premium Plan",
-        description: "All Assistants for $20 per month.",
-        image: "./img/Advanced-NAHK.png",
+        description: "All Assistants for $19.99 per month.",
+        image: "./img/enterprise.png",
     },
     {
         title: "Enterprise Plan",
