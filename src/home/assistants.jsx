@@ -29,7 +29,7 @@ export const Assistants = (props) => {
     const tabCount = props.data.length;
     const interval = setInterval(() => {
       setActiveTab((prevTab) => (prevTab + 1) % tabCount); // Cycle through tabs
-    }, 3000); // 10-second interval
+    }, 10000); // 10-second interval
 
     return () => clearInterval(interval); // Clear interval on component unmount
   }, [props.data.length]);
