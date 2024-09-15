@@ -522,65 +522,83 @@ header .intro-text {
   margin-bottom: 40px;
 }
 
-/* assistants Section */
+/* Assistants Section */
 #assistants {
-  padding: 100px 0; /* Adjust padding */
-  background-color: #dcca98; /* Beige background */
-  width: 100%; /* Full width */
-  height: auto; /* Allow height to adjust dynamically */
-  min-height: 100vh; /* Ensure minimum height is the full viewport height */
-  overflow: hidden; /* Prevent any unwanted overflow */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-top: 100px;
+  padding-bottom: 100px;
+  background-color: #dcca98;
+  width: 100%;
+  min-height: 100vh; /* By default, the section will cover the full viewport height */
+  box-sizing: border-box;
+  position: relative;
 }
 
-/* Ensure the container takes up the appropriate width and grows as needed */
+/* For devices with max width of 500px and specific viewport heights */
+@media (max-width: 500px) and (max-height: 700px) {
+  #assistants {
+    margin-bottom: 120px;
+    min-height: 150vh; /* Extend the height a bit more to allow content to fit */
+  }
+}
+
+@media (max-width: 500px) and (max-height: 800px) {
+  #assistants {
+    padding-bottom: 180px; /* More padding for taller screens */
+    min-height: 100vh; /* Full viewport height */
+  }
+}
+
+@media (max-width: 500px) and (max-height: 900px) {
+  #assistants {
+    padding-bottom: 180px; /* More padding for taller screens */
+    min-height: 100vh; /* Full viewport height */
+  }
+}
+
+@media (max-width: 500px) and (max-height: 1000px) {
+  #assistants {
+    margin-bottom: 120px;
+    min-height: 150vh; /* Extend height for larger screens */
+  }
+}
+
+/* Ensure the container takes up the appropriate width */
 .container {
-  max-width: 1200px; /* Limit the width of the container */
-  margin: 0 auto; /* Center the container */
-  padding: 0 20px; /* Add padding on the sides */
-  box-sizing: border-box; /* Include padding in width and height */
+  max-width: 1200px;
+  margin: 0 auto;
+  height: auto;
+  padding: 0 20px;
+  box-sizing: border-box;
 }
 
 /* Assistants Item */
 .assistants-item {
   width: 100%;
-  max-width: 300px; /* Set max width for each assistant item */
-  margin: 0 auto; /* Center each item */
+  max-width: 300px;
+  margin: 0 auto;
   padding: 20px;
-  box-sizing: border-box; /* Include padding in the width calculation */
+  box-sizing: border-box;
 }
 
 /* Tab content to arrange the assistants */
 .tab-content {
   display: flex;
-  flex-wrap: wrap; /* Allow wrapping to new rows */
-  justify-content: center; /* Center items in the container */
-  gap: 20px; /* Add space between the items */
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  flex-grow: 1;
 }
 
 .assistants-item img {
-  width: 100%; /* Ensure images take full width */
-  height: auto; /* Maintain aspect ratio */
+  width: 100%;
+  height: auto;
 }
 
-/* Adjustments for text alignment */
 h4, p {
   text-align: center;
-}
-
-/* Mobile responsive adjustments */
-@media (max-width: 768px) {
-  #assistants {
-    height: 205vh; /* Ensure minimum height is the full viewport height */
-  }
-
-  .assistants-item {
-    max-width: 100%; /* Allow full width on mobile */
-    width: 100%;
-  }
-
-  .tab-content {
-    flex-direction: column; /* Stack the items vertically on mobile */
-  }
 }
 
 .assistants-item .hover-bg {
