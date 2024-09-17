@@ -226,12 +226,12 @@ export const Navigation = (props) => {
                 About
               </a>
             </li>
-            <li>
+            {/*<li>
               <a href="/#features" onClick={() => handleNavigation('/#features')} className="page-scroll">
                 Features
               </a>
             </li>
-            {/*<li>
+            <li>
               <a href="/#team" onClick={() => handleNavigation('/#team')} className="page-scroll">
                 Team
               </a>
