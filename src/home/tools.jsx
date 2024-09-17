@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import './tools.css'; // Import the custom CSS file
+
 
 export const Tools = (props) => {
   const navigate = useNavigate();
