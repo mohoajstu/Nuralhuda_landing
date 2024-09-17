@@ -88,7 +88,7 @@ const App = () => {
           <Route path="/quiz/:quizId" element={<FetchQuiz />} />
           <Route path="/tools/graderbot" element={<ProtectedRoute element={AutograderPage} />} />
           <Route path="/onboarding" element={<ProtectedRoute element={Onboarding} />} />
-          <Route path="/tools/5dthinking" element={<FiveDThinking />} />
+          <Route path="/tools/5dthinking" element={<ProtectedRoute element={FiveDThinking} />} />
           <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
           <Route path="/terms-of-use" element={<TermsOfUsePage />} />
           <Route path="/dashboard" element={<ProtectedRoute element={<Dashboard accountType={accountType} />} />} /> {/* Pass accountType to Dashboard */}

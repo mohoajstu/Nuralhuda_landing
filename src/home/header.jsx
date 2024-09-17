@@ -1,6 +1,14 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 export const Header = (props) => {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate('/chat/nurAlHuda');
+  };
+  
+
   return (
     <header id="header">
       <div className="intro">
@@ -14,7 +22,7 @@ export const Header = (props) => {
                 </h1>
                 <p>{props.data ? props.data.paragraph : "Loading"}</p>
                 <a
-                  href="#assistants"
+                  onClick={handleClick}
                   className="text-center btn btn-custom btn-lg page-scroll"
                 >
                   Start Now

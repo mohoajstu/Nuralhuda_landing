@@ -107,5 +107,25 @@
       "text": "As-salam-alaikum! I am Iqra With Us, your Quran Assistant. I'm here to help you understand the Quran by providing accurate Arabic texts, English translations, and concise explanations based on traditional tafseer. My aim is to offer practical insights that you can apply in your daily life.",
       "type": "iqraWithUs"
     }
+  ],
+"Tools": [
+    {
+      "smallImage": "img/auto.png",
+      "title": "GraderBot",
+      "description": "An auto-grader that requires three CSV files: Questions and Max Score, Grading Scheme or Rubric, and Student Answers. Once these are supplied, each student response gets tailored feedback and a score.",
+      "type": "graderbot"
+    },
+    {
+      "smallImage": "img/quiz-gen.png",
+      "title": "Quiz Generator",
+      "description": "Generates quizzes based on any topic or existing resources you provide, including lesson plans and textbook pages. The quiz includes Multiple Choice, True/False, Fill in the Blank, as well as short and long answer questions. Once generated, you can edit it as needed and export it in three ways: as a PDF to print for your students, as a link to an online quiz for students to complete with their answers being recorded, or as a Google Form compatible with Google Workspace.",
+      "type": "quiz-generator"
+    },
+    {
+      "smallImage": "img/5dlogotransparent.png",
+      "title": "5D Thinking Lesson Planner",
+      "description": "Utilizes the 5D thinking model that breaks down topics into five dimensions: Explore, Compare, Question, Connect, Appreciate. The goal is to relate secular content taught in schools back to Allah as the creator. This tool generates lessons and slides about any topic or existing lesson of your choice for any grade level. [Learn more about the 5D thinking model](https://5dthinking.org/).",
+      "type": "5dthinking"
+    }
   ]
 }
