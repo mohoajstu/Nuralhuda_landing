@@ -736,10 +736,6 @@ header .intro-text {
   height: auto;
 }
 
-h4, p {
-  text-align: center;
-}
-
 .assistants-item .hover-bg {
   overflow: hidden;
   position: relative;
