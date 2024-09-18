@@ -4,6 +4,9 @@ import { createThread, createMessage, createRun, titleToAssistantIDMap } from '.
 import SlideContent from './SlideContent';
 import './FiveDAssistant.css';
 
+// The template presentation ID (from your shared Google Slides link)
+const templateId = '1heYm0snZ8upxRHmcrt1UZoiHUNUptrbZdpFcTUkZcVA';
+
 const titleSubtopicMap = {
   Explore: ['Content', 'Explanation', 'Observations', 'Fascinating Facts'],
   Compare: ['Analogy', 'Content', 'Explanation', 'Comparison'],
@@ -18,6 +21,7 @@ const FiveDAssistant = () => {
   const [slides, setSlides] = useState([]);
   const [responseBuffer, setResponseBuffer] = useState('');
   const [error, setError] = useState('');
+  const [presentationLink, setPresentationLink] = useState('');
 
   const handleTextChange = (e) => setText(e.target.value);
 
@@ -80,7 +84,7 @@ const FiveDAssistant = () => {
 
   const createSlidesFromResponse = (response, dimension) => {
     const slides = [];
-  
+
     if (dimension === 'Explore') {
       slides.push({ dimension: 'Explore', content: response.content });
       slides.push({ dimension: 'Explore', explanation: response.explanation });
@@ -121,15 +125,13 @@ const FiveDAssistant = () => {
       slides.push({ dimension: 'Appreciate', connectWithQuran: response.connectWithQuran });
       slides.push({ dimension: 'Appreciate', connectWithHadith: response.connectWithHadith });
     }
-  
+
     return slides;
   };
-  
-
 
   const exportSlidesAsPptx = () => {
     const pptx = new PptxGenJS();
-  
+
     // Initialize subtopicIndex to 0 for each dimension
     const subtopicIndexes = {
       Explore: 0,
@@ -138,20 +140,20 @@ const FiveDAssistant = () => {
       Connect: 0,
       Appreciate: 0,
     };
-  
+
     slides.forEach((slideContent) => {
       const slide = pptx.addSlide();
       const dimension = slideContent.dimension;
-  
+
       // Get the current subtopic index for this dimension
       const subtopicIndex = subtopicIndexes[dimension];
-  
+
       // Get the corresponding subtopic title
       const subtopic = titleSubtopicMap[dimension][subtopicIndex];
-  
+
       // Increment the subtopic index for the next slide in this dimension
       subtopicIndexes[dimension]++;
-  
+
       // Add title centered at the top
       slide.addText(`${dimension} - ${subtopic}`, {
         x: 0.5,
@@ -162,7 +164,7 @@ const FiveDAssistant = () => {
         color: 'ffffff',
         align: 'center',
       });
-  
+
       // Add the content based on the subtopic and dimension
       switch (dimension) {
         case 'Explore':
@@ -209,7 +211,7 @@ const FiveDAssistant = () => {
           }
           slide.background = { fill: "f4a460" };
           break;
-  
+
         case 'Compare':
           if (subtopic === 'Analogy' && slideContent.analogy) {
             slide.addText(slideContent.analogy, {
@@ -254,7 +256,7 @@ const FiveDAssistant = () => {
           }
           slide.background = { fill: "66cdaa" };
           break;
-  
+
         case 'Question':
           if (subtopic === 'Questions' && slideContent.questions && slideContent.questions.length > 0) {
             slide.addText(slideContent.questions.join('\n'), {
@@ -279,7 +281,7 @@ const FiveDAssistant = () => {
           }
           slide.background = { fill: "f08080" };
           break;
-  
+
         case 'Connect':
           if (subtopic === 'Connections' && slideContent.connections) {
             slide.addText(slideContent.connections, {
@@ -343,7 +345,7 @@ const FiveDAssistant = () => {
           }
           slide.background = { fill: "90ee90" };
           break;
-  
+
         case 'Appreciate':
           if (subtopic === 'What ifs' && slideContent.whatIfs) {
             slide.addText(slideContent.whatIfs, {
@@ -409,10 +411,131 @@ const FiveDAssistant = () => {
           break;
       }
     });
-  
+
     pptx.writeFile({ fileName: '5D_Lesson_Plan.pptx' });
   };
+
+  // Function to copy the template
+  const copyTemplate = async (templateId, accessToken) => {
+    const copyResponse = await fetch(
+      `https://www.googleapis.com/drive/v3/files/${templateId}/copy`, 
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: 'New 5D Lesson Plan',  // Name for the new presentation
+        }),
+      }
+    );
+    const copyResult = await copyResponse.json();
+    return copyResult.id;  // This is the new copied presentation ID
+  };
+
+  // Function to update the new presentation
+  const updatePresentation = async (presentationId, accessToken, slides) => {
+    const requests = [];
+
+    slides.forEach((slideContent, index) => {
+      const pageObjectId = `slide_${index + 1}`;
+
+      // Add content text box
+      const contentText = getContentText(slideContent);
+
+      requests.push({
+        insertText: {
+          objectId: `content_${pageObjectId}`,
+          text: contentText,
+        },
+      });
+    });
+
+    await fetch(
+      `https://slides.googleapis.com/v1/presentations/${presentationId}:batchUpdate`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ requests }),
+      }
+    );
+  };
+
+  // Main function to export slides
+  const exportSlidesToGoogleSlides = async () => {
+    if (!slides.length) {
+      alert('Please generate slides first.');
+      return;
+    }
   
+    setIsLoading(true);
+    setError('');
+  
+    const accessToken = sessionStorage.getItem('googleAuthToken');
+  
+    if (!accessToken) {
+      setError('Access token not found. Please sign in with Google.');
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      // Step 1: Copy the template presentation
+      const newPresentationId = await copyTemplate(templateId, accessToken);
+
+      // Step 2: Modify the new presentation with dynamic content
+      await updatePresentation(newPresentationId, accessToken, slides);
+
+      // Step 3: Update the UI with the new presentation link
+      const presentationLink = `https://docs.google.com/presentation/d/${newPresentationId}/edit`;
+      setPresentationLink(presentationLink);
+      alert('Google Slides presentation created successfully!');
+    } catch (error) {
+      console.error('Error exporting slides:', error);
+      setError(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };  
+
+  const getContentText = (slideContent) => {
+    // Extract the appropriate content based on the dimension and subtopic
+    const keys = Object.keys(slideContent);
+    for (const key of keys) {
+      if (key !== 'dimension' && slideContent[key]) {
+        if (Array.isArray(slideContent[key])) {
+          return slideContent[key].join('\n');
+        } else if (typeof slideContent[key] === 'object') {
+          // Handle nested objects if necessary
+          return JSON.stringify(slideContent[key], null, 2);
+        } else {
+          return slideContent[key];
+        }
+      }
+    }
+    return '';
+  };
+
+  const getBackgroundColor = (dimension) => {
+    switch (dimension) {
+      case 'Explore':
+        return { red: 0.956, green: 0.643, blue: 0.376 };
+      case 'Compare':
+        return { red: 0.4, green: 0.8, blue: 0.667 };
+      case 'Question':
+        return { red: 0.941, green: 0.502, blue: 0.502 };
+      case 'Connect':
+        return { red: 0.565, green: 0.933, blue: 0.565 };
+      case 'Appreciate':
+        return { red: 0.867, green: 0.627, blue: 0.867 };
+      default:
+        return { red: 1, green: 1, blue: 1 };
+    }
+  };
 
   const handleError = (error) => {
     console.error("Error occurred:", error);
@@ -446,7 +569,26 @@ const FiveDAssistant = () => {
           {slides.map((slide, index) => (
             <SlideContent key={index} slide={slide} />
           ))}
-          <button className="export-button" onClick={exportSlidesAsPptx}>Export as Powerpoint</button>
+          <div className="export-buttons">
+            <button className="export-button" onClick={exportSlidesAsPptx}>
+              Export as PowerPoint
+            </button>
+            <button
+              className="export-button"
+              onClick={exportSlidesToGoogleSlides}
+              disabled={isLoading}
+            >
+              {isLoading ? 'Exporting...' : 'Export to Google Slides'}
+            </button>
+          </div>
+          {presentationLink && (
+            <div className="presentation-link">
+              <p>Your presentation is ready:</p>
+              <a href={presentationLink} target="_blank" rel="noopener noreferrer">
+                Open Presentation
+              </a>
+            </div>
+          )}
         </div>
       )}
     </div>

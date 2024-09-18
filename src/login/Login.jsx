@@ -6,9 +6,12 @@ import googleLogo from '../img/Google-Icon.png'; // Make sure you have a Google 
 import { auth } from '../config/firebase-config'; // Ensure path accuracy
 import './Login.css';
 
+
 // Initialize the GoogleAuthProvider and add the necessary scopes
 const provider = new GoogleAuthProvider();
-provider.addScope('https://www.googleapis.com/auth/forms.body'); // Add the Google Forms scope
+provider.addScope('https://www.googleapis.com/auth/forms.body'); // Existing scope for Google Forms
+provider.addScope('https://www.googleapis.com/auth/presentations'); // Add scope for Google Slides
+provider.addScope('https://www.googleapis.com/auth/drive.file'); // Add scope for Google Drive access
 
 const db = getFirestore();
 
@@ -170,27 +173,22 @@ const Login = () => {
                 accountType = '';
             }
     
-            // Store accountType in local storage
+            // Store accountType and Google token in session storage
             localStorage.setItem('accountType', accountType);
-    
-            // Store the Google token in session storage
             sessionStorage.setItem('googleAuthToken', token);
     
-            if(accountType=='')
-            {
-                navigate('/pricing')
+            // Redirect based on account type
+            if (accountType === '') {
+                navigate('/pricing');
+            } else {
+                navigate('/dashboard');
             }
-            else{
-            // Navigate to dashboard
-            navigate('/dashboard');
-            }
-
+    
         } catch (error) {
-            console.error(error);
-            setError("Failed to log in with Google.");
+            console.error('Failed to log in with Google:', error);
+            setError('Failed to log in with Google.');
         }
     };
-    
 
     return (
         <div className="login-container">
