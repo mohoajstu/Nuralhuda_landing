@@ -16,7 +16,7 @@ export const Tools = (props) => {
     <div id="tools" className="tools-section">
       <div className="tools-container">
         <div className="section-title">
-          <h2>Our Tools</h2>
+          <h2>Teaching Tools</h2>
           <p>
             We offer a variety of tools to enhance your learning experience. Explore our tools below.
           </p>
