@@ -1,0 +1,105 @@
+/* Container styling */
+.teacher-input-container {
+    margin: 20px auto;
+    padding: 20px;
+    max-width: 1200px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.teacher-input-container h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+    font-family: Arial, sans-serif;
+}
+
+.teacher-name-input,
+.teacher-type-select {
+    display: block;
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.submit-button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background-color: #144040;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.submit-button:hover {
+    background-color: #0f3030;
+}
+
+/* Availability grid styling */
+.availability-grid {
+    display: grid;
+    grid-template-columns: 100px repeat(5, 1fr);
+    gap: 2px;
+    margin-top: 20px;
+}
+
+.day-header {
+    background-color: #f0f0f0;
+    padding: 10px;
+    text-align: center;
+    font-weight: bold;
+    border: 1px solid #e0e0e0;
+    font-family: Arial, sans-serif;
+}
+
+.time-label {
+    background-color: #f7f7f7;
+    text-align: right;
+    padding: 10px;
+    border: 1px solid #e0e0e0;
+    font-family: Arial, sans-serif;
+}
+
+/* Availability cells */
+.availability-cell {
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    text-align: center;
+    padding: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.availability-cell:hover {
+    background-color: #f0f0f0;
+}
+
+.selected {
+    background-color: #DCCA98; /* Highlight selected cells */
+    font-weight: bold;
+    color: #333;
+}
+
+/* Responsive styling */
+@media (max-width: 768px) {
+    .availability-grid {
+        grid-template-columns: 80px repeat(5, 1fr);
+    }
+
+    .teacher-input-container {
+        padding: 10px;
+    }
+
+    .day-header, .time-label, .availability-cell {
+        font-size: 0.8rem;
+        padding: 5px;
+    }
+}

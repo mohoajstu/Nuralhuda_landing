@@ -17,6 +17,7 @@
     "file-type": "^19.3.0",
     "firebase": "^10.11.1",
     "framer-motion": "6",
+    "glpk.js": "^4.0.2",
     "html-react-parser": "^5.1.10",
     "jspdf": "^2.5.1",
     "mammoth": "^1.8.0",

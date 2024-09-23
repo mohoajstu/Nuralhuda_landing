@@ -1,0 +1,134 @@
+/* Container for the entire tool */
+.schedule-tool-container {
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
+    padding: 20px;
+    transition: margin-left 0.3s ease;
+  }
+  
+  .schedule-tool-container.sidebar-open {
+    margin-left: 250px; /* Adjusted based on sidebar width */
+  }
+  
+  .schedule-tool-container.sidebar-closed {
+    margin-left: 0;
+  }
+  
+  /* Form container */
+  .teacher-input-form {
+    margin-bottom: 20px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Styling for form elements */
+  .teacher-input-form input[type="text"],
+  .teacher-input-form select {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .teacher-input-form h3 {
+    margin-top: 15px;
+    color: #144040;
+  }
+  
+  .teacher-input-form button {
+    background-color: #144040;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .teacher-input-form button:hover {
+    background-color: #0f3030;
+  }
+  
+  .availability {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: space-between;
+  }
+  
+  .day-section {
+    flex: 1 1 100%;
+    margin-bottom: 10px;
+  }
+  
+  .day-section strong {
+    display: block;
+    margin-bottom: 5px;
+    color: #144040;
+  }
+  
+  .day-section label {
+    display: inline-block;
+    margin-right: 8px;
+  }
+  
+  .generate-schedule-button {
+    background-color: #144040;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .generate-schedule-button:hover {
+    background-color: #0f3030;
+  }
+  
+  /* Schedule Display Styling */
+  .schedule-display {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .schedule-display h2 {
+    color: #144040;
+    margin-bottom: 15px;
+  }
+  
+  .schedule-display h3 {
+    color: #144040;
+    margin-bottom: 10px;
+  }
+  
+  .schedule-display p {
+    padding: 5px;
+    margin: 0;
+    background-color: #DCCA98;
+    border-radius: 4px;
+  }
+  
+  /* Responsive Styling */
+  @media (max-width: 768px) {
+    .schedule-tool-container {
+      padding: 10px;
+    }
+  
+    .teacher-input-form button,
+    .generate-schedule-button {
+      width: 100%;
+    }
+  
+    .availability {
+      flex-direction: column;
+    }
+  }
+  

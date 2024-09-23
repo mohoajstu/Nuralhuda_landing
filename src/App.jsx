@@ -25,6 +25,7 @@ import PrivacyPolicyPage from './home/PrivacyPolicyPage';
 import TermsOfUsePage from './home/TermsOfUsePage';
 import Sidebar from './Dashboard/sidebar';
 import { SidebarProvider } from './SidebarContext'; // Import SidebarContext
+import ScheduleTool from './SchedulingTool/ScheduleManager';
 
 export const scroll = new SmoothScroll('a[href*="#"]', {
   speed: 1000,
@@ -89,6 +90,7 @@ const App = () => {
           <Route path="/tools/graderbot" element={<ProtectedRoute element={AutograderPage} />} />
           <Route path="/onboarding" element={<ProtectedRoute element={Onboarding} />} />
           <Route path="/tools/5dthinking" element={<ProtectedRoute element={FiveDThinking} />} />
+          <Route path="/tools/schedule-generator" element={<ProtectedRoute element={ScheduleTool} />} />
           <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
           <Route path="/terms-of-use" element={<TermsOfUsePage />} />
           <Route path="/dashboard" element={<ProtectedRoute element={<Dashboard accountType={accountType} />} />} /> {/* Pass accountType to Dashboard */}

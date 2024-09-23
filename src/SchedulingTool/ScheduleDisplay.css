@@ -1,0 +1,114 @@
+/* Container for the weekly schedule */
+.weekly-schedule-container {
+    margin: 20px auto;
+    padding: 20px;
+    max-width: 1200px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.weekly-schedule-container h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+    font-family: Arial, sans-serif;
+}
+
+/* Schedule grid container */
+.schedule-grid {
+    display: grid;
+    grid-template-columns: 100px repeat(5, 1fr); /* Time labels + 5 days */
+    gap: 2px;
+    align-items: stretch;
+}
+
+/* Header cells for days of the week */
+.header {
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 10px;
+    font-weight: bold;
+    font-family: Arial, sans-serif;
+}
+
+.day-header {
+    background-color: #F8F8F8;
+    color: #333;
+}
+
+/* Time slot labels */
+.time-label {
+    background-color: #F0F0F0;
+    text-align: right;
+    padding: 10px;
+    border-right: 1px solid #e0e0e0;
+    font-family: Arial, sans-serif;
+}
+
+/* Cells for the schedule */
+.schedule-cell {
+    border: 1px solid #e0e0e0;
+    padding: 10px;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    background-color: #FDFDFD;
+    transition: background-color 0.3s ease;
+}
+
+/* Alternating row colors */
+.even {
+    background-color: #f9f9f9;
+}
+.odd {
+    background-color: #ffffff;
+}
+
+/* Cell hover effect */
+.schedule-cell:hover {
+    background-color: #f0f0f0;
+    cursor: pointer;
+}
+
+/* Coloring each day's column differently */
+.day-header:nth-child(2),
+.schedule-cell:nth-child(6n + 2) {
+    background-color: #fde8e8;
+}
+
+.day-header:nth-child(3),
+.schedule-cell:nth-child(6n + 3) {
+    background-color: #fff7e6;
+}
+
+.day-header:nth-child(4),
+.schedule-cell:nth-child(6n + 4) {
+    background-color: #e6f7e6;
+}
+
+.day-header:nth-child(5),
+.schedule-cell:nth-child(6n + 5) {
+    background-color: #e6f2ff;
+}
+
+.day-header:nth-child(6),
+.schedule-cell:nth-child(6n + 6) {
+    background-color: #f3e6ff;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .schedule-grid {
+        grid-template-columns: 80px repeat(5, 1fr);
+    }
+
+    .weekly-schedule-container {
+        padding: 10px;
+    }
+
+    .time-label, .header, .schedule-cell {
+        font-size: 0.8rem;
+        padding: 5px;
+    }
+}
