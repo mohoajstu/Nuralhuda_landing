@@ -12,6 +12,15 @@ const titleSubtopicMap = {
   Appreciate: ['What ifs', 'Zikr Fikr Shukr', 'Character Lessons', 'Connect With Quran', 'Connect With Hadith'],
 };
 
+// Updated color codes for each dimension
+const dimensionColors = {
+  Explore: 'fa6666',
+  Compare: '000000',
+  Question: '64aae8',
+  Connect: 'ffa600',
+  Appreciate: '35b8b1',
+};
+
 const FiveDAssistant = () => {
   const [text, setText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -49,7 +58,13 @@ const FiveDAssistant = () => {
     return new Promise((resolve, reject) => {
       createMessage(threadId, prompt, assistantTitle)
         .then(() => {
-          createRun(threadId, titleToAssistantIDMap[assistantTitle], (message) => handleMessage(message, dimension.name, resolve), handleError, assistantTitle);
+          createRun(
+            threadId,
+            titleToAssistantIDMap[assistantTitle],
+            (message) => handleMessage(message, dimension.name, resolve),
+            handleError,
+            assistantTitle
+          );
         })
         .catch((error) => {
           handleError(error);
@@ -115,7 +130,7 @@ const FiveDAssistant = () => {
           allahNames: response.allahNames,
           subtopicIndex: subtopicIndex++,
         });
-      }      
+      }
       addSlideIfContentExists('analogicalReflection', { analogicalReflection: response.analogicalReflection });
       addSlideIfContentExists('questionsForDeeperConnection', { questionsForDeeperConnection: response.questionsForDeeperConnection });
       addSlideIfContentExists('contemplationAndAppreciation', { contemplationAndAppreciation: response.contemplationAndAppreciation });
@@ -165,15 +180,28 @@ const FiveDAssistant = () => {
       // Increment the subtopic index for the next slide in this dimension
       subtopicIndexes[dimension]++;
 
-      // Add title centered at the top
+      // Add title box with rounded edges and background color
+      slide.addShape(pptx.ShapeType.rect, {
+        x: 0.5,
+        y: 0.5,
+        w: '90%',
+        h: 1,
+        fill: { color: dimensionColors[dimension] },
+        line: { color: 'FFFFFF' },
+        radius: 10, // Rounded edges
+      });
+
+      // Add title text centered in the title box
       slide.addText(`${dimension} - ${subtopic}`, {
         x: 0.5,
         y: 0.5,
         w: '90%',
+        h: 1,
         fontSize: 30,
         bold: true,
-        color: 'ffffff',
+        color: 'FFFFFF',
         align: 'center',
+        valign: 'middle',
       });
 
       // Get the content text
@@ -187,7 +215,7 @@ const FiveDAssistant = () => {
           w: '80%',
           h: '60%',
           fontSize: 20,
-          color: 'ffffff',
+          color: '000000',
           align: 'center',
           valign: 'middle',
         });
@@ -206,10 +234,10 @@ const FiveDAssistant = () => {
           ];
           slide.addTable(tableData, {
             x: '10%',
-            y: '20%',
+            y: '30%',
             w: '80%',
             fontSize: 14,
-            color: 'ffffff',
+            color: '000000',
             align: 'center',
           });
         } else if (dimension === 'Appreciate' && slideContent.zikrFikrShukr) {
@@ -225,17 +253,17 @@ const FiveDAssistant = () => {
           ];
           slide.addTable(tableData, {
             x: '10%',
-            y: '20%',
+            y: '30%',
             w: '80%',
             fontSize: 14,
-            color: 'ffffff',
+            color: '000000',
             align: 'center',
           });
         }
       }
 
-      // Set background color
-      slide.background = { fill: getHexBackgroundColor(dimension) };
+      // Set slide background color to white
+      slide.background = { fill: 'FFFFFF' };
     });
 
     pptx.writeFile({ fileName: '5D_Lesson_Plan.pptx' });
@@ -276,7 +304,7 @@ const FiveDAssistant = () => {
         },
       });
 
-      // Set background color
+      // Set slide background color to white
       requests.push({
         updatePageProperties: {
           objectId: pageObjectId,
@@ -284,7 +312,7 @@ const FiveDAssistant = () => {
             pageBackgroundFill: {
               solidFill: {
                 color: {
-                  rgbColor: getBackgroundColor(slideContent.dimension),
+                  rgbColor: { red: 1, green: 1, blue: 1 },
                 },
               },
             },
@@ -293,14 +321,14 @@ const FiveDAssistant = () => {
         },
       });
 
-      // Add title text box
+      // Add title shape with rounded corners and background color
       const titleElementId = `title_${pageObjectId}`;
       const subtopicTitle = `${slideContent.dimension} - ${getSubtopicTitle(slideContent)}`;
 
       requests.push({
         createShape: {
           objectId: titleElementId,
-          shapeType: 'TEXT_BOX',
+          shapeType: 'RECTANGLE', //rectangle shape
           elementProperties: {
             pageObjectId: pageObjectId,
             size: {
@@ -318,6 +346,24 @@ const FiveDAssistant = () => {
         },
       });
 
+      // Set background color of the title shape
+      requests.push({
+        updateShapeProperties: {
+          objectId: titleElementId,
+          shapeProperties: {
+            shapeBackgroundFill: {
+              solidFill: {
+                color: {
+                  rgbColor: hexToRgb(dimensionColors[slideContent.dimension]),
+                },
+              },
+            },
+          },
+          fields: 'shapeBackgroundFill.solidFill.color',
+        },
+      });
+
+      // Insert title text
       requests.push({
         insertText: {
           objectId: titleElementId,
@@ -335,12 +381,24 @@ const FiveDAssistant = () => {
             bold: true,
             foregroundColor: {
               opaqueColor: {
-                rgbColor: { red: 1, green: 1, blue: 1 },
+                rgbColor: { red: 1, green: 1, blue: 1 }, // White text
               },
             },
           },
           textRange: { type: 'ALL' },
           fields: 'bold,fontSize,foregroundColor',
+        },
+      });
+
+      // Center-align title text
+      requests.push({
+        updateParagraphStyle: {
+          objectId: titleElementId,
+          style: {
+            alignment: 'CENTER',
+          },
+          textRange: { type: 'ALL' },
+          fields: 'alignment',
         },
       });
 
@@ -388,7 +446,7 @@ const FiveDAssistant = () => {
               fontSize: { magnitude: 20, unit: 'PT' },
               foregroundColor: {
                 opaqueColor: {
-                  rgbColor: { red: 1, green: 1, blue: 1 },
+                  rgbColor: { red: 0, green: 0, blue: 0 }, // Black text
                 },
               },
             },
@@ -694,38 +752,25 @@ requests.push({
     return '';
   };
 
+  // Updated getBackgroundColor function
   const getBackgroundColor = (dimension) => {
-    switch (dimension) {
-      case 'Explore':
-        return { red: 0.956, green: 0.643, blue: 0.376 }; // f4a460
-      case 'Compare':
-        return { red: 0.4, green: 0.8, blue: 0.667 }; // 66cdaa
-      case 'Question':
-        return { red: 0.941, green: 0.502, blue: 0.502 }; // f08080
-      case 'Connect':
-        return { red: 0.565, green: 0.933, blue: 0.565 }; // 90ee90
-      case 'Appreciate':
-        return { red: 0.867, green: 0.627, blue: 0.867 }; // dda0dd
-      default:
-        return { red: 1, green: 1, blue: 1 };
-    }
+    const hexColor = dimensionColors[dimension];
+    return hexToRgb(hexColor);
   };
 
+  // Updated getHexBackgroundColor function
   const getHexBackgroundColor = (dimension) => {
-    switch (dimension) {
-      case 'Explore':
-        return 'f4a460';
-      case 'Compare':
-        return '66cdaa';
-      case 'Question':
-        return 'f08080';
-      case 'Connect':
-        return '90ee90';
-      case 'Appreciate':
-        return 'dda0dd';
-      default:
-        return 'ffffff';
-    }
+    return dimensionColors[dimension] || 'FFFFFF';
+  };
+
+  // Helper function to convert hex color to rgb object
+  const hexToRgb = (hex) => {
+    const bigint = parseInt(hex, 16);
+    return {
+      red: ((bigint >> 16) & 255) / 255,
+      green: ((bigint >> 8) & 255) / 255,
+      blue: (bigint & 255) / 255,
+    };
   };
 
   const getSubtopicTitle = (slideContent) => {
