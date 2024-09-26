@@ -106,7 +106,13 @@ const QuestionContent = ({ questions = [], conclusion = '' }) => (
   </div>
 );
 
-const ConnectContent = ({ connections = '', allahNames = {}, examples = [], questionsForDeeperConnection = [], contemplationAndAppreciation = '' }) => (
+const ConnectContent = ({
+  connections = '',
+  allahNames = {},
+  analogicalReflection = [],
+  questionsForDeeperConnection = [],
+  contemplationAndAppreciation = '',
+}) => (
   <div className="slide connect-content">
     <h2>Connect</h2>
     {connections && (
@@ -115,35 +121,37 @@ const ConnectContent = ({ connections = '', allahNames = {}, examples = [], ques
         <p>{connections}</p>
       </div>
     )}
-    {allahNames.whatItTells?.length > 0 && allahNames.namesInEnglish?.length > 0 && allahNames.namesInArabic?.length > 0 && (
-      <div className="content-section">
-        <h3>Allah's Names</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>What it tells us about Allah</th>
-              <th>Names in English</th>
-              <th>Names in Arabic</th>
-            </tr>
-          </thead>
-          <tbody>
-            {allahNames.whatItTells.map((item, index) => (
-              <tr key={index}>
-                <td>{item}</td>
-                <td>{allahNames.namesInEnglish[index] || ''}</td>
-                <td>{allahNames.namesInArabic[index] || ''}</td>
+    {allahNames.whatItTells?.length > 0 &&
+      allahNames.namesInEnglish?.length > 0 &&
+      allahNames.namesInArabic?.length > 0 && (
+        <div className="content-section">
+          <h3>Allah's Names</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>What it tells us about Allah</th>
+                <th>Names in English</th>
+                <th>Names in Arabic</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    )}
-    {examples.length > 0 && (
+            </thead>
+            <tbody>
+              {allahNames.whatItTells.map((item, index) => (
+                <tr key={index}>
+                  <td>{item}</td>
+                  <td>{allahNames.namesInEnglish[index] || ''}</td>
+                  <td>{allahNames.namesInArabic[index] || ''}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    {analogicalReflection.length > 0 && (
       <div className="content-section">
-        <h3>Examples</h3>
+        <h3>Analogical Reflection</h3>
         <ul>
-          {examples.map((example, index) => (
-            <li key={index}>{example}</li>
+          {analogicalReflection.map((reflection, index) => (
+            <li key={index}>{reflection}</li>
           ))}
         </ul>
       </div>
@@ -166,6 +174,7 @@ const ConnectContent = ({ connections = '', allahNames = {}, examples = [], ques
     )}
   </div>
 );
+
 
 
 const AppreciateContent = ({ whatIfs = '', zikrFikrShukr = {}, characterLessons = '', connectWithQuran = '', connectWithHadith = '' }) => (

@@ -27,10 +27,30 @@ function initializeOpenAIClient(assistantTitle) {
 
 let currentStream = null;
 
+// Helper function for retry logic with exponential backoff
+async function withRetry(asyncFunc, args = [], maxRetries = 3, baseDelay = 1000) {
+  let attempt = 0;
+  while (attempt <= maxRetries) {
+    try {
+      return await asyncFunc(...args);
+    } catch (error) {
+      if (attempt < maxRetries) {
+        const retryDelay = baseDelay * Math.pow(2, attempt); // Exponential backoff
+        console.warn(`Attempt ${attempt + 1} failed. Retrying after ${retryDelay}ms...`);
+        await new Promise((resolve) => setTimeout(resolve, retryDelay));
+        attempt++;
+      } else {
+        console.error(`All ${maxRetries + 1} attempts failed.`);
+        throw error;
+      }
+    }
+  }
+}
+
 export async function createThread(assistantTitle) {
   const openai = initializeOpenAIClient(assistantTitle);
   try {
-    const thread = await openai.beta.threads.create();
+    const thread = await withRetry(() => openai.beta.threads.create());
     return thread;
   } catch (error) {
     console.error("Error creating thread:", error);
@@ -41,10 +61,12 @@ export async function createThread(assistantTitle) {
 export async function createMessage(threadId, newMessage, assistantTitle) {
   const openai = initializeOpenAIClient(assistantTitle);
   try {
-    const response = await openai.beta.threads.messages.create(threadId, {
-      role: "user",
-      content: newMessage,
-    });
+    const response = await withRetry(() =>
+      openai.beta.threads.messages.create(threadId, {
+        role: "user",
+        content: newMessage,
+      })
+    );
     return response;
   } catch (error) {
     console.error("Error sending message to thread:", error);
@@ -60,42 +82,56 @@ export function createRun(threadId, assistantId, handleMessage, handleError, ass
 
   const openai = initializeOpenAIClient(assistantTitle);
 
-  try {
-    currentStream = openai.beta.threads.runs.stream(threadId, {
-      assistant_id: assistantId,
+  const runStream = () => {
+    return new Promise((resolve, reject) => {
+      try {
+        currentStream = openai.beta.threads.runs
+          .stream(threadId, {
+            assistant_id: assistantId,
+          })
+          .on("textDelta", (textDelta) => {
+            if (textDelta.value) {
+              handleMessage({ sender: "assistant", text: textDelta.value });
+            }
+          })
+          .on("end", () => {
+            handleMessage({ sender: "assistant", text: "END_TOKEN" });
+            currentStream = null; // Reset current stream on end
+            resolve();
+          })
+          .on("error", (error) => {
+            console.error("Stream error:", error);
+            currentStream = null; // Reset current stream on error
+            reject(error);
+          });
+      } catch (error) {
+        console.error("Error initiating run with assistant:", error);
+        currentStream = null; // Reset current stream on catch
+        reject(error);
+      }
+    });
+  };
+
+  // Wrap the streaming in retry logic
+  withRetry(runStream)
+    .then(() => {
+      // Stream ended successfully
     })
-      .on('textDelta', (textDelta) => {
-        if (textDelta.value) {
-          handleMessage({ sender: 'assistant', text: textDelta.value });
-        }
-      })
-      .on('end', () => {
-        handleMessage({ sender: 'assistant', text: 'END_TOKEN' });
-        currentStream = null; // Reset current stream on end
-      })
-      .on('error', (error) => {
-        console.error("Stream error:", error);
-        currentStream = null; // Reset current stream on error
-        if (handleError) {
-          handleError(error);
-        }
-      });
-
-    return currentStream;
-
-  } catch (error) {
-    console.error("Error initiating run with assistant:", error);
-    currentStream = null; // Reset current stream on catch
-    throw error;
-  }
+    .catch((error) => {
+      if (handleError) {
+        handleError(error);
+      }
+    });
 }
 
 export async function createRunNoStream(threadId, assistantId, assistantTitle) {
   const openai = initializeOpenAIClient(assistantTitle);
   try {
-    const runResponse = await openai.beta.threads.runs.create(threadId, {
-      assistant_id: assistantId,
-    });
+    const runResponse = await withRetry(() =>
+      openai.beta.threads.runs.create(threadId, {
+        assistant_id: assistantId,
+      })
+    );
     return runResponse;
   } catch (error) {
     console.error("Error initiating run with assistant:", error);
@@ -106,7 +142,9 @@ export async function createRunNoStream(threadId, assistantId, assistantTitle) {
 export async function getRunStatus(threadId, runId, assistantTitle) {
   const openai = initializeOpenAIClient(assistantTitle);
   try {
-    const runStatus = await openai.beta.threads.runs.retrieve(threadId, runId);
+    const runStatus = await withRetry(() =>
+      openai.beta.threads.runs.retrieve(threadId, runId)
+    );
     return runStatus;
   } catch (error) {
     console.error("Error retrieving run status:", error);
