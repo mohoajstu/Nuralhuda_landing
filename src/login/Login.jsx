@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import googleLogo from '../img/Google-Icon.png'; // Make sure you have a Google logo image
 import { auth } from '../config/firebase-config'; // Ensure path accuracy
 import './Login.css';
-
+import { storeTokens } from './authTokenManager'; // Adjust the path accordingly
 
 // Initialize the GoogleAuthProvider and add the necessary scopes
 const provider = new GoogleAuthProvider();
@@ -151,7 +151,13 @@ const Login = () => {
             const result = await signInWithPopup(auth, provider);
             const credential = GoogleAuthProvider.credentialFromResult(result);
             const token = credential.accessToken;
+            console.log(token)
+            const refreshToken = result.user.stsTokenManager.refreshToken; // Obtain the refresh token from the result
+            console.log(refreshToken)
             const user = result.user;
+    
+            // Store the tokens using the utility function
+            await storeTokens(token, refreshToken); // Ensure storage completes before proceeding
     
             const userDocRef = doc(db, 'users', user.uid);
             const userDoc = await getDoc(userDocRef);
@@ -173,9 +179,8 @@ const Login = () => {
                 accountType = '';
             }
     
-            // Store accountType and Google token in session storage
-            localStorage.setItem('accountType', accountType);
-            sessionStorage.setItem('googleAuthToken', token);
+            // Store accountType in session storage instead of local storage
+            sessionStorage.setItem('accountType', accountType);
     
             // Redirect based on account type
             if (accountType === '') {
@@ -188,7 +193,7 @@ const Login = () => {
             console.error('Failed to log in with Google:', error);
             setError('Failed to log in with Google.');
         }
-    };
+    };      
 
     return (
         <div className="login-container">
