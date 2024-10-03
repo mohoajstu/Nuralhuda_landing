@@ -5,7 +5,12 @@ import { auth } from '../config/firebase-config';
 import googleLogo from '../img/Google-Icon.png';
 import './LoginModal.css';
 
+// Initialize the GoogleAuthProvider and add the necessary scopes
 const provider = new GoogleAuthProvider();
+provider.addScope('https://www.googleapis.com/auth/forms.body'); // Scope for Google Forms
+provider.addScope('https://www.googleapis.com/auth/presentations'); // Scope for Google Slides
+provider.addScope('https://www.googleapis.com/auth/drive.file'); // Scope for Google Drive access
+
 const db = getFirestore();
 
 const LoginModal = ({ isOpen, onClose, onLogin }) => {
@@ -18,11 +23,35 @@ const LoginModal = ({ isOpen, onClose, onLogin }) => {
   const handleLogin = async (event) => {
     event.preventDefault();
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      const userDocRef = doc(db, 'users', user.uid);
+      const userDoc = await getDoc(userDocRef);
+
+      let accountType = '';
+
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        accountType = userData.account || '';
+      } else {
+        await setDoc(userDocRef, {
+          email: user.email,
+          paymentStatus: 'unpaid',
+          account: '',
+          lastResetDate: new Date(),
+        });
+        accountType = '';
+      }
+
+      // Store accountType in localStorage
+      localStorage.setItem('accountType', accountType);
+
+      // Trigger the onLogin callback
       onLogin();
       onClose();
     } catch (error) {
-      console.error(error);
+      console.error("Failed to log in: ", error);
       setError("Failed to log in. Check your email and password.");
     }
   };
@@ -49,10 +78,11 @@ const LoginModal = ({ isOpen, onClose, onLogin }) => {
         });
       }
 
+      // Trigger the onLogin callback
       onLogin();
       onClose();
     } catch (error) {
-      console.error("Error creating account:", error);
+      console.error("Error creating account: ", error);
       setError(error.message);
     }
   };
@@ -60,24 +90,37 @@ const LoginModal = ({ isOpen, onClose, onLogin }) => {
   const handleGoogleLogin = async () => {
     try {
       const result = await signInWithPopup(auth, provider);
+      const credential = GoogleAuthProvider.credentialFromResult(result);
+      const token = credential.accessToken;
       const user = result.user;
 
       const userDocRef = doc(db, 'users', user.uid);
       const userDoc = await getDoc(userDocRef);
 
-      if (!userDoc.exists()) {
+      let accountType = '';
+
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        accountType = userData.account || '';
+      } else {
         await setDoc(userDocRef, {
           email: user.email,
           paymentStatus: 'unpaid',
           account: '',
           lastResetDate: new Date(),
         });
+        accountType = '';
       }
 
+      // Store accountType and Google token in session storage
+      localStorage.setItem('accountType', accountType);
+      sessionStorage.setItem('googleAuthToken', token);
+
+      // Trigger the onLogin callback
       onLogin();
       onClose();
     } catch (error) {
-      console.error(error);
+      console.error("Failed to log in with Google: ", error);
       setError("Failed to log in with Google.");
     }
   };
