@@ -9,13 +9,18 @@ const DashboardTools = () => {
 
   const tools = Object.keys(titleToToolTypeMap);
 
+  const handleNavigation = (path) => {
+    navigate(path);
+    window.location.reload(); // Force a full page reload
+};
+
   return (
     <div className="dashboard-tools-container">
       {tools.map((title) => (
         <div
           key={title}
           className="tool-box"
-          onClick={() => navigate(`/tools/${titleToToolTypeMap[title]}`)}
+          onClick={() => handleNavigation(`/tools/${titleToToolTypeMap[title]}`)}
         >
           <div className="tool-image-container">
             <img

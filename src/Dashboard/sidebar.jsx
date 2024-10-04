@@ -138,7 +138,7 @@ const Sidebar = ({ hasNavbar, accountType }) => {
                                         <motion.button
                                             key={tool.name}
                                             className="sub-button"
-                                            onClick={() => navigate(tool.path)}
+                                            onClick={() => handleNavigation(tool.path)}
                                             variants={menuItemVariants}
                                         >
                                             {tool.name}
