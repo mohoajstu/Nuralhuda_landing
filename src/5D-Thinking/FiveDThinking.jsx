@@ -1,8 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import PptxGenJS from 'pptxgenjs';
 import { createThread, createMessage, createRun, titleToAssistantIDMap } from '../chat/openAIUtils';
 import SlideContent from './SlideContent';
 import './FiveDAssistant.css';
+import LoginModal from '../login/LoginModal'; // Assuming you have a LoginModal component
+import { readFileContent } from '../utils/fileUtils';
+import { FaBook, FaChevronDown, FaPaperclip, FaExclamationCircle, FaGraduationCap, FaListAlt, FaAlignLeft } from 'react-icons/fa'; // Import icons
+import fiveDThinkingImg from '../img/5dlogotransparent.png';
 
 const titleSubtopicMap = {
   Explore: ['Content', 'Explanation', 'Observations', 'Fascinating Facts'],
@@ -12,7 +16,6 @@ const titleSubtopicMap = {
   Appreciate: ['What ifs', 'Zikr Fikr Shukr', 'Character Lessons', 'Connect With Quran', 'Connect With Hadith'],
 };
 
-// Updated color codes for each dimension
 const dimensionColors = {
   Explore: 'fa6666',
   Compare: '000000',
@@ -23,40 +26,235 @@ const dimensionColors = {
 
 const logoUrl = 'https://drive.google.com/uc?export=view&id=1WoF-kUTfs6mxgeXao2gmM9flISNLkbHT';
 const base64ImageString = process.env.REACT_APP_BASE64_IMAGE_STRING;
+
 const FiveDAssistant = () => {
-  const [text, setText] = useState('');
+
+  const [selectedDimension, setSelectedDimension] = useState('Explore');
+
+  // State variables for required and optional inputs
+  const [topic, setTopic] = useState(''); // Required Topic input
+  const [gradeLevel, setGradeLevel] = useState(''); // Optional Grade Level input
+  
+  // State variables for Topic file upload
+  const [topicFile, setTopicFile] = useState(null);
+  const [topicPreview, setTopicPreview] = useState('');
+
+
+  // State variables for each dimension input (Optional)
+  const [exploreInput, setExploreInput] = useState('');
+  const [exploreFile, setExploreFile] = useState(null);
+
+  const [compareInput, setCompareInput] = useState('');
+  const [compareFile, setCompareFile] = useState(null);
+
+  const [questionInput, setQuestionInput] = useState('');
+  const [questionFile, setQuestionFile] = useState(null);
+
+  const [connectInput, setConnectInput] = useState('');
+  const [connectFile, setConnectFile] = useState(null);
+
+  const [appreciateInput, setAppreciateInput] = useState('');
+  const [appreciateFile, setAppreciateFile] = useState(null);
+
+  // Existing state variables
   const [isLoading, setIsLoading] = useState(false);
   const [slides, setSlides] = useState([]);
   const [responseBuffer, setResponseBuffer] = useState('');
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false); // Add this state variable
   const [error, setError] = useState('');
   const [presentationLink, setPresentationLink] = useState('');
 
-  const handleTextChange = (e) => setText(e.target.value);
+  const [standards, setStandards] = useState('');
+  const [standardsFile, setStandardsFile] = useState(null);
+  const [standardsPreview, setStandardsPreview] = useState('');
+
+  // State to control the visibility of the dropdown
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  // Reference for the dropdown to handle clicks outside
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    // Close the dropdown when clicking outside of it
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+  
+  // Function to handle dimension selection
+  const handleDimensionSelect = (dimension) => {
+    setSelectedDimension(dimension);
+    setIsDropdownOpen(false);
+  };
+
+  // Handlers for input changes
+  const handleTopicChange = (e) => setTopic(e.target.value);
+  const handleGradeLevelChange = (e) => setGradeLevel(e.target.value);
+
+  // Handlers for each dimension input
+  const handleExploreInputChange = (e) => setExploreInput(e.target.value);
+  const handleCompareInputChange = (e) => setCompareInput(e.target.value);
+  const handleQuestionInputChange = (e) => setQuestionInput(e.target.value);
+  const handleConnectInputChange = (e) => setConnectInput(e.target.value);
+  const handleAppreciateInputChange = (e) => setAppreciateInput(e.target.value);
+  
+
+  const handleStandardsChange = (e) => setStandards(e.target.value);
+
+  const handleFileChange = (e, setFile, setPreview = null) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFile(file);
+      if (setPreview) {
+        readFileContent(file)
+          .then((content) => {
+            setPreview(content);
+          })
+          .catch((error) => {
+            setError(error.message);
+            setPreview('');
+            setFile(null);
+          });
+      }
+    }
+  };
+  
+
+  const handleFileDrop = (e, setFile, setPreview = null) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    if (file) {
+      setFile(file);
+      if (setPreview) {
+        readFileContent(file)
+          .then((content) => {
+            setPreview(content);
+          })
+          .catch((error) => {
+            setError(error.message);
+            setPreview('');
+            setFile(null);
+          });
+      }
+    }
+  };
+  
 
   const handleSubmit = async () => {
+    // Get topicContent
+    let topicContent = topic;
+    if (topicFile) {
+      topicContent = await readFileContent(topicFile);
+    }
+
+    if (!topicContent.trim()) {
+      setError('Topic is required to generate the lesson plan.');
+      return;
+    }
+
+    // Get standardsContent
+  let standardsContent = standards;
+  if (standardsFile) {
+    standardsContent = await readFileContent(standardsFile);
+  }
+
+     // Prepare dimension inputs
+     const dimensionInputs = {};
+
+    // For each dimension, get the input content
+    const dimensionsList = ['Explore', 'Compare', 'Question', 'Connect', 'Appreciate'];
+    for (const dimension of dimensionsList) {
+      let inputText = '';
+      let inputFile = null;
+
+      switch (dimension) {
+        case 'Explore':
+          inputText = exploreInput;
+          inputFile = exploreFile;
+          break;
+        case 'Compare':
+          inputText = compareInput;
+          inputFile = compareFile;
+          break;
+        case 'Question':
+          inputText = questionInput;
+          inputFile = questionFile;
+          break;
+        case 'Connect':
+          inputText = connectInput;
+          inputFile = connectFile;
+          break;
+        case 'Appreciate':
+          inputText = appreciateInput;
+          inputFile = appreciateFile;
+          break;
+        default:
+          break;
+      }
+
+      let inputContent = inputText;
+      if (inputFile) {
+        const fileContent = await readFileContent(inputFile);
+        inputContent += '\n' + fileContent;
+      }
+
+      dimensionInputs[dimension] = inputContent;
+    }
+
     setIsLoading(true);
     setError('');
     setSlides([]);
     const dimensions = [
-      { name: 'Explore', title: 'Analytical thinking - Explore' },
-      { name: 'Compare', title: 'Analogical thinking - Compare' },
-      { name: 'Question', title: 'Critical thinking - Question' },
-      { name: 'Connect', title: 'Meditative thinking - Connect' },
-      { name: 'Appreciate', title: 'Moral thinking - Appreciate' },
+      { name: 'Explore', title: 'Analytical thinking - Explore', input: dimensionInputs['Explore'] },
+      { name: 'Compare', title: 'Analogical thinking - Compare', input: dimensionInputs['Compare'] },
+      { name: 'Question', title: 'Critical thinking - Question', input: dimensionInputs['Question'] },
+      { name: 'Connect', title: 'Meditative thinking - Connect', input: dimensionInputs['Connect'] },
+      { name: 'Appreciate', title: 'Moral thinking - Appreciate', input: dimensionInputs['Appreciate'] },
     ];
     try {
       const assistantTitle = '5D Thinking-1';
       const thread = await createThread(assistantTitle);
       for (const dimension of dimensions) {
-        await fetchContentForDimension(thread.id, dimension, text, assistantTitle);
+        await fetchContentForDimension(
+          thread.id,
+          dimension,
+          topicContent,
+          gradeLevel,
+          standardsContent,
+          assistantTitle
+        );
       }
     } catch (error) {
       handleError(error);
     }
   };
+  
+  const fetchContentForDimension = async (
+    threadId,
+    dimension,
+    topicContent,
+    gradeLevel,
+    standardsContent,
+    assistantTitle
+  ) => {
+    const dimensionInput = dimension.input || 'N/A';
+    const prompt = `
+Topic: ${topicContent}
+Grade Level: ${gradeLevel || 'N/A'}
+Standards: ${standardsContent || 'N/A'}
 
-  const fetchContentForDimension = async (threadId, dimension, inputText, assistantTitle) => {
-    const prompt = `${inputText}\n\nFocus only on creating a comprehensive ${dimension.title} thinking response.`;
+Dimension: ${dimension.name}
+Dimension Input: ${dimensionInput}
+
+Focus only on creating a comprehensive ${dimension.title} thinking response.
+`;
+
     return new Promise((resolve, reject) => {
       createMessage(threadId, prompt, assistantTitle)
         .then(() => {
@@ -88,6 +286,8 @@ const FiveDAssistant = () => {
         } catch (error) {
           console.error('Error parsing response:', error);
           setError('An error occurred while parsing the slide data. Please try again.');
+          setIsLoading(false);
+          resolve(); // Resolve to move on even if there's an error
         }
         return '';
       } else {
@@ -96,31 +296,32 @@ const FiveDAssistant = () => {
     });
   };
 
-  const createSlidesFromResponse = (response, dimension) => {
+  const createSlidesFromResponse = (response, dimensionName) => {
+    // Existing logic to create slides from the assistant's response
     const slides = [];
     let subtopicIndex = 0;
 
     const addSlideIfContentExists = (contentKey, slideData) => {
       const content = response[contentKey];
       if (content && (Array.isArray(content) ? content.length > 0 : Object.keys(content).length > 0)) {
-        slides.push({ dimension, ...slideData, subtopicIndex: subtopicIndex++ });
+        slides.push({ dimension: dimensionName, ...slideData, subtopicIndex: subtopicIndex++ });
       }
     };
 
-    if (dimension === 'Explore') {
+    if (dimensionName === 'Explore') {
       addSlideIfContentExists('content', { content: response.content });
       addSlideIfContentExists('explanation', { explanation: response.explanation });
       addSlideIfContentExists('observations', { observations: response.observations });
       addSlideIfContentExists('fascinatingFacts', { fascinatingFacts: response.fascinatingFacts });
-    } else if (dimension === 'Compare') {
+    } else if (dimensionName === 'Compare') {
       addSlideIfContentExists('analogy', { analogy: response.analogy });
       addSlideIfContentExists('content', { content: response.content });
       addSlideIfContentExists('explanation', { explanation: response.explanation });
       addSlideIfContentExists('comparison', { comparison: response.comparison });
-    } else if (dimension === 'Question') {
+    } else if (dimensionName === 'Question') {
       addSlideIfContentExists('questions', { questions: response.questions });
       addSlideIfContentExists('conclusion', { conclusion: response.conclusion });
-    } else if (dimension === 'Connect') {
+    } else if (dimensionName === 'Connect') {
       addSlideIfContentExists('connections', { connections: response.connections });
       if (
         response.allahNames &&
@@ -136,7 +337,7 @@ const FiveDAssistant = () => {
       addSlideIfContentExists('analogicalReflection', { analogicalReflection: response.analogicalReflection });
       addSlideIfContentExists('questionsForDeeperConnection', { questionsForDeeperConnection: response.questionsForDeeperConnection });
       addSlideIfContentExists('contemplationAndAppreciation', { contemplationAndAppreciation: response.contemplationAndAppreciation });
-    } else if (dimension === 'Appreciate') {
+    } else if (dimensionName === 'Appreciate') {
       addSlideIfContentExists('whatIfs', { whatIfs: response.whatIfs });
       if (response.zikrFikrShukr && Object.keys(response.zikrFikrShukr).length > 0) {
         slides.push({
@@ -741,31 +942,47 @@ const FiveDAssistant = () => {
   
     try {
       const accessToken = sessionStorage.getItem('googleAuthToken');
-      console.log(accessToken);
+      const tokenExpiryTime = sessionStorage.getItem('tokenExpiryTime');
   
-      if (!accessToken) {
-        setError('Access token not found or expired. Please sign in with Google again.');
-        setIsLoading(false);
-        return;
+      // Check if access token is missing or expired
+      if (!accessToken || (tokenExpiryTime && new Date() > new Date(tokenExpiryTime))) {
+        throw new Error('Access token is invalid or expired. Please authenticate again.');
       }
   
-      // Step 1: Create a new presentation
-      const newPresentationId = await createPresentation(accessToken, 'New 5D Lesson Plan');
+      const maxRetries = 3;
+      let attempt = 0;
+      let success = false;
   
-      // Step 2: Modify the new presentation with dynamic content
-      await updatePresentation(newPresentationId, accessToken, slides);
-  
-      // Step 3: Update the UI with the new presentation link
-      const presentationLink = `https://docs.google.com/presentation/d/${newPresentationId}/edit`;
-      setPresentationLink(presentationLink);
-      alert('Google Slides presentation created successfully!');
+      while (attempt < maxRetries && !success) {
+        try {
+          attempt++;
+          const newPresentationId = await createPresentation(accessToken, 'New 5D Lesson Plan');
+          await updatePresentation(newPresentationId, accessToken, slides);
+          const presentationLink = `https://docs.google.com/presentation/d/${newPresentationId}/edit`;
+          setPresentationLink(presentationLink);
+          alert('Google Slides presentation created successfully!');
+          success = true;
+        } catch (error) {
+          console.error(`Attempt ${attempt} failed:`, error);
+          if (attempt >= maxRetries) {
+            throw new Error('Failed to create Google Slides presentation after multiple attempts.');
+          }
+        }
+      }
     } catch (error) {
-      console.error('Error exporting slides:', error);
+      console.error('Error during Google Slides export:', error);
       setError(error.message);
+  
+      // If an authentication-related error occurs, prompt the user to log in again
+      if (error) {
+        console.log('Triggering login modal due to expired or missing access token');
+        setIsLoginModalOpen(true);
+      }
     } finally {
       setIsLoading(false);
     }
   };
+  
 
   // Helper functions
   const getContentText = (slideContent) => {
@@ -808,18 +1025,222 @@ const FiveDAssistant = () => {
     setIsLoading(false);
   };
 
+  // Function to render the input for the selected dimension
+  const renderDimensionInput = () => {
+    let inputValue = '';
+    let onChangeHandler = () => {};
+    let fileValue = null;
+    let setFileHandler = () => {};
+
+    switch (selectedDimension) {
+      case 'Explore':
+        inputValue = exploreInput;
+        onChangeHandler = handleExploreInputChange;
+        fileValue = exploreFile;
+        setFileHandler = setExploreFile;
+        break;
+      case 'Compare':
+        inputValue = compareInput;
+        onChangeHandler = handleCompareInputChange;
+        fileValue = compareFile;
+        setFileHandler = setCompareFile;
+        break;
+      case 'Question':
+        inputValue = questionInput;
+        onChangeHandler = handleQuestionInputChange;
+        fileValue = questionFile;
+        setFileHandler = setQuestionFile;
+        break;
+      case 'Connect':
+        inputValue = connectInput;
+        onChangeHandler = handleConnectInputChange;
+        fileValue = connectFile;
+        setFileHandler = setConnectFile;
+        break;
+      case 'Appreciate':
+        inputValue = appreciateInput;
+        onChangeHandler = handleAppreciateInputChange;
+        fileValue = appreciateFile;
+        setFileHandler = setAppreciateFile;
+        break;
+      default:
+        break;
+    }
+
+    return (
+      <div className="input-group">
+        <h3> <FaBook/> {selectedDimension} Input (Optional):</h3>
+        <div className="input-container">
+          <textarea
+            value={inputValue}
+            onChange={onChangeHandler}
+            placeholder={`Provide specific input for the '${selectedDimension}' dimension`}
+            rows={4}
+          />
+          <label htmlFor={`${selectedDimension}FileInput`} className="file-upload-icon">
+            <FaPaperclip />
+          </label>
+          <input
+            type="file"
+            id={`${selectedDimension}FileInput`}
+            onChange={(e) => handleFileChange(e, setFileHandler)}
+            accept=".txt,.doc,.docx,.pdf"
+            style={{ display: 'none' }}
+          />
+        </div>
+        {/* Display the uploaded file name if a file is selected */}
+        {fileValue && (
+          <div className="file-name">
+            <p>Uploaded file: {fileValue.name}</p>
+          </div>
+        )}
+      </div>
+    );
+  };
+  
+
   return (
     <div className="five-d-assistant-container">
-      <header className="five-d-assistant-header">
-        <h1>5D Lesson Planner</h1>
-      </header>
-      <div className="input-section">
-        <textarea
-          value={text}
-          onChange={handleTextChange}
-          placeholder="Enter text content here"
-          rows={6}
+      {isLoginModalOpen && (
+        <LoginModal
+          isOpen={isLoginModalOpen}
+          onClose={() => setIsLoginModalOpen(false)}
+          onLogin={() => {
+            console.log('Login successful, closing modal');
+            setIsLoginModalOpen(false);
+            setError('');
+          }}
         />
+      )}
+
+      <header className="five-d-assistant-header">
+        <h1 className="five-d-title"> 5D Lesson Planner  </h1> 
+        <img src={fiveDThinkingImg} alt="5D Lesson Planner" className="five-d-logo" />    
+      </header>
+
+      <div className="input-section">
+        {/* Topic Input (Required) */}
+        <div className="input-group">
+          <h3>
+            <FaListAlt /> Topic Content (Required):
+          </h3>
+          <div
+            className="input-container"
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => handleFileDrop(e, setTopicFile, setTopicPreview)}
+          >
+            <input
+              type="text"
+              value={topic}
+              onChange={handleTopicChange}
+              placeholder="Enter the main topic here"
+            />
+            <label htmlFor="topicFileInput" className="file-upload-icon">
+              <FaPaperclip />
+            </label>
+            <input
+              type="file"
+              id="topicFileInput"
+              onChange={(e) => handleFileChange(e, setTopicFile, setTopicPreview)}
+              accept=".txt,.doc,.docx,.pdf"
+              style={{ display: 'none' }}
+            />
+          </div>
+          {topicPreview && (
+            <div className="file-preview">
+              <h4>Topic Preview:</h4>
+              <p>
+                {topicPreview.slice(0, 500)}
+                {topicPreview.length > 500 && '...'}
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Grade Level Input (Optional) */}
+        <div className="input-group">
+          <h3> <FaGraduationCap/> Grade Level (Optional):</h3>
+          <input
+            type="text"
+            value={gradeLevel}
+            onChange={handleGradeLevelChange}
+            placeholder="Specify the grade level (e.g., 9th Grade, Middle School)"
+          />
+        </div>
+
+        {/* Standards Input */}
+        <div className="input-group">
+          <h3>
+            <FaExclamationCircle /> Standards (Optional):
+          </h3>
+          <div
+            className="input-container"
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => handleFileDrop(e, setStandardsFile, setStandardsPreview)}
+          >
+            <input
+              type="text"
+              value={standards}
+              onChange={handleStandardsChange}
+              placeholder="Enter the standards to align with (e.g., CCSS, TEKS, NGSS, or your own curriculum standards)"
+            />
+            <label htmlFor="standardsFileInput" className="file-upload-icon">
+              <FaPaperclip />
+            </label>
+            <input
+              type="file"
+              id="standardsFileInput"
+              onChange={(e) => handleFileChange(e, setStandardsFile, setStandardsPreview)}
+              accept=".txt,.doc,.docx,.pdf"
+              style={{ display: 'none' }}
+            />
+          </div>
+          {standardsPreview && (
+            <div className="file-preview">
+              <h4>Standards Preview:</h4>
+              <p>
+                {standardsPreview.slice(0, 500)}
+                {standardsPreview.length > 500 && '...'}
+              </p>
+            </div>
+          )}
+        </div>
+
+        
+      {/* Dimension Selector */}
+      <div className="input-group">
+        <h4>Select Dimension:</h4>
+        <div className="custom-dropdown" ref={dropdownRef}>
+          <div
+            className="custom-dropdown-selected"
+            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            style={{ borderColor: `#${dimensionColors[selectedDimension]}` }}
+          >
+            {selectedDimension}
+            <FaChevronDown style={{ marginLeft: '8px' }} />
+          </div>
+          {isDropdownOpen && (
+            <div className="custom-dropdown-options">
+              {Object.keys(dimensionColors).map((dimension) => (
+                <div
+                  key={dimension}
+                  className="custom-dropdown-option"
+                  onClick={() => handleDimensionSelect(dimension)}
+                  style={{
+                    backgroundColor: `#${dimensionColors[dimension]}`,
+                    color: '#fff',
+                  }}
+                >
+                  {dimension}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+{/* Input for Selected Dimension */}
+{renderDimensionInput()}
         <button onClick={handleSubmit} disabled={isLoading}>
           {isLoading ? 'Generating Slides...' : 'Generate Slides'}
         </button>

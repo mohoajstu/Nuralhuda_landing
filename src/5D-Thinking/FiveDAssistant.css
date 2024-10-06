@@ -18,13 +18,26 @@ body {
   margin-bottom: 30px;
 }
 
-.five-d-assistant-header h1 {
-  color: #144040; /* Theme's primary color */
-  font-size: 2.8em; /* Larger font for prominence */
-  font-weight: 700; /* Bolder font weight */
-  margin-bottom: 10px; /* Slightly reduced margin */
-  border-bottom: 2px solid #Dcca98; /* Subtle underline with secondary color */
-  padding-bottom: 10px; /* Space between text and underline */
+.five-d-logo {
+  width: 100px; /* Adjust to an appropriate size */
+  height: auto;
+  margin-right: 20px; /* Space between the logo and title */
+}
+
+.five-d-title {
+    font-size: 2.5rem; /* Adjust title font size */
+    margin: 0;
+    color: #005c69;
+}
+
+.five-d-assistant-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2rem;
+    color: #005c69;
+    width: 100%;
+    max-width: 800px;
 }
 
 /* Input section */
@@ -132,3 +145,45 @@ button.export-button:hover {
 .presentation-link a:hover {
   background-color: #0056b3; /* Darker shade on hover */
 }
+
+/* Custom Dropdown Styles */
+.custom-dropdown {
+  position: relative;
+  width: 200px; /* Adjust as needed */
+}
+
+.custom-dropdown-selected {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border: 2px solid #ccc;
+  cursor: pointer;
+  user-select: none;
+}
+
+.custom-dropdown-options {
+  position: absolute;
+  top: calc(100% + 2px);
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  border: 2px solid #ccc;
+  background-color: #fff;
+}
+
+.custom-dropdown-option {
+  padding: 8px 12px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.custom-dropdown-option:hover {
+  opacity: 0.8;
+}
+
+/* Ensure the dropdown doesn't get cut off */
+.input-group {
+  position: relative;
+}
+
