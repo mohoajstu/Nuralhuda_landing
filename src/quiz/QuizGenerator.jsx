@@ -19,12 +19,11 @@ import {
 import { db } from '../config/firebase-config';
 import { collection, addDoc, doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
 import './QuizGenerator.css';
-import mammoth from 'mammoth';
-import { fileTypeFromBuffer } from 'file-type';
 import { exportToPDF } from './QuizExport';
 import { FaPaperclip, FaExclamationCircle, FaGraduationCap, FaListAlt, FaAlignLeft } from 'react-icons/fa'; // Import icons
 import quizGenIMG from '../img/quiz-gen.png';
 import LoginModal from '../login/LoginModal'; // Assuming you have a LoginModal component
+import { readFileContent } from '../utils/fileUtils';
 
 const QuizGenerator = () => {
   const [user] = useAuthState(auth); // Get the authenticated user
@@ -74,64 +73,6 @@ const QuizGenerator = () => {
   const handleStandardsChange = (e) => setStandards(e.target.value);
   const handleExportChange = (e) => setExportWithAnswers(e.target.value);
 
-  const readDOCX = async (file) => {
-    try {
-      const arrayBuffer = await file.arrayBuffer();
-      const { value: text } = await mammoth.extractRawText({ arrayBuffer });
-      console.log('Extracted text from DOCX:', text);
-      return text;
-    } catch (error) {
-      console.error('Error reading DOCX file:', error);
-      setError('Failed to read the DOCX file. Please try again.');
-      return '';
-    }
-  };
-  
-/*
-  const readPDF = async (file) => {
-    const arrayBuffer = await file.arrayBuffer();
-    const pdfDoc = await PDFDocument.load(arrayBuffer);
-    const pages = pdfDoc.getPages();
-    let text = '';
-    for (const page of pages) {
-      const textContent = await page.getTextContent();
-      text += textContent.items.map((item) => item.str).join(' ');
-    }
-    return text;
-  };
-  */
-
-  const readFileContent = async (file) => {
-    try {
-      console.log('Reading file:', file.name);
-      const arrayBuffer = await file.arrayBuffer();
-      const uint8Array = new Uint8Array(arrayBuffer);
-      const type = await fileTypeFromBuffer(uint8Array);
-      console.log('Detected file type:', type);
-
-      if (type && type.mime === 'application/pdf') {
-        console.log('PDF files are not supported yet.');
-        setError('PDF file reading is not supported yet.');
-        return '';
-      } else if (
-        type &&
-        type.mime ===
-          'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-      ) {
-        const content = await readDOCX(file);
-        console.log('DOCX file content:', content);
-        return content;
-      } else {
-        const text = await file.text();
-        console.log('Plain text file content:', text);
-        return text;
-      }
-    } catch (error) {
-      console.error('Error reading file:', error);
-      setError('Failed to read the file. Please try again.');
-      return '';
-    }
-  };
 
   const handleFileChange = async (e, setFileState, setPreviewState) => {
     const file = e.target.files[0];
@@ -155,45 +96,54 @@ const QuizGenerator = () => {
   };
 
   const handleSubmit = async () => {
-    if (!text.trim()) {
+    if (!text.trim() && !mainContentFile) { // Check for both text and file
       setError('Content is required to generate a quiz.');
       return;
     }
-
+  
     setIsGeneratingQuiz(true);
     setError('');
     setSuccessMessage('');
     const assistantTitle = 'Quiz Generator';
-
+  
     try {
-      const thread = await createThread(assistantTitle);
       let messageContent = text;
-      if (mainContentFile) {
-        messageContent = await readFileContent(mainContentFile);
-      }
 
+      if (mainContentFile) { // Prioritize file content if file is uploaded
+        messageContent = await readFileContent(mainContentFile);
+        console.log("File content being used in quiz generation:", messageContent); // Log file content
+      }
+  
+      // Check if messageContent is still empty after trying to load the file content
+      if (!messageContent.trim()) {
+        setError('Content is required to generate a quiz.');
+        setIsGeneratingQuiz(false);
+        return;
+      }
+  
+      const thread = await createThread(assistantTitle);
       let additionalCriteriaContent = additionalCriteria;
       if (additionalCriteriaFile) {
         additionalCriteriaContent = await readFileContent(additionalCriteriaFile);
       }
-
+  
       let gradeLevelContent = gradeLevel;
       if (gradeLevelFile) {
         gradeLevelContent = await readFileContent(gradeLevelFile);
       }
-
+  
       let standardsContent = standards;
       if (standardsFile) {
         standardsContent = await readFileContent(standardsFile);
       }
-
+  
       const compiledPrompt = `
-Grade Level: ${gradeLevelContent || 'N/A'}
-Additional Criteria: ${additionalCriteriaContent || 'N/A'}
-Standards to Align To: ${standardsContent || 'N/A'}
-Content: ${messageContent}
+      Grade Level: ${gradeLevelContent || 'N/A'}
+      Additional Criteria: ${additionalCriteriaContent || 'N/A'}
+      Standards to Align To: ${standardsContent || 'N/A'}
+      Content: ${messageContent}
       `;
-
+  
       await createMessage(thread.id, compiledPrompt, assistantTitle);
       await createRun(
         thread.id,
@@ -208,6 +158,7 @@ Content: ${messageContent}
       setIsGeneratingQuiz(false);
     }
   };
+  
 
   const handleMessage = (message) => {
     setResponseBuffer((prevAccumulated) => {
@@ -438,31 +389,32 @@ Content: ${messageContent}
       alert('Please generate a quiz first.');
       return;
     }
-
+  
     setIsExportingGoogleForm(true);
     setError('');
     setSuccessMessage('');
-
+  
     const accessToken = sessionStorage.getItem('googleAuthToken');
-
-    if (!accessToken) {
-      // Handle the case where the access token is missing
-      setError('Access token not found. Please authenticate with Google.');
-      // Show the login modal to let the user log in with their Google account
+    const tokenExpiryTime = sessionStorage.getItem('tokenExpiryTime'); // Assuming you store this on login
+  
+    // Check if the access token is missing or expired
+    if (!accessToken || (tokenExpiryTime && new Date() > new Date(tokenExpiryTime))) {
+      // Show the login modal to let the user re-authenticate
       setIsLoginModalOpen(true);
+      setError('Access token is invalid or expired. Please authenticate again.');
       setIsExportingGoogleForm(false);
       return;
     }
-
+  
     const maxRetries = 3; // Number of retries
     let attempt = 0;
     let success = false;
-
+  
     while (attempt < maxRetries && !success) {
       try {
         attempt++;
         console.log(`Attempt ${attempt} to create Google Form...`);
-
+  
         // Create the form
         const createFormResponse = await fetch(
           'https://forms.googleapis.com/v1/forms',
@@ -479,25 +431,25 @@ Content: ${messageContent}
             }),
           }
         );
-
+  
         if (!createFormResponse.ok) {
           throw new Error(`Error creating form: ${createFormResponse.statusText}`);
         }
-
+  
         const createFormData = await createFormResponse.json();
         const formId = createFormData.formId;
-
+  
         // Update the form settings with quiz settings
         console.log("Trying to update form settings");
         await updateQuizSettings(formId, accessToken);
-
+  
         // Add questions to the form
         console.log("Trying to add questions");
         await addQuestionsToGoogleForm(formId, accessToken);
-
+  
         // Get the form's URL
         const formUrl = `https://docs.google.com/forms/d/${formId}/edit`;
-
+  
         setQuizLink(formUrl);
         alert('Google Form created successfully!');
         success = true;
@@ -511,9 +463,10 @@ Content: ${messageContent}
         }
       }
     }
-
+  
     setIsExportingGoogleForm(false);
   };
+  
 
   const addQuestionsToGoogleForm = async (formId, accessToken) => {
     const requests = quizData.questions.map((q, index) => {
