@@ -13,7 +13,8 @@ const ProtectedRoute = ({ element }) => {
   // Check if the element is a React component or an element
   const Component = typeof element === 'function' ? element : () => element;
 
-  return user ? <Component /> : <Navigate to="/login" />;
+  // return user ? <Component /> : <Navigate to="/login" />;
+  return <Component /> ;
 };
 
 export default ProtectedRoute;
