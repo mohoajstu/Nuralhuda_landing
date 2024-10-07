@@ -2,7 +2,21 @@ import React from 'react';
 import './ResponseBox.css';
 
 const ResponseBox = ({ index, response }) => {
-    const { reasoning, score, maximumScore } = JSON.parse(response);
+    let parsedResponse;
+    try {
+        parsedResponse = JSON.parse(response);
+    } catch (error) {
+        console.error('Failed to parse response:', error);
+        return (
+            <div className="response-box">
+                <h2>Response {index + 1}</h2>
+                <p>Failed to parse response data.</p>
+            </div>
+        );
+    }
+
+    const { reasoning, score, maximumScore } = parsedResponse;
+
     return (
         <div className="response-box">
             <h2>Response {index + 1}</h2>

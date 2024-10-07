@@ -1,0 +1,74 @@
+/* CSS in UploadGradingScheme.css */
+
+.upload-grading-scheme-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+    background: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.upload-section {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.upload-option, .manual-input-option {
+    padding: 15px;
+    border: 1px solid #dcca98;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+.input-textarea {
+    width: 100%;
+    height: 100px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.primary-button, .secondary-button {
+    margin-top: 10px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+}
+
+.primary-button {
+    background-color: #144040;
+    color: #fff;
+}
+
+.primary-button:hover {
+    background-color: #0f2d2d;
+}
+
+.secondary-button {
+    background-color: #dcca98;
+    color: #144040;
+}
+
+.secondary-button:hover {
+    background-color: #b89e74;
+}
+
+.recommended-badge {
+    background-color: #4caf50;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 0.8em;
+    margin-left: 10px;
+}

@@ -1,0 +1,88 @@
+.onboarding-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    max-width: 600px;
+    margin: 0 auto;
+    background: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.progress-indicator {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.step {
+    padding: 10px;
+    border-radius: 5px;
+    background: #dcca98; /* Primary color */
+    color: #144040; /* Secondary color */
+    font-weight: bold;
+}
+
+.step.active {
+    background: #144040; /* Secondary color for active state */
+    color: #fff;
+}
+
+.onboarding-content {
+    width: 100%;
+    text-align: center;
+}
+
+.onboarding-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.input-field {
+    width: 80%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.primary-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #144040; /* Secondary color */
+    color: #fff;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.primary-button:hover {
+    background-color: #0f2d2d; /* Slightly darker shade for hover */
+}
+
+.secondary-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #dcca98; /* Primary color */
+    color: #144040; /* Secondary color text */
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-right: 10px;
+}
+
+.secondary-button:hover {
+    background-color: #b89e74; /* Slightly darker shade for hover */
+}
+
+.navigation-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
