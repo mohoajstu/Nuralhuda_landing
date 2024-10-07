@@ -13,6 +13,31 @@ h1 {
     color: #333;
 }
 
+  
+  .graderbot-logo {
+    width: 100px; /* Adjust to an appropriate size */
+    height: auto;
+    margin-right: 20px; /* Space between the logo and title */
+  }
+  
+  .graderbot-title {
+      font-size: 2.5rem; /* Adjust title font size */
+      margin: 0;
+      color: #005c69;
+  }
+  
+  .graderbot-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 2rem;
+      color: #005c69;
+      width: 100%;
+      max-width: 800px;
+      text-align: center;
+      margin-bottom: 30px;
+  }
+
 #description {
     font-size: 16px;
     margin-bottom: 20px;
