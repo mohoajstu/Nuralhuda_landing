@@ -21,17 +21,7 @@ const GenerateButton = ({ questionsAndMaxScores, gradingScheme, studentResponses
             const responses = await processAllPrompts(prompts);
             console.log('Received responses:', responses);
 
-            // Parsing the responses before updating the state
-            const parsedResponses = responses.map((res) => {
-                try {
-                    return JSON.parse(res);
-                } catch (error) {
-                    console.error('Error parsing response:', res, error);
-                    return null;
-                }
-            }).filter(response => response !== null); // Filtering out any null values due to parsing errors
-
-            setAllResponses(parsedResponses);
+            setAllResponses(responses);
         } catch (error) {
             setResponse('Error fetching response. Please try again.');
             console.error('Error generating responses:', error);

@@ -1,213 +1,94 @@
-/* Container for the entire AutoGrader page */
-.autograder-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 30px;
-    max-width: 900px;
+.autograder-page {
+    font-family: Arial, sans-serif;
+    max-width: 800px;
     margin: 0 auto;
-    background: #f9f9f9;
-    border-radius: 15px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: beige;
 }
 
-/* Page content container */
-.autograder-content {
+h1 {
+    text-align: center;
+    color: #333;
+}
+
+#description {
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+#description input {
+    font-size: 16px;
+    padding: 5px;
+    margin-left: 5px;
+    margin-right: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.layout-container {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    background-color: beige;
+}
+
+.box {
+    background: #dcca98;
+    border: 3px solid #144044;
+    border-radius: 4px;
+    padding: 20px;
+    margin: 10px;
+    flex: 1;
+    min-width: 250px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.box h2 {
+    margin-top: 0;
+    font-size: 18px;
+}
+
+.upload-details {
+    font-size: 14px;
+    color: #222222;
+}
+
+#uploadButton,
+#generate-button {
+    background-color: #144044;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin: 20px 0;
+    display: block;
     width: 100%;
+    max-width: 200px;
+    margin-left: auto;
+    margin-right: auto;
     text-align: center;
 }
 
-/* Container for each step/page in AutoGrader */
-.autograder-step {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
+#uploadButton:disabled,
+#generate-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
 }
 
-/* Progress indicator container to show each step */
-.progress-indicator {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    margin-bottom: 30px;
-    background: #dcca98; /* Primary color */
-    padding: 15px;
-    border-radius: 10px;
+.response-container {
+    margin-top: 20px;
 }
 
-/* Individual steps in progress indicator */
-.step {
-    padding: 10px;
-    border-radius: 5px;
-    background: #f1e7d1; /* Lighter variant of primary color for inactive state */
-    color: #144040; /* Secondary color */
-    font-weight: bold;
-    font-size: 0.9em;
-    transition: all 0.3s ease;
+.response-container p {
+    text-align: center;
+    color: #144044;
 }
 
-/* Styling for the active step */
-.step.active {
-    background: #144040; /* Secondary color for active state */
-    color: #fff;
-}
-
-/* Styling for primary button (Next/Get Started) */
-.primary-button {
-    padding: 12px 25px;
-    border: none;
-    border-radius: 8px;
-    background-color: #144040; /* Secondary color */
-    color: #fff;
-    font-size: 1.1em;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-/* Hover effect for primary button */
-.primary-button:hover {
-    background-color: #0f2d2d; /* Slightly darker shade for hover */
-    transform: scale(1.05);
-}
-
-/* Styling for secondary button (Back) */
-.secondary-button {
-    padding: 12px 25px;
-    border: none;
-    border-radius: 8px;
-    background-color: #dcca98; /* Primary color */
-    color: #144040; /* Secondary color text */
-    font-size: 1.1em;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-/* Hover effect for secondary button */
-.secondary-button:hover {
-    background-color: #b89e74; /* Slightly darker shade for hover */
-    transform: scale(1.05);
-}
-
-/* Navigation buttons container */
-.navigation-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    margin-top: 25px;
-}
-
-/* Styling for input fields in upload pages */
-.input-field {
-    padding: 12px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    width: 100%;
-    max-width: 400px;
-    font-size: 1em;
-    margin-bottom: 20px;
-}
-
-/* Instructions section styling */
-.instructions {
-    text-align: left;
-    margin: 20px 0;
-    padding: 15px;
-    background: #f1e7d1; /* Light background for instructions */
-    border-radius: 10px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.instructions h3 {
-    color: #144040;
-    font-size: 1.2em;
-    font-weight: bold;
-    margin-bottom: 10px;
-}
-
-.instructions p,
-.instructions ol {
-    color: #333;
-    line-height: 1.5;
-    font-size: 0.95em;
-}
-
-/* Disclaimer section styling */
-.disclaimer {
-    padding: 15px;
-    background: #fffbe6; /* Light yellow background for emphasis */
-    color: #705c20; /* Darker yellow text color */
-    border-left: 5px solid #dcca98; /* Primary color */
-    margin: 15px 0;
-    font-size: 0.9em;
-    border-radius: 5px;
-}
-
-/* Styling for details card containing user information */
-.details-card {
-    background: #e5e5e5;
-    padding: 20px;
-    margin: 20px 0;
-    border-radius: 8px;
-    width: 100%;
-    max-width: 500px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    text-align: left;
-}
-
-.details-card h3 {
-    color: #144040;
-    font-size: 1.2em;
-    margin-bottom: 10px;
-}
-
-.details-card p {
-    color: #333;
-    font-size: 1em;
-    margin: 0;
-}
-
-/* Style to improve the box-shadow for cards */
-.box-shadow-enhanced {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.details-card {
-    background: #f2f2f2;
-    padding: 20px;
-    border-radius: 10px;
-    margin-bottom: 20px;
-    text-align: left;
-    max-width: 600px;
-    margin: 0 auto;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.details-card h3 {
-    color: #144040;
-    margin-bottom: 10px;
-    font-weight: bold;
-}
-
-.details-card p {
-    font-size: 1em;
-    line-height: 1.6em;
-    color: #333;
-}
-
-.details-input {
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    padding: 5px 10px;
-    margin-left: 10px;
-    margin-right: 10px;
-    width: 150px; /* Adjust width as needed */
-    font-size: 0.95em;
-}
-
-.details-input:focus {
-    outline: none;
-    border-color: #144040;
-    box-shadow: 0 0 5px rgba(20, 64, 64, 0.5);
+.export-button {
+    margin-top: 20px;
+    text-align: center;
 }

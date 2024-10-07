@@ -9,14 +9,7 @@ const processCSV = (files, jsonData) => {
         console.log('Files:', files);
 
         keys.forEach((key) => {
-            // Ensure file is properly accessed
-            const file = files[key];
-            if (!file) {
-                console.error(`No file found for key: ${key}`);
-                reject(new Error(`No file found for key: ${key}`));
-                return;
-            }
-
+            const file = files[key][0];
             const reader = new FileReader();
 
             reader.onload = (event) => {
@@ -28,7 +21,6 @@ const processCSV = (files, jsonData) => {
 
                     Papa.parse(cleanedCSVString, {
                         header: true,
-                        skipEmptyLines: true, // To skip any empty lines in the CSV
                         complete: (results) => {
                             console.log('Parsed CSV results:', results);
                             jsonData[key] = restoreNewlinesInJSON(results.data);

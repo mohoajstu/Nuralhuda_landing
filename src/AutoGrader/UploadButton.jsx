@@ -4,22 +4,12 @@ import './UploadButton.css';
 
 const UploadButton = ({ storageManager, setQuestionsAndMaxScores, setGradingScheme, setStudentResponses }) => {
     const [files, setFiles] = useState({});
-    const [textInputs, setTextInputs] = useState({
-        csvFile1: '',
-        csvFile2: '',
-        csvFile3: ''
-      });
 
     const handleFileChange = (e) => {
         const { name, files } = e.target;
         setFiles(prevFiles => ({ ...prevFiles, [name]: files }));
         console.log('File selected for', name, files);
     };
-
-    const handleTextChange = (e) => {
-        const { name, value } = e.target;
-        setTextInputs({ ...textInputs, [name]: value });
-      };
 
     const handleUpload = async () => {
         console.log('Starting CSV upload and processing');
@@ -59,23 +49,18 @@ const UploadButton = ({ storageManager, setQuestionsAndMaxScores, setGradingSche
             <div id="upload-container" className="layout-container">
                 <div className="box">
                     <h2>Upload Questions with Max Scores</h2>
-                    <p className="upload-details">Please provide the questions and max scores</p>
+                    <p className="upload-details">Details here about this</p>
                     <input type="file" id="csvFile1" name="csvFile1" onChange={handleFileChange} />
                 </div>
                 <div className="box">
                     <h2>Upload Grading Scheme</h2>
-                    <p className="upload-details">Please Provide either a Grading Scheme which looks like examples for each point score availble</p>
+                    <p className="upload-details">Details here about this</p>
                     <input type="file" id="csvFile2" name="csvFile2" onChange={handleFileChange} />
                 </div>
                 <div className="box">
                     <h2>Upload Student Responses</h2>
                     <p className="upload-details">Details here about this</p>
                     <input type="file" id="csvFile3" name="csvFile3" onChange={handleFileChange} />
-                </div>
-                <div className="box">
-                    <h2>Upload Grading Rubric</h2>
-                    <p className="upload-details">Please provide the grading rubric you would like to use</p>
-                    <input type="file" id="csvFile4" name="csvFile4" onChange={handleFileChange} />
                 </div>
             </div>
             <button id="uploadButton" onClick={handleUpload}>

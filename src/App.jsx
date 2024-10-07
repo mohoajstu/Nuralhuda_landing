@@ -16,7 +16,7 @@ import PaymentSuccess from './pricing/PaymentSuccess';
 import FAQ from './home/FAQ';
 import QuizGenerator from './quiz/QuizGenerator';
 import FetchQuiz from './quiz/FetchQuiz';
-import AutograderPage from './AutoGrader/AutoGraderPage';
+import AutograderPage from './AutoGrader/AutGraderPage';
 import Onboarding from './AutoGrader/onboarding';
 import FiveDThinking from './5D-Thinking/FiveDThinking';
 import ProtectedRoute from './ProtectedRoute';
