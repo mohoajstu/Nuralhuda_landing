@@ -123,7 +123,7 @@ const Sidebar = ({ hasNavbar, accountType }) => {
                         </motion.div>
 
                         {/* Conditionally render Tools section for enterprise users */}
-                        {accountType === 'enterprise' && (
+
                             <div>
                                 <div className="main-button underline-effect" onClick={() => handleNavigation('/dashboard')}>
                                     Tools
@@ -146,7 +146,7 @@ const Sidebar = ({ hasNavbar, accountType }) => {
                                     ))}
                                 </motion.div>
                             </div>
-                        )}
+
                     </div>
                     {/* <button className={`main-button underline-effect ${activeButton === 'settings' ? 'active' : ''}`} onClick={() => setActiveContent('settings')}>
                         Settings

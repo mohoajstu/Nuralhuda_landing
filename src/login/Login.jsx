@@ -139,7 +139,7 @@ const Login = () => {
 
             sessionStorage.setItem('accountSetupComplete', 'true');
             sessionStorage.setItem('userEmail', email);
-            navigate('/pricing', { state: { email } });
+            navigate('/dashboard', { state: { email } });
         } catch (error) {
             console.error("Error creating account:", error);
             setError(error.message);
@@ -179,8 +179,8 @@ const Login = () => {
     
             // Redirect based on account type
             if (accountType === '') {
-                navigate('/pricing');
-            } else {
+                //navigate('/pricing');
+            //} else {
                 navigate('/dashboard');
             }
     
