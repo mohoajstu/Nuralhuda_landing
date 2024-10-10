@@ -1,160 +1,262 @@
 import React, { useState, useEffect } from 'react';
-import { doc, setDoc, getDocs, collection } from 'firebase/firestore'; // Firebase Firestore methods
-import { db } from '../config/firebase-config'; // Your Firebase configuration
+import { doc, setDoc } from 'firebase/firestore';
+import { db } from '../config/firebase-config';
 import TeacherInput from './TeacherInput';
 import ScheduleDisplay from './ScheduleDisplay';
 import TeacherDisplay from './TeacherDisplay';
-import GLPK from 'glpk.js';
 import './ScheduleManager.css';
+import {
+  createThread,
+  createMessage,
+  createRun,
+  titleToAssistantIDMap
+} from '../chat/openAIUtils';
 
 const ScheduleManager = () => {
-    const [teachers, setTeachers] = useState([]);
-    const [finalSchedule, setFinalSchedule] = useState(null);
-    const [selectedTeacher, setSelectedTeacher] = useState(null);
+  const [teachers, setTeachers] = useState([]);
+  const [finalSchedule, setFinalSchedule] = useState(null);
+  const [selectedTeacher, setSelectedTeacher] = useState(null);
 
-    // Load teachers from session storage on initial render
-    useEffect(() => {
-        const storedTeachers = JSON.parse(sessionStorage.getItem('teachers')) || [];
-        setTeachers(storedTeachers);
-    }, []);
+  useEffect(() => {
+    const storedTeachers = JSON.parse(sessionStorage.getItem('teachers')) || [];
+    setTeachers(storedTeachers);
+  }, []);
 
-    // Function to save data to Firebase
-    const saveTeacherToFirebase = async (teacher) => {
-        try {
-            await setDoc(doc(db, "teachers", teacher.name), teacher);
-            console.log("Teacher data saved to Firebase");
-        } catch (error) {
-            console.error("Error saving teacher to Firebase:", error);
-        }
-    };
+  const saveTeacherToFirebase = async (teacher) => {
+    try {
+      await setDoc(doc(db, 'teachers', teacher.name), teacher);
+      console.log('Teacher data saved to Firebase');
+    } catch (error) {
+      console.error('Error saving teacher to Firebase:', error);
+    }
+  };
 
-    // Add a teacher to the state, Firebase, and session storage
-    const addTeacher = (teacher) => {
-        const updatedTeachers = [...teachers, teacher];
-        setTeachers(updatedTeachers);
+  const addTeacher = (teacher) => {
+    const updatedTeachers = [...teachers, teacher];
+    setTeachers(updatedTeachers);
+    saveTeacherToFirebase(teacher);
+    sessionStorage.setItem('teachers', JSON.stringify(updatedTeachers));
+  };
 
-        // Save to Firebase
-        saveTeacherToFirebase(teacher);
+  const handleTeacherClick = (teacher) => {
+    setSelectedTeacher(teacher);
+  };
 
-        // Save to session storage
-        sessionStorage.setItem('teachers', JSON.stringify(updatedTeachers));
-    };
+  const closeTeacherDetails = () => {
+    setSelectedTeacher(null);
+  };
 
-    const handleTeacherClick = (teacher) => {
-        setSelectedTeacher(teacher);
-    };
-
-    const closeTeacherDetails = () => {
-        setSelectedTeacher(null);
-    };
-
-    const generateOptimizedSchedule = async () => {
-        console.log("Starting the schedule optimization process...");
+  const generateSchedules = () => {
+    console.log('Starting the scheduling process...');
     
-        let scheduleTemplate = {
-            "Monday": { "9:00-10:00": null, "10:00-10:10": "Morning Nutrition Break", "10:10-11:00": null, "11:00-12:00": null, "12:00-12:45": "Lunch Break", "12:45-1:45": null, "1:45-2:00": "Afternoon Nutrition Break", "2:00-3:00": null },
-            "Tuesday": { "9:00-10:00": null, "10:00-10:10": "Morning Nutrition Break", "10:10-11:00": null, "11:00-12:00": null, "12:00-12:45": "Lunch Break", "12:45-1:45": null, "1:45-2:00": "Afternoon Nutrition Break", "2:00-3:00": null },
-            "Wednesday": { "9:00-10:00": null, "10:00-10:10": "Morning Nutrition Break", "10:10-11:00": null, "11:00-12:00": null, "12:00-12:45": "Lunch Break", "12:45-1:45": null, "1:45-2:00": "Afternoon Nutrition Break", "2:00-3:00": null },
-            "Thursday": { "9:00-10:00": null, "10:00-10:10": "Morning Nutrition Break", "10:10-11:00": null, "11:00-12:00": null, "12:00-12:45": "Lunch Break", "12:45-1:45": null, "1:45-2:00": "Afternoon Nutrition Break", "2:00-3:00": null },
-            "Friday": { "9:00-10:00": null, "10:00-10:10": "Morning Nutrition Break", "10:10-11:00": null, "11:00-12:00": null, "12:00-12:45": "Lunch Break", "12:45-1:45": null, "1:45-2:00": "Afternoon Nutrition Break", "2:00-3:00": null }
-        };
-    
-        const problem = {
-            name: "Schedule Optimization",
-            objective: {
-                direction: "min", // This should be 'min' or 'max' as per GLPK's requirement
-                name: "workload",
-                vars: []
+    // Simulating schedule generation with hardcoded data
+    const generatedSchedule = {
+        "Grade 1": {
+          "Monday": {
+            "9:00-10:00": {
+              "subject": "Mathematics",
+              "teacher": "Alice Johnson"
             },
-            subjectTo: [],
-            binaries: [],
-        };
-    
-        // Adding variables and constraints to the problem object
-        teachers.forEach((teacher) => {
-            Object.entries(teacher.availability).forEach(([day, times]) => {
-                times.forEach((time) => {
-                    if (scheduleTemplate[day][time] === null) {
-                        const variableName = `${teacher.name}_${day}_${time}`;
-    
-                        // Add the variable as a binary (0 or 1)
-                        problem.binaries.push(variableName);
-    
-                        // Add the variable to the objective function
-                        problem.objective.vars.push({ name: variableName, coef: 1 });
-    
-                        // Ensure each slot is assigned to one teacher
-                        const slotConstraintName = `${day}_${time}`;
-                        let constraint = problem.subjectTo.find(constraint => constraint.name === slotConstraintName);
-    
-                        if (!constraint) {
-                            constraint = {
-                                name: slotConstraintName,
-                                vars: [],
-                                bnds: { type: "fixed", lb: 1, ub: 1 },
-                            };
-                            problem.subjectTo.push(constraint);
-                        }
-    
-                        constraint.vars.push({ name: variableName, coef: 1 });
-                    }
-                });
-            });
-        });
-    
-        try {
-            console.log("Solving the problem using GLPK...");
-            const glpk = await GLPK();
-            const result = glpk.solve(problem);
-    
-            console.log("GLPK optimization result:", result);
-    
-            if (result.status === "optimal") {
-                console.log("Optimal solution found! Updating the schedule...");
-                Object.entries(scheduleTemplate).forEach(([day, slots]) => {
-                    Object.keys(slots).forEach((time) => {
-                        const assignedTeacher = teachers.find(teacher => result.vars[`${teacher.name}_${day}_${time}`]);
-                        if (assignedTeacher) {
-                            scheduleTemplate[day][time] = assignedTeacher.name;
-                        }
-                    });
-                });
-    
-                setFinalSchedule(scheduleTemplate);
-                console.log("Optimized schedule has been set:", scheduleTemplate);
-                alert("The optimized schedule has been generated successfully! You can now view it.");
-            } else {
-                console.error("No feasible solution found by GLPK. Check the constraints and input data.");
-                alert("Could not find a feasible solution. Please check the input data or try again.");
+            "10:00-10:10": {
+              "subject": "Nutrition Break",
+              "teacher": null
+            },
+            "10:10-11:00": {
+              "subject": "Mathematics",
+              "teacher": "David Brown"
+            },
+            "11:00-12:00": {
+              "subject": "Islamic Studies",
+              "teacher": "Bob Smith"
+            },
+            "12:00-12:45": {
+              "subject": "Lunch",
+              "teacher": null
+            },
+            "12:45-1:45": {
+              "subject": "Free Period",
+              "teacher": null
+            },
+            "1:45-2:00": {
+              "subject": "Nutrition Break",
+              "teacher": null
+            },
+            "2:00-3:00": {
+              "subject": "Art",
+              "teacher": "Catherine Lee"
             }
-        } catch (error) {
-            console.error("Error during GLPK optimization:", error);
-            alert("An error occurred while generating the optimized schedule. Please try again.");
+          },
+          "Tuesday": {
+            "9:00-10:00": {
+              "subject": "Mathematics",
+              "teacher": "Alice Johnson"
+            },
+            "10:00-10:10": {
+              "subject": "Nutrition Break",
+              "teacher": null
+            },
+            "10:10-11:00": {
+              "subject": "Mathematics",
+              "teacher": "David Brown"
+            },
+            "11:00-12:00": {
+              "subject": "Islamic Studies",
+              "teacher": "Eva Green"
+            },
+            "12:00-12:45": {
+              "subject": "Lunch",
+              "teacher": null
+            },
+            "12:45-1:45": {
+              "subject": "Free Period",
+              "teacher": null
+            },
+            "1:45-2:00": {
+              "subject": "Nutrition Break",
+              "teacher": null
+            },
+            "2:00-3:00": {
+              "subject": "Art",
+              "teacher": "Eva Green"
+            }
+          },
+          "Wednesday": {
+            "9:00-10:00": {
+              "subject": "Mathematics",
+              "teacher": "Alice Johnson"
+            },
+            "10:00-10:10": {
+              "subject": "Nutrition Break",
+              "teacher": null
+            },
+            "10:10-11:00": {
+              "subject": "Mathematics",
+              "teacher": "David Brown"
+            },
+            "11:00-12:00": {
+              "subject": "Islamic Studies",
+              "teacher": "Bob Smith"
+            },
+            "12:00-12:45": {
+              "subject": "Lunch",
+              "teacher": null
+            },
+            "12:45-1:45": {
+              "subject": "Free Period",
+              "teacher": null
+            },
+            "1:45-2:00": {
+              "subject": "Nutrition Break",
+              "teacher": null
+            },
+            "2:00-3:00": {
+              "subject": "Art",
+              "teacher": "Catherine Lee"
+            }
+          },
+          "Thursday": {
+            "9:00-10:00": {
+              "subject": "Mathematics",
+              "teacher": "Alice Johnson"
+            },
+            "10:00-10:10": {
+              "subject": "Nutrition Break",
+              "teacher": null
+            },
+            "10:10-11:00": {
+              "subject": "Free Period",
+              "teacher": null
+            },
+            "11:00-12:00": {
+              "subject": "Islamic Studies",
+              "teacher": "Bob Smith"
+            },
+            "12:00-12:45": {
+              "subject": "Lunch",
+              "teacher": null
+            },
+            "12:45-1:45": {
+              "subject": "Free Period",
+              "teacher": null
+            },
+            "1:45-2:00": {
+              "subject": "Nutrition Break",
+              "teacher": null
+            },
+            "2:00-3:00": {
+              "subject": "Art",
+              "teacher": "Eva Green"
+            }
+          },
+          "Friday": {
+            "9:00-10:00": {
+              "subject": "Mathematics",
+              "teacher": "Alice Johnson"
+            },
+            "10:00-10:10": {
+              "subject": "Nutrition Break",
+              "teacher": null
+            },
+            "10:10-11:00": {
+              "subject": "Mathematics",
+              "teacher": "David Brown"
+            },
+            "11:00-12:00": {
+              "subject": "Islamic Studies",
+              "teacher": "Eva Green"
+            },
+            "12:00-12:45": {
+              "subject": "Lunch",
+              "teacher": null
+            },
+            "12:45-1:45": {
+              "subject": "Free Period",
+              "teacher": null
+            },
+            "1:45-2:00": {
+              "subject": "Nutrition Break",
+              "teacher": null
+            },
+            "2:00-3:00": {
+              "subject": "Art",
+              "teacher": "Catherine Lee"
+            }
+          }
         }
-    };
-    
-    
-    
+      }
+      
 
-    return (
-        <div className="schedule-manager">
-            <TeacherInput addTeacher={addTeacher} />
-            
-            {/* Use the TeacherDisplay component for displaying added teachers and viewing their details */}
-            <TeacherDisplay 
-                teachers={teachers} 
-                onTeacherClick={handleTeacherClick}
-                selectedTeacher={selectedTeacher}
-                closeTeacherDetails={closeTeacherDetails}
-            />
+    setFinalSchedule(generatedSchedule);
+  };
 
-            <button className="generate-schedule-button" onClick={generateOptimizedSchedule}>
-                Generate Optimized Schedule
-            </button>
+  return (
+    <div className="schedule-manager">
+      <h2 className="schedule-manager-title">Schedule Manager</h2>
+      <TeacherInput addTeacher={addTeacher} />
+      
+      <TeacherDisplay
+        teachers={teachers}
+        onTeacherClick={handleTeacherClick}
+        selectedTeacher={selectedTeacher}
+        closeTeacherDetails={closeTeacherDetails}
+      />
 
-            {finalSchedule && <ScheduleDisplay schedule={finalSchedule} />}
-        </div>
-    );
+      <button
+        className="generate-schedule-button"
+        onClick={generateSchedules}
+        disabled={teachers.length === 0}
+      >
+        Generate Optimized Schedule
+      </button>
+
+      {finalSchedule ? (
+    <ScheduleDisplay schedule={finalSchedule} grade="Grade 1" />
+) : (
+    <p className="schedule-placeholder">No schedule generated yet. Please add teachers and click the button to generate a schedule.</p>
+)}
+
+    </div>
+  );
 };
 
 export default ScheduleManager;

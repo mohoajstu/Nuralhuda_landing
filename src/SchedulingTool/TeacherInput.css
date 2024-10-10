@@ -24,6 +24,14 @@
     border: 1px solid #ccc;
     border-radius: 4px;
     font-size: 1rem;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.teacher-name-input:focus,
+.teacher-type-select:focus {
+    border-color: #144040;
+    outline: none;
+    box-shadow: 0 0 5px rgba(20, 64, 64, 0.5);
 }
 
 .submit-button {
@@ -36,11 +44,12 @@
     border-radius: 4px;
     cursor: pointer;
     margin-top: 10px;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .submit-button:hover {
     background-color: #0f3030;
+    transform: scale(1.02);
 }
 
 /* Availability grid styling */
@@ -86,20 +95,68 @@
     background-color: #DCCA98; /* Highlight selected cells */
     font-weight: bold;
     color: #333;
+    transition: background-color 0.3s ease-in-out;
+}
+
+/* Subjects and Grade Levels styling */
+.subject-item,
+.grade-level-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.subject-item label,
+.grade-level-item label {
+    margin-left: 5px;
+    font-size: 0.9rem;
+    color: #333;
+}
+
+/* Frequency input */
+.frequency-input,
+.other-subject-input,
+.other-grade-input {
+    margin-left: 10px;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    width: 60px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.frequency-input:focus,
+.other-subject-input:focus,
+.other-grade-input:focus {
+    border-color: #144040;
+    box-shadow: 0 0 5px rgba(20, 64, 64, 0.5);
 }
 
 /* Responsive styling */
 @media (max-width: 768px) {
     .availability-grid {
         grid-template-columns: 80px repeat(5, 1fr);
+        gap: 1px; /* Adjust gap for smaller screens */
     }
 
     .teacher-input-container {
         padding: 10px;
     }
 
-    .day-header, .time-label, .availability-cell {
-        font-size: 0.8rem;
+    .day-header,
+    .time-label,
+    .availability-cell {
+        font-size: 0.75rem;
         padding: 5px;
+    }
+
+    .teacher-name-input,
+    .teacher-type-select,
+    .frequency-input,
+    .other-subject-input,
+    .other-grade-input {
+        font-size: 0.85rem;
+        padding: 6px;
     }
 }
