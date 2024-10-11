@@ -290,7 +290,7 @@ const SlideGenerator = () => {
             <textarea
               value={additionalCriteria}
               onChange={handleAdditionalCriteriaChange}
-              placeholder="Add any specific requirements (e.g., focus on critical thinking skills, only multiple choice questions, or a specified number of questions)"
+              placeholder="Add any specific requirements (e.g. Number of slides, only bullet points, etc.)"
               rows={4}
             />
             <label htmlFor="additionalCriteriaFileInput" className="file-upload-icon">
@@ -320,7 +320,7 @@ const SlideGenerator = () => {
               type="text"
               value={standards}
               onChange={handleStandardsChange}
-              placeholder="Enter the standards to align with (e.g., CCSS, TEKS, NGSS)"
+              placeholder="Enter the standards to align with (e.g., CCSS, TEKS, NGSS, or your own curriculum standards)"
             />
             <label htmlFor="standardsFileInput" className="file-upload-icon">
               <FaPaperclip />
