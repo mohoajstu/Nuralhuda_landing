@@ -1,0 +1,133 @@
+/* Container for the slides */
+.general-slides-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+    background-color: #dcca98; /* Softer background for better contrast */
+  }
+  
+  /* Styling for individual slides */
+  .slide {
+    border: none;
+    border-radius: 15px;
+    padding: 30px;
+    margin-bottom: 30px;
+    display: fixed;
+    background: #fff; /* Ensures content background stands out */
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15); /* Softer, more spread-out shadow for depth */
+    transition: transform 0.2s ease, box-shadow 0.2s ease; /* Adds smooth hover effect */
+  }
+  
+  .slide:hover {
+    transform: translateY(-5px); /* Subtle lift on hover */
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.2); /* Enhanced shadow on hover */
+  }
+  
+  /* Title text inside the slides */
+  .slide h2 {
+    text-align: center;
+    font-size: 2em;
+    color: #333; /* Darker color for better readability */
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  }
+  
+  /* Content inside the slide */
+  .slide-content {
+    background-color: rgba(255, 255, 255, 0.95); /* Slight opacity for a layered look */
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* Light shadow for contrast */
+  }
+  
+  /* Subtitle styling */
+  .slide-content h3 {
+    font-size: 1.5em;
+    color: #444; /* Slightly softer for better readability */
+    margin-bottom: 15px;
+    border-bottom: 2px solid #ddd; /* Cleaner line for separation */
+    padding-bottom: 5px;
+    transition: border-color 0.2s ease;
+  }
+  
+  .slide-content h3:hover {
+    border-color: #bbb; /* Slight color change on hover for interactivity */
+  }
+  
+  /* Paragraphs and list items inside the slide content */
+  .slide-content p, .slide-content li {
+    font-size: 1.15em;
+    color: #555; /* Softer tone for better readability */
+    line-height: 1.8; /* Increased for better readability */
+    margin-bottom: 10px;
+  }
+  
+  /* Custom gradients for each type of slide */
+  .slide.title-slide {
+    background: linear-gradient(135deg, #7b4397 0%, #dc2430 100%);
+    color: #fff; /* Ensures text contrasts against gradient */
+  }
+  
+  .slide.overview-slide {
+    background: linear-gradient(135deg, #66cdaa 0%, #20b2aa 100%);
+    color: #fff;
+  }
+  
+  .slide.history-slide {
+    background: linear-gradient(135deg, #f4a460 0%, #ffd700 100%);
+    color: #fff;
+  }
+  
+  .slide.features-slide {
+    background: linear-gradient(135deg, #f08080 0%, #ff6347 100%);
+    color: #fff;
+  }
+  
+  .slide.community-slide {
+    background: linear-gradient(135deg, #90ee90 0%, #32cd32 100%);
+    color: #fff;
+  }
+  
+  .slide.significance-slide {
+    background: linear-gradient(135deg, #dda0dd 0%, #ba55d3 100%);
+    color: #fff;
+  }
+  
+  .slide.tourist-slide {
+    background: linear-gradient(135deg, #8a2be2 0%, #4b0082 100%);
+    color: #fff;
+  }
+  
+  .slide.preservation-slide {
+    background: linear-gradient(135deg, #87ceeb 0%, #1e90ff 100%);
+    color: #fff;
+  }
+  
+  .slide.conclusion-slide {
+    background: linear-gradient(135deg, #ffa500 0%, #ff4500 100%);
+    color: #fff;
+  }
+  
+  /* Responsive design */
+  @media (max-width: 768px) {
+    .slide {
+      padding: 20px;
+    }
+  
+    .slide h2 {
+      font-size: 1.5em;
+    }
+  
+    .slide-content h3 {
+      font-size: 1.2em;
+    }
+  
+    .slide-content p, .slide-content li {
+      font-size: 1em;
+    }
+  }
+  

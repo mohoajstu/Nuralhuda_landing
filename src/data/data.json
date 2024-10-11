@@ -126,6 +126,12 @@
       "title": "5D Thinking Lesson Planner",
       "description": "Utilizes the 5D thinking model that breaks down topics into five dimensions: Explore, Compare, Question, Connect, Appreciate. The goal is to relate secular content taught in schools back to Allah as the creator. This tool generates lessons and slides about any topic or existing lesson of your choice for any grade level. [Learn more about the 5D thinking model](https://5dthinking.org/).",
       "type": "5dthinking"
-    }
+    },
+    {
+      "smallImage": "img/prez-gen.png",
+      "title": "Presentation Generator",
+      "description": "Create custom PowerPoint slides effortlessly, tailored to your educational needs. Input topics, grade levels, educational standards, and additional criteria to generate detailed, professional slide presentations. Export in multiple formats, including PowerPoint, with Google Slides support coming soon.",
+      "type": "slidegenerator"
+    }    
   ]
 }
