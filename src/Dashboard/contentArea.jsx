@@ -12,12 +12,12 @@ const ContentArea = ({ isSidebarOpen, accountType }) => {
       </div>
       
       {/* Conditionally render Tools section only for enterprise users */}
-
+      {accountType === 'enterprise' && (
         <div className="section">
           <h2>Tools</h2>
           <DashboardTools />
         </div>
-
+      )}
     </div>
   );
 };
