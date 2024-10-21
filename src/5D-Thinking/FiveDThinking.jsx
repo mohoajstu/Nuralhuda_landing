@@ -8,6 +8,11 @@ import { readFileContent } from '../utils/fileUtils';
 import { FaBook, FaChevronDown, FaPaperclip, FaExclamationCircle, FaGraduationCap, FaListAlt, FaAlignLeft } from 'react-icons/fa'; // Import icons
 import fiveDThinkingImg from '../img/5dlogotransparent.png';
 
+import { auth, db } from '../config/firebase-config'; // Adjust path based on your setup
+import { doc, getDoc, updateDoc, arrayUnion, increment, setDoc } from 'firebase/firestore';
+import { useAuthState } from 'react-firebase-hooks/auth';
+
+
 const titleSubtopicMap = {
   Explore: ['Content', 'Explanation', 'Observations', 'Fascinating Facts'],
   Compare: ['Analogy', 'Content', 'Explanation', 'Comparison'],
@@ -28,6 +33,8 @@ const logoUrl = 'https://drive.google.com/uc?export=view&id=1WoF-kUTfs6mxgeXao2g
 const base64ImageString = process.env.REACT_APP_BASE64_IMAGE_STRING;
 
 const FiveDAssistant = () => {
+
+  const [user] = useAuthState(auth);
 
   const [selectedDimension, setSelectedDimension] = useState('Explore');
 
@@ -87,6 +94,18 @@ const FiveDAssistant = () => {
     };
   }, []);
   
+  const fetchUserData = async () => {
+    if (!user) return;
+  
+    const userDoc = await getDoc(doc(db, 'users', user.uid));
+    if (!userDoc.exists()) {
+      // Create the user document if it doesn't exist
+      await setDoc(doc(db, 'users', user.uid), {
+        usageCount: 0,
+        threads: [],
+      });
+    }
+  };
   // Function to handle dimension selection
   const handleDimensionSelect = (dimension) => {
     setSelectedDimension(dimension);
@@ -219,7 +238,19 @@ const FiveDAssistant = () => {
     ];
     try {
       const assistantTitle = '5D Thinking-1';
+      
       const thread = await createThread(assistantTitle);
+
+      // Store the thread and update usage count in Firebase
+    if (user) {
+      const userRef = doc(db, 'users', user.uid);
+      
+      await updateDoc(userRef, {
+        '5DThinking.threads': arrayUnion(thread.id),
+        '5DThinking.usageCount': increment(1),
+      });
+    }
+
       for (const dimension of dimensions) {
         await fetchContentForDimension(
           thread.id,
