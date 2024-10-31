@@ -1,0 +1,169 @@
+/* Center the container and apply a maximum width */
+.report-card-gen-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    background-color: #f9f9f9; /* Light background for contrast */
+}
+
+/* Header styling with larger font and central alignment */
+.report-card-header {
+    color: #144040;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.report-card-header h1 {
+    font-size: 2.5em;
+    font-weight: bold;
+    color: #144040;
+    margin: 0;
+}
+
+/* Center input fields with consistent spacing and font size */
+.input-section {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.input-group label {
+    font-weight: bold;
+    color: #144040;
+    display: flex;
+    align-items: center;
+    font-size: 1.2em;
+    gap: 10px;
+}
+
+/* Increase font size and padding for inputs */
+.large-input, .large-textarea, select {
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1.1em;
+    font-family: 'Arial', sans-serif;
+    background-color: #fff;
+}
+
+.large-textarea {
+    height: 100px; /* Larger height for more detailed input */
+    resize: vertical;
+}
+
+/* Style the generate button */
+.generate-button {
+    padding: 15px;
+    font-size: 1.2em;
+    color: #fff;
+    background-color: #144040;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-weight: bold;
+    text-align: center;
+}
+
+.generate-button:hover {
+    background-color: #0f3030;
+}
+
+/* Style for the output section */
+.output-section {
+    margin-top: 30px;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.output-section h2 {
+    font-size: 1.5em;
+    color: #144040;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+/* Style for report card content */
+.report-card-content p {
+    font-size: 1.1em;
+    margin: 8px 0;
+    color: #333;
+}
+
+/* Revision section styling */
+.revision-section {
+    margin-top: 20px;
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #e8f0f2; /* Light blue background for distinction */
+    border-left: 4px solid #144040;
+}
+
+.revision-section label {
+    font-weight: bold;
+    color: #144040;
+    font-size: 1.2em;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.revision-button {
+    padding: 12px;
+    font-size: 1.1em;
+    color: #fff;
+    background-color: #1a6268;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.revision-button:hover {
+    background-color: #144040;
+}
+
+/* Styling for textarea in revision section */
+.large-textarea {
+    padding: 10px;
+    font-size: 1em;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fdfdfd;
+}
+
+/* Responsive design adjustments */
+@media (max-width: 768px) {
+    .report-card-gen-container {
+        padding: 20px;
+    }
+
+    .report-card-header h1 {
+        font-size: 2em;
+    }
+
+    .generate-button, .revision-button {
+        font-size: 1.1em;
+        padding: 12px;
+    }
+
+    .output-section h2 {
+        font-size: 1.3em;
+    }
+
+    .input-group label {
+        font-size: 1em;
+    }
+}
