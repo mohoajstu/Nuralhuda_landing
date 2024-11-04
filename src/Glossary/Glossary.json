@@ -1,0 +1,47 @@
+[
+    {
+        "title": "Report Document Information",
+        "definition":"Click to open the template Report Document based on the type of report and grade level"
+    },
+    {
+      "title": "Type of Report",
+      "definition": "Select the type of report you want to generate."
+    },
+    {
+      "title": "Student's Name",
+      "definition": "Enter the full name of the student."
+    },
+    {
+      "title": "Grade Level",
+      "definition": "Enter the student's grade level (e.g., Grade 2)."
+    },
+    {
+      "title": "Subject",
+      "definition": "Specify the subject for the report card."
+    },
+    {
+      "title": "Strengths",
+      "definition": "Describe the student's strengths in this area."
+    },
+    {
+      "title": "Areas for Improvement",
+      "definition": "Mention areas where the student can improve."
+    },
+    {
+      "title": "Key Learning",
+      "definition": "Highlight the most significant skills demonstrated."
+    },
+    {
+      "title": "Growth in Learning",
+      "definition": "Describe positive learning developments."
+    },
+    {
+      "title": "Next Steps in Learning",
+      "definition": "Suggest ways to support further development."
+    },
+    {
+      "title": "Grade Percentage",
+      "definition": "Enter the grade percentage or letter grade as applicable."
+    }
+  ]
+  

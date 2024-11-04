@@ -1,9 +1,43 @@
-import React, { useState } from 'react';
-import { FaUser, FaGraduationCap, FaClipboardList, FaTasks, FaLightbulb, FaChartLine } from 'react-icons/fa';
+// ReportCardGen.jsx
+
+import React, { useState, useEffect, useRef } from 'react';
+import {
+  FaUser,
+  FaGraduationCap,
+  FaClipboardList,
+  FaTasks,
+  FaLightbulb,
+  FaChartLine,
+  FaInfoCircle,
+} from 'react-icons/fa';
 import './ReportCardGen.css';
-import { createThread, createMessage, createRun, titleToAssistantIDMap } from '../chat/openAIUtils';
+import {
+  createThread,
+  createMessage,
+  createRun,
+  titleToAssistantIDMap,
+} from '../chat/openAIUtils';
+import { Tooltip } from '@mui/material'; // Updated import
+import CommentDisplay from './CommentDisplay';
+import ReportCardModal from './ReportCardModal';
+
+// Import pdf-lib and fontkit
+import { PDFDocument } from 'pdf-lib';
+import fontkit from '@pdf-lib/fontkit';
+
+// Import the PDF files
+import kindergartenInitialObservation from './pdfTemplates/edu-kindergarten_report_initial_observations.pdf';
+import kindergartenFinal from './pdfTemplates/edu-Kindergarten-Communication-of-Learning.pdf';
+import grade1to6Progress from './pdfTemplates/edu-elementary-progress-report-card-1-6.pdf';
+import grade1to6Final from './pdfTemplates/edu-elementary-provincial-report-card-1-6.pdf';
+import grade7to8Progress from './pdfTemplates/edu-elementary-progress-report-card-7-8.pdf';
+import grade7to8Final from './pdfTemplates/edu-elementary-provincial-report-card-7-8.pdf';
+
+// Import the GlossaryTooltip component
+import GlossaryTooltip from '../Glossary/GlossaryTooltip'; // Adjust the path as needed
 
 const ReportCardGen = () => {
+  // State variables
   const [reportType, setReportType] = useState('');
   const [studentName, setStudentName] = useState('');
   const [gradeLevel, setGradeLevel] = useState('');
@@ -17,23 +51,67 @@ const ReportCardGen = () => {
   const [output, setOutput] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [revisionComment, setRevisionComment] = useState('');
-  const [responseBuffer, setResponseBuffer] = useState(''); // For accumulating response fragments
-  const [threadId, setThreadId] = useState(null); // Store thread ID for reuse in revisions
+  const [threadId, setThreadId] = useState(null);
+  const [editableData, setEditableData] = useState(null);
+  const [reportTypeOutput, setReportTypeOutput] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedSkill, setSelectedSkill] = useState(null);
+  const [selectedSkillValue, setSelectedSkillValue] = useState('');
+
+  const responseBufferRef = useRef('');
+
+  // Function to open the modal with the selected skill
+  const openModal = (skill, value) => {
+    setSelectedSkill(skill);
+    setSelectedSkillValue(value);
+    setIsModalOpen(true);
+  };
+
+  // Function to close the modal and reset selected skill
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedSkill(null);
+    setSelectedSkillValue('');
+  };
+
+  // Function to handle saving changes made in the modal
+  const saveSkillValue = () => {
+    handleFieldChange(
+      `comments.learningSkillsAndHabits.${selectedSkill}`,
+      selectedSkillValue
+    );
+    closeModal();
+  };
+
+  const handleInfoIconClick = () => {
+    const pdfTemplateUrl = getPdfTemplateUrl(reportType, gradeLevel);
+    if (pdfTemplateUrl) {
+      window.open(pdfTemplateUrl, '_blank');
+    } else {
+      alert(
+        'Please select a valid report type and enter the grade level to view the template.'
+      );
+    }
+  };
 
   const shouldShowGradeField = () => {
     const grade = parseInt(gradeLevel, 10);
     if (reportType.includes('Progress Report') || reportType.includes('Final')) {
-      return grade >= 7 && grade <= 8; // Show percentage for Grades 7-8
+      return grade >= 7 && grade <= 8;
     }
     if (reportType.includes('Term 1') || reportType.includes('Final')) {
-      return grade >= 1 && grade <= 6; // Show letter grade for Grades 1-6
+      return grade >= 1 && grade <= 6;
     }
     return false;
   };
 
   const handleGenerateComment = async () => {
     setIsLoading(true);
-    setResponseBuffer(''); // Clear previous response buffer
+    responseBufferRef.current = '';
+    setOutput(null);
+    setEditableData(null);
 
     const prompt = {
       studentName,
@@ -41,29 +119,29 @@ const ReportCardGen = () => {
       reportType,
       subject,
       gradePercentage,
-      ...(reportType.includes('Kindergarten') ? {
-        keyLearning,
-        growthInLearning,
-        nextSteps
-      } : {
-        strengths,
-        improvements
-      })
+      ...(reportType.includes('Kindergarten')
+        ? {
+            keyLearning,
+            growthInLearning,
+            nextSteps,
+          }
+        : {
+            strengths,
+            improvements,
+          }),
     };
 
-    console.log("Generated prompt:", prompt);
+    console.log('Generated prompt:', prompt);
 
     try {
       const assistantTitle = 'Report Card Comment Generator';
-      console.log("Creating thread for assistant:", assistantTitle);
       const thread = await createThread(assistantTitle);
-      setThreadId(thread.id); // Store thread ID for future revisions
-      console.log("Thread created with ID:", thread.id);
+      console.log('Created thread:', thread);
+      setThreadId(thread.id);
 
-      console.log("Sending message to thread...");
       await createMessage(thread.id, JSON.stringify(prompt), assistantTitle);
+      console.log('Message sent to assistant:', JSON.stringify(prompt));
 
-      console.log("Initiating agent run...");
       createRun(
         thread.id,
         titleToAssistantIDMap[assistantTitle],
@@ -72,60 +150,106 @@ const ReportCardGen = () => {
         assistantTitle
       );
     } catch (error) {
-      console.error("Error initiating comment generation:", error);
-      alert("An error occurred while initiating the comment generation. Please try again.");
+      console.error('Error initiating comment generation:', error);
+      alert(
+        'An error occurred while initiating the comment generation. Please try again.'
+      );
       setIsLoading(false);
     }
   };
 
   const handleMessage = (message) => {
-    console.log("Received message fragment:", message.text);
-  
-    if (message.text === 'END_TOKEN') {
-      console.log("END_TOKEN received. Final buffer content:", responseBuffer);
-      const cleanedResponse = responseBuffer
-        .replace(/```json/g, '') 
-        .replace(/```/g, '')    
-        .trim();
-  
-      try {
-        console.log("Complete response after cleaning:", cleanedResponse);
-        // Check if cleanedResponse has valid JSON structure
-        if (!cleanedResponse || cleanedResponse[0] !== '{' || cleanedResponse[cleanedResponse.length - 1] !== '}') {
-          throw new Error("Invalid JSON structure");
+    console.log('Received message from assistant:', message);
+
+    const messageText = message.text;
+
+    if (messageText === 'END_TOKEN') {
+      if (responseBufferRef.current.trim()) {
+        console.log(
+          'Final accumulated responseBuffer:',
+          responseBufferRef.current
+        );
+
+        // Proceed with parsing
+        let cleanedResponse = responseBufferRef.current.trim();
+
+        // Remove code block markers and unnecessary whitespace
+        cleanedResponse = cleanedResponse
+          .replace(/```json/g, '')
+          .replace(/```/g, '')
+          .trim();
+
+        // Attempt to extract JSON object
+        const jsonStart = cleanedResponse.indexOf('{');
+        const jsonEnd = cleanedResponse.lastIndexOf('}');
+
+        if (jsonStart !== -1 && jsonEnd !== -1) {
+          cleanedResponse = cleanedResponse.substring(jsonStart, jsonEnd + 1);
+        } else {
+          console.error('Could not find JSON object in the response.');
+          alert(
+            'An error occurred while parsing the comment data. Please try again.'
+          );
+          setIsLoading(false);
+          responseBufferRef.current = '';
+          return;
         }
-        const jsonResponse = JSON.parse(cleanedResponse);
-        setOutput(jsonResponse);
-      } catch (error) {
-        console.error("Error parsing response:", error);
-        console.error("Response Buffer Content:", responseBuffer); // Log full buffer for debugging
-        alert("An error occurred while parsing the comment data. Please try again.");
-      } finally {
-        setIsLoading(false); 
-        setResponseBuffer(''); // Clear buffer after processing
+
+        try {
+          const jsonResponse = JSON.parse(cleanedResponse);
+          console.log('Parsed JSON response:', jsonResponse);
+          setOutput(jsonResponse);
+          setEditableData(jsonResponse);
+          setReportTypeOutput(jsonResponse.reportType);
+        } catch (error) {
+          console.error('Error parsing response:', error);
+          alert(
+            'An error occurred while parsing the comment data. Please try again.'
+          );
+        } finally {
+          setIsLoading(false);
+          responseBufferRef.current = '';
+        }
+      } else {
+        console.error('END_TOKEN received but no content was accumulated.');
+        alert('No content was received from the assistant.');
+        setIsLoading(false);
       }
+    } else if (messageText) {
+      console.log('Accumulating message text:', messageText);
+      responseBufferRef.current += messageText;
     } else {
-      setResponseBuffer((prev) => prev + message.text); // Accumulate message fragments
-      console.log("Accumulated responseBuffer so far:", responseBuffer);
+      console.warn('Received message without usable text:', message);
     }
   };
-  
-  
+
+  const handleSave = (updatedComment) => {
+    console.log('Saving updated comment:', updatedComment);
+    setOutput(updatedComment);
+    setIsEditing(false);
+  };
+
+  const handlePreview = (updatedComment) => {
+    console.log('Previewing comment:', updatedComment);
+    // Add preview logic if needed
+  };
 
   const handleError = (error) => {
-    console.error("Error during agent run:", error);
-    alert("An error occurred while generating the report. Please try again.");
+    console.error('Error during agent run:', error);
+    alert('An error occurred while generating the report. Please try again.');
     setIsLoading(false);
   };
 
   const handleRevisionRequest = async () => {
     if (!threadId) {
-      alert("No initial report found. Please generate a comment before requesting a revision.");
+      alert(
+        'No initial report found. Please generate a comment before requesting a revision.'
+      );
       return;
     }
 
     setIsLoading(true);
-    setResponseBuffer(''); // Clear previous response buffer for revision
+    responseBufferRef.current = '';
 
     const revisionPrompt = {
       studentName,
@@ -134,21 +258,24 @@ const ReportCardGen = () => {
       subject,
       gradePercentage,
       revisionComment,
-      ...(reportType.includes('Kindergarten') ? {
-        keyLearning,
-        growthInLearning,
-        nextSteps
-      } : {
-        strengths,
-        improvements
-      })
+      ...(reportType.includes('Kindergarten')
+        ? {
+            keyLearning,
+            growthInLearning,
+            nextSteps,
+          }
+        : {
+            strengths,
+            improvements,
+          }),
     };
 
-    console.log("Generated revision prompt:", revisionPrompt);
+    console.log('Revision prompt:', revisionPrompt);
 
     try {
       const assistantTitle = 'Report Card Comment Generator';
-      await createMessage(threadId, JSON.stringify(revisionPrompt), assistantTitle); // Reuse existing thread ID
+      await createMessage(threadId, JSON.stringify(revisionPrompt), assistantTitle);
+      console.log('Revision message sent.');
 
       createRun(
         threadId,
@@ -158,8 +285,8 @@ const ReportCardGen = () => {
         assistantTitle
       );
     } catch (error) {
-      console.error("Error initiating revision:", error);
-      alert("An error occurred while requesting a revision. Please try again.");
+      console.error('Error initiating revision:', error);
+      alert('An error occurred while requesting a revision. Please try again.');
       setIsLoading(false);
     }
   };
@@ -168,23 +295,212 @@ const ReportCardGen = () => {
     if (reportType.includes('Kindergarten')) {
       switch (field) {
         case 'keyLearning':
-          return "Describe the most significant skills and knowledge the child demonstrated during this period.";
+          return 'Describe the most significant skills and knowledge the child demonstrated during this period.';
         case 'growthInLearning':
           return "Describe the child's positive learning developments and personal progress.";
         case 'nextSteps':
           return "Provide suggested ways to further support the child's development at school and home.";
         default:
-          return "";
+          return '';
       }
     } else {
       switch (field) {
         case 'strengths':
-          return "Describe the student’s strengths in this area (e.g., active participation, understanding of key concepts).";
+          return 'Describe the student’s strengths in this area (e.g., active participation, understanding of key concepts).';
         case 'improvements':
-          return "Describe areas for improvement and next steps (e.g., focus on completing assignments on time).";
+          return 'Describe areas for improvement and next steps (e.g., focus on completing assignments on time).';
         default:
-          return "";
+          return '';
       }
+    }
+  };
+
+  const handleFieldChange = (fieldPath, value) => {
+    console.log(`Updating field ${fieldPath} with value:`, value);
+    setEditableData((prevData) => {
+      const updatedData = { ...prevData };
+      const keys = fieldPath.split('.');
+      let current = updatedData;
+      for (let i = 0; i < keys.length - 1; i++) {
+        if (!current[keys[i]]) current[keys[i]] = {};
+        current = current[keys[i]];
+      }
+      current[keys[keys.length - 1]] = value;
+      return updatedData;
+    });
+  };
+
+  const getPdfTemplateUrl = (reportType, gradeLevel) => {
+    const grade = parseInt(gradeLevel, 10);
+    if (reportType === 'Kindergarten Initial Observation') {
+      return kindergartenInitialObservation;
+    } else if (
+      reportType === 'Kindergarten Communication of Learning Term 1' ||
+      reportType === 'Kindergarten Communication of Learning Final (Term 2)'
+    ) {
+      return kindergartenFinal;
+    } else if (reportType === 'Progress Report') {
+      if (grade >= 1 && grade <= 6) {
+        return grade1to6Progress;
+      } else if (grade >= 7 && grade <= 8) {
+        return grade7to8Progress;
+      }
+    } else if (
+      reportType === 'Term 1 Report Card' ||
+      reportType === 'Final (Term 2) Report Card'
+    ) {
+      if (grade >= 1 && grade <= 6) {
+        return grade1to6Final;
+      } else if (grade >= 7 && grade <= 8) {
+        return grade7to8Final;
+      }
+    }
+    return null;
+  };
+
+  const fillPdfForm = async (pdfTemplateBytes, formData) => {
+    const pdfDoc = await PDFDocument.load(pdfTemplateBytes);
+    pdfDoc.registerFontkit(fontkit);
+
+    const form = pdfDoc.getForm();
+
+    // Fill in the form fields
+    form.getTextField('studentName').setText(formData.studentName);
+    form.getTextField('gradeLevel').setText(formData.gradeLevel);
+
+    if (formData.gradePercentage) {
+      form.getTextField('gradePercentage').setText(formData.gradePercentage);
+    }
+
+    if (formData.subject) {
+      form.getTextField('subject').setText(formData.subject);
+    }
+
+    // Fill in comments
+    if (formData.comments) {
+      // Subject Comments
+      if (formData.comments.subjectComments) {
+        formData.comments.subjectComments.forEach((commentObj, index) => {
+          form
+            .getTextField(`subject${index + 1}`)
+            .setText(commentObj.subject || '');
+          form
+            .getTextField(`comment${index + 1}`)
+            .setText(commentObj.comment || '');
+        });
+      }
+      // Achievement Level
+      if (formData.comments.achievementLevel) {
+        form
+          .getTextField('KnowledgeAndUnderstanding')
+          .setText(
+            formData.comments.achievementLevel.KnowledgeAndUnderstanding || ''
+          );
+        form
+          .getTextField('Thinking')
+          .setText(formData.comments.achievementLevel.Thinking || '');
+        form
+          .getTextField('Communication')
+          .setText(formData.comments.achievementLevel.Communication || '');
+        form
+          .getTextField('Application')
+          .setText(formData.comments.achievementLevel.Application || '');
+      }
+      // Learning Skills and Habits
+      if (formData.comments.learningSkillsAndHabits) {
+        form
+          .getTextField('Responsibility')
+          .setText(formData.comments.learningSkillsAndHabits.Responsibility || '');
+        form
+          .getTextField('Organization')
+          .setText(formData.comments.learningSkillsAndHabits.Organization || '');
+        form
+          .getTextField('IndependentWork')
+          .setText(
+            formData.comments.learningSkillsAndHabits.IndependentWork || ''
+          );
+        form
+          .getTextField('Collaboration')
+          .setText(formData.comments.learningSkillsAndHabits.Collaboration || '');
+        form
+          .getTextField('Initiative')
+          .setText(formData.comments.learningSkillsAndHabits.Initiative || '');
+        form
+          .getTextField('SelfRegulation')
+          .setText(
+            formData.comments.learningSkillsAndHabits.SelfRegulation || ''
+          );
+      }
+      // Progress Indicators
+      if (formData.comments.progressIndicators) {
+        form
+          .getTextField('letterGrade')
+          .setText(formData.comments.progressIndicators.letterGrade || '');
+        form
+          .getTextField('nextSteps')
+          .setText(formData.comments.progressIndicators.nextSteps || '');
+      }
+      // Kindergarten Specific
+      if (formData.comments.kindergartenSpecific) {
+        form
+          .getTextField('KeyLearning')
+          .setText(formData.comments.kindergartenSpecific.KeyLearning || '');
+        form
+          .getTextField('GrowthInLearning')
+          .setText(
+            formData.comments.kindergartenSpecific.GrowthInLearning || ''
+          );
+        form
+          .getTextField('NextStepsInLearning')
+          .setText(
+            formData.comments.kindergartenSpecific.NextStepsInLearning || ''
+          );
+      }
+    }
+
+    // Optionally flatten the form to prevent editing
+    // form.flatten();
+
+    const pdfBytes = await pdfDoc.save();
+    return pdfBytes;
+  };
+
+  const handleDownloadPdf = async () => {
+    try {
+      // Get the appropriate PDF template based on reportType
+      const pdfTemplateUrl = getPdfTemplateUrl(
+        editableData.reportType,
+        editableData.gradeLevel
+      );
+      if (!pdfTemplateUrl) {
+        alert(
+          'No PDF template found for the selected report type and grade level.'
+        );
+        return;
+      }
+      // Fetch the PDF template bytes
+      const pdfTemplateBytes = await fetch(pdfTemplateUrl).then((res) =>
+        res.arrayBuffer()
+      );
+
+      // Fill the PDF with the editable data
+      const pdfBytes = await fillPdfForm(pdfTemplateBytes, editableData);
+
+      // Create a Blob and download the PDF
+      const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+
+      // Create a link and trigger download
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${editableData.studentName}_ReportCard.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      alert('An error occurred while generating the PDF. Please try again.');
     }
   };
 
@@ -195,169 +511,456 @@ const ReportCardGen = () => {
       </header>
 
       <div className="input-section">
-        {/* Input fields for student's details */}
+        {/* Type of Report Dropdown with GlossaryTooltip */}
         <div className="input-group">
-          <label><FaUser /> Student's Name:</label>
-          <input
-            type="text"
-            value={studentName}
-            onChange={(e) => setStudentName(e.target.value)}
-            placeholder="Enter the student's full name"
+          
+            <label>
+            <GlossaryTooltip name="Type of Report">
+              <FaClipboardList /> Type of Report:
+              </GlossaryTooltip>
+              <GlossaryTooltip name="Report Document Information">
+              <FaInfoCircle
+                className="info-icon"
+                onClick={handleInfoIconClick}
+                style={{ marginLeft: '8px', cursor: 'pointer' }}
+              />
+              </GlossaryTooltip>
+            </label>
+
+          <select
+            value={reportType}
+            onChange={(e) => setReportType(e.target.value)}
             className="large-input"
-          />
-        </div>
-
-        <div className="input-group">
-          <label><FaGraduationCap /> Grade Level:</label>
-          <input
-            type="text"
-            value={gradeLevel}
-            onChange={(e) => setGradeLevel(e.target.value)}
-            placeholder="Enter the student's grade level (e.g., Grade 2)"
-            className="large-input"
-          />
-        </div>
-
-        <div className="input-group">
-          <label><FaClipboardList /> Subject:</label>
-          <input
-            type="text"
-            value={subject}
-            onChange={(e) => setSubject(e.target.value)}
-            placeholder="Enter the subject (e.g., Mathematics, Science)"
-            className="large-input"
-          />
-        </div>
-
-        {shouldShowGradeField() && (
-          <div className="input-group">
-            <label><FaChartLine /> {parseInt(gradeLevel, 10) >= 7 ? "Grade Percentage:" : "Letter Grade:"}</label>
-            <input
-              type="text"
-              value={gradePercentage}
-              onChange={(e) => setGradePercentage(e.target.value)}
-              placeholder={parseInt(gradeLevel, 10) >= 7 ? "Enter grade percentage (e.g., 85%)" : "Enter letter grade (e.g., A)"}
-              className="large-input"
-            />
-          </div>
-        )}
-
-        {/* Input fields for report type and content */}
-        <div className="input-group">
-          <label><FaClipboardList /> Type of Report:</label>
-          <select value={reportType} onChange={(e) => setReportType(e.target.value)} className="large-input">
+          >
             <option value="">Select report type</option>
             <option value="Progress Report">Progress Report</option>
             <option value="Term 1 Report Card">Term 1 Report Card</option>
-            <option value="Final (Term 2) Report Card">Final (Term 2) Report Card</option>
-            <option value="Kindergarten Initial Observation">Kindergarten Initial Observation</option>
-            <option value="Kindergarten Communication of Learning Term 1">Kindergarten Communication of Learning Term 1</option>
-            <option value="Kindergarten Communication of Learning Final (Term 2)">Kindergarten Communication of Learning Final (Term 2)</option>
+            <option value="Final (Term 2) Report Card">
+              Final (Term 2) Report Card
+            </option>
+            <option value="Kindergarten Initial Observation">
+              Kindergarten Initial Observation
+            </option>
+            <option value="Kindergarten Communication of Learning Term 1">
+              Kindergarten Communication of Learning Term 1
+            </option>
+            <option value="Kindergarten Communication of Learning Final (Term 2)">
+              Kindergarten Communication of Learning Final (Term 2)
+            </option>
           </select>
         </div>
 
-        {/* Fields for Kindergarten report types */}
-        {reportType.includes('Kindergarten') ? (
+        {/* Show other fields only if reportType is selected */}
+        {reportType && (
           <>
+            {/* Student's Name with GlossaryTooltip */}
             <div className="input-group">
-              <label><FaLightbulb /> Key Learning:</label>
-              <textarea
-                value={keyLearning}
-                onChange={(e) => setKeyLearning(e.target.value)}
-                placeholder={getPlaceholderText('keyLearning')}
-                className="large-textarea"
+              <GlossaryTooltip name="Student's Name">
+                <label>
+                  <FaUser /> Student's Name:
+                </label>
+              </GlossaryTooltip>
+              <input
+                type="text"
+                value={studentName}
+                onChange={(e) => setStudentName(e.target.value)}
+                placeholder="Enter the student's full name"
+                className="large-input"
               />
             </div>
+
+            {/* Grade Level - Hidden for Kindergarten Reports */}
+            {!reportType.includes('Kindergarten') && (
+              <div className="input-group">
+                <GlossaryTooltip name="Grade Level">
+                  <label>
+                    <FaGraduationCap /> Grade Level:
+                  </label>
+                </GlossaryTooltip>
+                <input
+                  type="text"
+                  value={gradeLevel}
+                  onChange={(e) => setGradeLevel(e.target.value)}
+                  placeholder="Enter the student's grade level (e.g., Grade 2)"
+                  className="large-input"
+                />
+              </div>
+            )}
+
+            {/* Subject with GlossaryTooltip */}
             <div className="input-group">
-              <label><FaChartLine /> Growth in Learning:</label>
-              <textarea
-                value={growthInLearning}
-                onChange={(e) => setGrowthInLearning(e.target.value)}
-                placeholder={getPlaceholderText('growthInLearning')}
-                className="large-textarea"
+              <GlossaryTooltip name="Subject">
+                <label>
+                  <FaClipboardList /> Subject:
+                </label>
+              </GlossaryTooltip>
+              <input
+                type="text"
+                value={subject}
+                onChange={(e) => setSubject(e.target.value)}
+                placeholder="Enter the subject (e.g., Mathematics, Science)"
+                className="large-input"
               />
             </div>
-            <div className="input-group">
-              <label><FaTasks /> Next Steps in Learning:</label>
-              <textarea
-                value={nextSteps}
-                onChange={(e) => setNextSteps(e.target.value)}
-                placeholder={getPlaceholderText('nextSteps')}
-                className="large-textarea"
-              />
-            </div>
-          </>
-        ) : (
-          <>
-            <div className="input-group">
-              <label><FaLightbulb /> Strengths:</label>
-              <textarea
-                value={strengths}
-                onChange={(e) => setStrengths(e.target.value)}
-                placeholder={getPlaceholderText('strengths')}
-                className="large-textarea"
-              />
-            </div>
-            <div className="input-group">
-              <label><FaTasks /> Areas for Improvement:</label>
-              <textarea
-                value={improvements}
-                onChange={(e) => setImprovements(e.target.value)}
-                placeholder={getPlaceholderText('improvements')}
-                className="large-textarea"
-              />
-            </div>
+
+            {/* Grade Percentage or Letter Grade */}
+            {shouldShowGradeField() && (
+              <div className="input-group">
+                <GlossaryTooltip name="Grade Percentage">
+                  <label>
+                    <FaChartLine />{' '}
+                    {parseInt(gradeLevel, 10) >= 7
+                      ? 'Grade Percentage:'
+                      : 'Letter Grade:'}
+                  </label>
+                </GlossaryTooltip>
+                <input
+                  type="text"
+                  value={gradePercentage}
+                  onChange={(e) => setGradePercentage(e.target.value)}
+                  placeholder={
+                    parseInt(gradeLevel, 10) >= 7
+                      ? 'Enter grade percentage (e.g., 85%)'
+                      : 'Enter letter grade (e.g., A)'
+                  }
+                  className="large-input"
+                />
+              </div>
+            )}
+
+            {/* Conditional fields based on report type */}
+            {reportType.includes('Kindergarten') ? (
+              <>
+                <div className="input-group">
+                  <GlossaryTooltip name="Key Learning">
+                    <label>
+                      <FaLightbulb /> Key Learning:
+                    </label>
+                  </GlossaryTooltip>
+                  <textarea
+                    value={keyLearning}
+                    onChange={(e) => setKeyLearning(e.target.value)}
+                    placeholder={getPlaceholderText('keyLearning')}
+                    className="large-textarea"
+                  />
+                </div>
+                <div className="input-group">
+                  <GlossaryTooltip name="Growth in Learning">
+                    <label>
+                      <FaChartLine /> Growth in Learning:
+                    </label>
+                  </GlossaryTooltip>
+                  <textarea
+                    value={growthInLearning}
+                    onChange={(e) => setGrowthInLearning(e.target.value)}
+                    placeholder={getPlaceholderText('growthInLearning')}
+                    className="large-textarea"
+                  />
+                </div>
+                <div className="input-group">
+                  <GlossaryTooltip name="Next Steps in Learning">
+                    <label>
+                      <FaTasks /> Next Steps in Learning:
+                    </label>
+                  </GlossaryTooltip>
+                  <textarea
+                    value={nextSteps}
+                    onChange={(e) => setNextSteps(e.target.value)}
+                    placeholder={getPlaceholderText('nextSteps')}
+                    className="large-textarea"
+                  />
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="input-group">
+                  <GlossaryTooltip name="Strengths">
+                    <label>
+                      <FaLightbulb /> Strengths:
+                    </label>
+                  </GlossaryTooltip>
+                  <textarea
+                    value={strengths}
+                    onChange={(e) => setStrengths(e.target.value)}
+                    placeholder={getPlaceholderText('strengths')}
+                    className="large-textarea"
+                  />
+                </div>
+                <div className="input-group">
+                  <GlossaryTooltip name="Areas for Improvement">
+                    <label>
+                      <FaTasks /> Areas for Improvement:
+                    </label>
+                  </GlossaryTooltip>
+                  <textarea
+                    value={improvements}
+                    onChange={(e) => setImprovements(e.target.value)}
+                    placeholder={getPlaceholderText('improvements')}
+                    className="large-textarea"
+                  />
+                </div>
+              </>
+            )}
+
+            <button
+              onClick={handleGenerateComment}
+              className="generate-button"
+              disabled={isLoading}
+            >
+              {isLoading ? 'Generating Comment...' : 'Generate Comment'}
+            </button>
           </>
         )}
-
-        <button onClick={handleGenerateComment} className="generate-button" disabled={isLoading}>
-          {isLoading ? 'Generating Comment...' : 'Generate Comment'}
-        </button>
       </div>
 
-      {/* Output and Revision Section */}
-      {output && (
-        <div className="output-section">
-          <h2>Generated Report Card Comment:</h2>
-          <div className="report-card-content">
-            <p><strong>Student Name:</strong> {output.studentName}</p>
-            <p><strong>Grade Level:</strong> {output.gradeLevel}</p>
-            {shouldShowGradeField() && (
-              <p><strong>{parseInt(gradeLevel, 10) >= 7 ? "Grade Percentage:" : "Letter Grade:"}</strong> {output.gradePercentage}</p>
-            )}
-            <p><strong>Subject:</strong> {output.subject}</p>
-            <div>
-              <strong>Subject Comments:</strong>
-              {output.comments.subjectComments.map((comment, index) => (
-                <p key={index}>{comment.comment}</p>
-              ))}
-            </div>
-            <div>
-              <strong>Achievement Level:</strong>
-              <p>Knowledge & Understanding: {output.comments.achievementLevel.KnowledgeAndUnderstanding}</p>
-              <p>Thinking: {output.comments.achievementLevel.Thinking}</p>
-              <p>Communication: {output.comments.achievementLevel.Communication}</p>
-              <p>Application: {output.comments.achievementLevel.Application}</p>
-            </div>
-            <div>
-              <strong>Progress Indicators:</strong>
-              <p>Letter Grade: {output.comments.progressIndicators.letterGrade}</p>
-              <p>Next Steps: {output.comments.progressIndicators.nextSteps}</p>
-            </div>
+      {/* Editable Form */}
+      {editableData && (
+        <div className="edit-section">
+          <h2>Edit Report Card Data</h2>
+
+          {/* Log the editableData for debugging */}
+          {console.log('Rendering editableData:', editableData)}
+
+          {/* Student Name */}
+          <div className="input-group">
+            <label>Student Name:</label>
+            <input
+              type="text"
+              value={editableData.studentName || ''}
+              onChange={(e) => handleFieldChange('studentName', e.target.value)}
+            />
           </div>
 
-          <div className="revision-section">
-            <label>Request Revision:</label>
-            <textarea
-              value={revisionComment}
-              onChange={(e) => setRevisionComment(e.target.value)}
-              placeholder="Add comments for revision (e.g., specific changes needed)"
-              className="large-textarea"
-            />
-            <button onClick={handleRevisionRequest} className="revision-button" disabled={isLoading}>
-              {isLoading ? 'Submitting Revision...' : 'Request Revision'}
-            </button>
-          </div>
+          {/* Grade Level - Hidden for Kindergarten Reports */}
+          {!editableData.reportType.includes('Kindergarten') && (
+            <div className="input-group">
+              <label>Grade Level:</label>
+              <input
+                type="text"
+                value={editableData.gradeLevel || ''}
+                onChange={(e) => handleFieldChange('gradeLevel', e.target.value)}
+              />
+            </div>
+          )}
+
+          {/* Conditional Rendering Based on Report Type */}
+          {editableData.reportType.includes('Kindergarten') ? (
+            // Render Kindergarten Specific Comments
+            <>
+              <div className="section-header">Kindergarten Report</div>
+              {editableData.comments?.kindergartenSpecific ? (
+                <div>
+                  <div className="input-group">
+                    <label>Key Learning:</label>
+                    <textarea
+                      value={
+                        editableData.comments.kindergartenSpecific.KeyLearning || ''
+                      }
+                      onChange={(e) =>
+                        handleFieldChange(
+                          'comments.kindergartenSpecific.KeyLearning',
+                          e.target.value
+                        )
+                      }
+                    />
+                  </div>
+                  <div className="input-group">
+                    <label>Growth in Learning:</label>
+                    <textarea
+                      value={
+                        editableData.comments.kindergartenSpecific.GrowthInLearning ||
+                        ''
+                      }
+                      onChange={(e) =>
+                        handleFieldChange(
+                          'comments.kindergartenSpecific.GrowthInLearning',
+                          e.target.value
+                        )
+                      }
+                    />
+                  </div>
+                  <div className="input-group">
+                    <label>Next Steps in Learning:</label>
+                    <textarea
+                      value={
+                        editableData.comments.kindergartenSpecific.NextStepsInLearning ||
+                        ''
+                      }
+                      onChange={(e) =>
+                        handleFieldChange(
+                          'comments.kindergartenSpecific.NextStepsInLearning',
+                          e.target.value
+                        )
+                      }
+                    />
+                  </div>
+                </div>
+              ) : (
+                <p>No Kindergarten specific comments available.</p>
+              )}
+            </>
+          ) : (
+            // Render Sections for Other Report Types
+            <>
+              {/* Learning Skills and Habits */}
+              {editableData.comments?.learningSkillsAndHabits &&
+                Object.keys(editableData.comments.learningSkillsAndHabits).length >
+                  0 && (
+                <>
+                  <div className="section-header">Learning Skills and Habits</div>
+                  <div className="learning-skills-grid">
+                    {Object.entries(
+                      editableData.comments.learningSkillsAndHabits
+                    ).map(([skill, value]) => (
+                      <div
+                        className="input-group"
+                        key={skill}
+                        onClick={() => openModal(skill, value)}
+                      >
+                        <label>{skill}:</label>
+                        <input type="text" value={value} readOnly />
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
+
+              {/* ReportCardModal for editing skill */}
+              {isModalOpen && (
+                <ReportCardModal
+                  isOpen={isModalOpen}
+                  onClose={closeModal}
+                  title={selectedSkill}
+                >
+                  <textarea
+                    value={selectedSkillValue}
+                    onChange={(e) => setSelectedSkillValue(e.target.value)}
+                    rows="6"
+                    className="large-textarea"
+                    placeholder={`Edit the content for ${selectedSkill}`}
+                  />
+                  <button onClick={saveSkillValue} className="save-button">
+                    Save
+                  </button>
+                </ReportCardModal>
+              )}
+
+              {/* Subject Comments */}
+              {editableData.comments?.subjectComments &&
+                editableData.comments.subjectComments.length > 0 && (
+                  <>
+                    <div className="section-header">Subject Comments</div>
+                    {editableData.comments.subjectComments.map(
+                      (commentObj, index) => (
+                        <div key={index} className="input-group">
+                          <label>Subject:</label>
+                          <input
+                            type="text"
+                            value={commentObj.subject || ''}
+                            onChange={(e) => {
+                              const updatedComments = [
+                                ...editableData.comments.subjectComments,
+                              ];
+                              updatedComments[index].subject = e.target.value;
+                              handleFieldChange(
+                                'comments.subjectComments',
+                                updatedComments
+                              );
+                            }}
+                          />
+                          <label>Comment:</label>
+                          <textarea
+                            className="expanded"
+                            value={commentObj.comment || ''}
+                            onChange={(e) => {
+                              const updatedComments = [
+                                ...editableData.comments.subjectComments,
+                              ];
+                              updatedComments[index].comment = e.target.value;
+                              handleFieldChange(
+                                'comments.subjectComments',
+                                updatedComments
+                              );
+                            }}
+                          />
+                        </div>
+                      )
+                    )}
+                  </>
+                )}
+
+              {/* Progress Indicators */}
+              {editableData.comments?.progressIndicators ? (
+                <>
+                  <div className="section-header">Progress Indicators</div>
+                  <div className="input-group">
+                    <label>Letter Grade:</label>
+                    <input
+                      type="text"
+                      value={
+                        editableData.comments.progressIndicators?.letterGrade || ''
+                      }
+                      onChange={(e) =>
+                        handleFieldChange(
+                          'comments.progressIndicators.letterGrade',
+                          e.target.value
+                        )
+                      }
+                    />
+                  </div>
+                  <div className="input-group">
+                    <label>Next Steps:</label>
+                    <textarea
+                      className="expanded"
+                      value={
+                        editableData.comments.progressIndicators?.nextSteps || ''
+                      }
+                      onChange={(e) =>
+                        handleFieldChange(
+                          'comments.progressIndicators.nextSteps',
+                          e.target.value
+                        )
+                      }
+                    />
+                  </div>
+                </>
+              ) : (
+                <p>No progress indicators available.</p>
+              )}
+            </>
+          )}
+
+          {/* Download PDF Button */}
+          <button onClick={handleDownloadPdf} className="download-button">
+            Download PDF
+          </button>
+        </div>
+      )}
+
+      {/* Revision Section */}
+      {output && (
+        <div className="revision-section">
+          <CommentDisplay
+            comment={output}
+            onEdit={() => setIsEditing(true)}
+            onPreview={handlePreview}
+            onSave={handleSave}
+            isEditing={isEditing}
+          />
+          <label>Request Revision:</label>
+          <textarea
+            value={revisionComment}
+            onChange={(e) => setRevisionComment(e.target.value)}
+            placeholder="Add comments for revision (e.g., specific changes needed)"
+            className="large-textarea"
+          />
+          <button
+            onClick={handleRevisionRequest}
+            className="revision-button"
+            disabled={isLoading}
+          >
+            {isLoading ? 'Submitting Revision...' : 'Request Revision'}
+          </button>
         </div>
       )}
     </div>

@@ -1,169 +1,371 @@
-/* Center the container and apply a maximum width */
+/* Main Container */
 .report-card-gen-container {
-    max-width: 800px;
+    max-width: 900px;
     margin: 0 auto;
     padding: 40px;
-    border-radius: 10px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-    background-color: #f9f9f9; /* Light background for contrast */
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+    background-color: #fefefe;
+    color: #333;
+    animation: fadeIn 0.5s ease-in-out;
 }
 
-/* Header styling with larger font and central alignment */
+/* Header */
 .report-card-header {
     color: #144040;
-    margin-bottom: 30px;
+    margin-bottom: 40px;
     text-align: center;
 }
 
 .report-card-header h1 {
-    font-size: 2.5em;
+    font-size: 3em;
     font-weight: bold;
     color: #144040;
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.1);
     margin: 0;
+    letter-spacing: 0.5px;
 }
 
-/* Center input fields with consistent spacing and font size */
-.input-section {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    margin-bottom: 30px;
+/* Section Styling */
+.section {
+    padding: 30px; /* Increased padding for more space */
+    border-radius: 12px;
+    background-color: #f0f6f5;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 40px; /* Increased margin for more space between sections */
+    position: relative;
+    transition: background-color 0.3s ease;
 }
 
+.section:hover {
+    background-color: #e7eceb;
+}
+
+.section h2 {
+    font-size: 1.8em;
+    color: #144040;
+    font-weight: bold;
+    margin-bottom: 20px;
+    padding-left: 10px;
+    border-left: 4px solid #144040;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Input Group with Icons */
 .input-group {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    margin-bottom: 25px; /* Added more margin for better spacing */
+    gap: 12px; /* Increased gap for more space between label and input */
+    position: relative;
+    background-color: #f8f9f9;
+    border-radius: 10px;
+    padding: 20px; /* Increased padding within the input group */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .input-group label {
     font-weight: bold;
     color: #144040;
+    font-size: 1.2em;
     display: flex;
     align-items: center;
-    font-size: 1.2em;
     gap: 10px;
 }
 
-/* Increase font size and padding for inputs */
-.large-input, .large-textarea, select {
-    padding: 12px;
+/* Enhanced Input Field Styling */
+.large-input,
+.large-textarea,
+select {
+    padding: 18px;
     border: 1px solid #ccc;
-    border-radius: 8px;
-    font-size: 1.1em;
+    border-radius: 10px;
+    font-size: 1.2em; /* Increased font size for readability */
+    background-color: #fefefe;
+    color: #333;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
     font-family: 'Arial', sans-serif;
-    background-color: #fff;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+    width: 100%; /* Ensure inputs take full width of container */
 }
 
+.large-input:focus,
+.large-textarea:focus,
+select:focus {
+    border-color: #144040;
+    box-shadow: 0 0 8px rgba(20, 64, 64, 0.4);
+    outline: none;
+    background-color: #ffffff;
+}
+
+/* Enhanced Textarea Styling */
 .large-textarea {
-    height: 100px; /* Larger height for more detailed input */
+    height: 160px; /* Increased height for more room */
     resize: vertical;
+    padding: 15px;
 }
 
-/* Style the generate button */
-.generate-button {
-    padding: 15px;
-    font-size: 1.2em;
+/* Buttons with Hover Effects */
+.generate-button,
+.download-button,
+.revision-button {
+    padding: 15px 25px;
+    font-size: 1.3em;
     color: #fff;
     background-color: #144040;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, transform 0.1s ease;
     font-weight: bold;
+    width: 100%;
     text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-.generate-button:hover {
+.generate-button:hover,
+.download-button:hover,
+.revision-button:hover {
     background-color: #0f3030;
+    transform: translateY(-2px);
 }
 
-/* Style for the output section */
+.generate-button:active,
+.download-button:active,
+.revision-button:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Output Section */
 .output-section {
-    margin-top: 30px;
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    margin-top: 40px; /* Increased top margin for more separation */
+    background-color: #ffffff;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
 }
 
 .output-section h2 {
-    font-size: 1.5em;
+    font-size: 1.7em;
     color: #144040;
     font-weight: bold;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
+    letter-spacing: 0.5px;
 }
 
-/* Style for report card content */
-.report-card-content p {
+/* Editable Form Field Labels */
+.edit-section label {
+    display: flex;
+    flex-direction: column;
+    font-weight: bold;
+    color: #144040;
     font-size: 1.1em;
-    margin: 8px 0;
-    color: #333;
+    margin-bottom: 20px; /* Increased margin for better readability */
 }
 
-/* Revision section styling */
+/* Revision Section Styling */
 .revision-section {
-    margin-top: 20px;
-    padding: 20px;
-    border-radius: 8px;
-    background-color: #e8f0f2; /* Light blue background for distinction */
-    border-left: 4px solid #144040;
+    margin-top: 30px;
+    padding: 25px;
+    border-radius: 10px;
+    background-color: #e8f0f2;
+    border-left: 6px solid #144040;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
 }
 
-.revision-section label {
-    font-weight: bold;
-    color: #144040;
-    font-size: 1.2em;
+/* Spinner for Loading */
+.spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #144040;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: auto;
     display: block;
-    margin-bottom: 10px;
 }
 
-.revision-button {
-    padding: 12px;
-    font-size: 1.1em;
-    color: #fff;
-    background-color: #1a6268;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    font-weight: bold;
-    margin-top: 10px;
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
-.revision-button:hover {
+/* PDF Preview Section */
+.pdf-preview-section {
+    margin-top: 30px;
+    border: 1px solid #d1d1d1;
+    border-radius: 10px;
+    padding: 15px;
+    background-color: #fafafa;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Tooltip for Help Text */
+.tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: help;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 160px;
     background-color: #144040;
-}
-
-/* Styling for textarea in revision section */
-.large-textarea {
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
     padding: 10px;
-    font-size: 1em;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: #fdfdfd;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%; /* Position above */
+    left: 50%;
+    margin-left: -80px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 0.9em;
 }
 
-/* Responsive design adjustments */
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Custom Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #144040;
+    border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #0f3030;
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
     .report-card-gen-container {
         padding: 20px;
     }
-
     .report-card-header h1 {
-        font-size: 2em;
+        font-size: 2.5em;
     }
-
-    .generate-button, .revision-button {
+    .section h2 {
+        font-size: 1.5em;
+    }
+    .generate-button,
+    .revision-button {
         font-size: 1.1em;
         padding: 12px;
     }
-
-    .output-section h2 {
-        font-size: 1.3em;
-    }
-
     .input-group label {
         font-size: 1em;
     }
 }
+
+
+.report-card-gen-container {
+    padding: 20px;
+    max-width: 800px;
+    margin: auto;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .edit-section h2 {
+    font-size: 1.5em;
+    margin-bottom: 15px;
+    color: #144040;
+  }
+  
+  .input-group {
+    margin-bottom: 15px;
+  }
+  
+  .input-group label {
+    font-weight: bold;
+    color: #144040;
+    display: block;
+    margin-bottom: 5px;
+  }
+  
+  .input-group input,
+  .input-group textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    font-size: 1em;
+    box-sizing: border-box;
+  }
+  
+  .input-group textarea {
+    resize: none;
+    overflow-y: auto;
+  }
+  
+  textarea.expanded {
+    height: auto;
+    min-height: 60px;
+    max-height: 200px;
+  }
+  
+  .section-header {
+    font-size: 1.2em;
+    margin-top: 20px;
+    color: #144040;
+    border-bottom: 1px solid #144040;
+    padding-bottom: 5px;
+  }
+  
+  .download-button {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    color: #ffffff;
+    background-color: #144040;
+    border-radius: 8px;
+    font-size: 1.2em;
+    cursor: pointer;
+  }
+  
+  .download-button:hover {
+    background-color: #0f3030;
+  }
+  
+
+  /* Learning Skills Grid */
+.learning-skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Adjust columns based on screen width */
+    gap: 20px; /* Space between grid items */
+    background-color: #f8f9f9;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.learning-skills-grid .input-group {
+    background-color: #ffffff;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.learning-skills-grid label {
+    font-size: 1.1em;
+    color: #144040;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
