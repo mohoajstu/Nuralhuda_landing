@@ -1,0 +1,36 @@
+/* OntarioAssessmentChart.css */
+
+.ontario-assessment-chart {
+  width: 100%;
+  text-align: center;
+  margin-top: 16px;
+  margin-bottom: 16px;
+  border-radius: 5%;
+  background-color: #a5edd1;
+
+}
+
+.ontario-assessment-chart h2,
+.ontario-assessment-chart h3 {
+  margin-top: 20px;
+  font-weight: bold;
+}
+
+.achievement-table, .qualifiers-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+}
+
+.achievement-table th, .achievement-table td,
+.qualifiers-table th, .qualifiers-table td {
+  padding: 8px;
+  border: 1px solid #ccc;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.achievement-table th, .qualifiers-table th {
+  background-color: #f4f4f4;
+  font-weight: bold;
+}

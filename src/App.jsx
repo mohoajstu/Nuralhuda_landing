@@ -24,6 +24,7 @@ import Dashboard from './Dashboard/dashboard';
 import PrivacyPolicyPage from './home/PrivacyPolicyPage';
 import TermsOfUsePage from './home/TermsOfUsePage';
 import SlideGenerator from './SlideGenerator/SlideGenerator';
+import ReportCardGen from './ReportCard/ReportCardGen'
 import Sidebar from './Dashboard/sidebar';
 import { SidebarProvider } from './SidebarContext'; // Import SidebarContext
 
@@ -91,6 +92,7 @@ const App = () => {
           <Route path="/onboarding" element={<ProtectedRoute element={Onboarding} />} />
           <Route path="/tools/5dthinking" element={<ProtectedRoute element={FiveDThinking} />} />
           <Route path="/tools/SlideGenerator" element={<ProtectedRoute element={<SlideGenerator />} />} />
+          <Route path="/tools/report-card-gen" element={<ProtectedRoute element={<ReportCardGen/>} />} />
           <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
           <Route path="/terms-of-use" element={<TermsOfUsePage />} />
           <Route path="/dashboard" element={<ProtectedRoute element={<Dashboard accountType={accountType} />} />} /> {/* Pass accountType to Dashboard */}
