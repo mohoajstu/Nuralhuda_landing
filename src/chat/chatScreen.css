@@ -406,3 +406,65 @@ input[type="button"] {
   width: 50vh; /* Makes the image fully occupy the container's width */
   height: 50vh; /* Maintains the aspect ratio of the image */
 }
+
+/* File Upload Styling */
+.custom-file-upload {
+  border: 1px solid #dcca98;
+  color: #144c4c;
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 15px;
+  cursor: pointer;
+  margin: 5px;
+  border-radius: 20px;
+  background-color: #dcca98;
+  transition: background-color 0.3s ease;
+}
+
+.custom-file-upload:hover {
+  background-color: #bba97a;
+}
+
+.uploaded-files-container {
+  display: flex;
+  flex-direction: column;
+  margin-top: 10px;
+  padding: 10px;
+  background-color: #f0f0f0;
+  border-radius: 10px;
+}
+
+.uploaded-file-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #ffffff;
+  padding: 8px 12px;
+  border: 1px solid #d9ceae;
+  border-radius: 8px;
+  margin-bottom: 5px;
+  gap: 10px; /* Space between file name and remove button */
+}
+
+.uploaded-file-item span {
+  color: #144c4c;
+  font-weight: bold;
+  max-width: 80%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex-grow: 1; /* Allows the file name to take up remaining space */
+}
+
+.remove-file-button {
+  background: none;
+  border: none;
+  color: #d9534f;
+  font-size: 16px;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+.remove-file-button:hover {
+  color: #c9302c;
+}
