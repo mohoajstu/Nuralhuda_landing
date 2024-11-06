@@ -17,6 +17,11 @@ import paliGPTImg from '../img/PaliGPT.png';
 import muslimReferenceAIIMG from '../img/muslimReferenceAI.png';
 import fiveDThinkingImg from '../img/5dlogotransparent.png';
 
+import { fileTypeFromBuffer } from 'file-type';
+
+// Import the readFileContent function
+import { readFileContent } from '../utils/fileUtils';
+
 import './chatScreen.css';
 
 const titleToChatbotTypeMap = {
@@ -71,6 +76,9 @@ const ChatScreen = () => {
   const [lastResetDate, setLastResetDate] = useState(null);
   const [accountType, setAccountType] = useState('');
   const [maxPrompts, setMaxPrompts] = useState(5);
+
+  const [uploadedFiles, setUploadedFiles] = useState([]);
+  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 2 MB
 
   useEffect(() => {
     const handleResize = () => {
@@ -215,118 +223,208 @@ const ChatScreen = () => {
     console.error('Stream error:', error);
   };
 
-  const handleSendMessage = async () => {
-    if (isSending || !currentMessage.trim()) return;
+const handleSendMessage = async () => {
+  if (isSending || (!currentMessage.trim() && uploadedFiles.length === 0)) return;
 
-    const isPaliGPT = chatbotType === 'paliGPT';
+  const isPaliGPT = chatbotType === 'paliGPT';
 
-    if (!user) {
-      // Handle user not logged in
-      /*
-      if (!isPaliGPT && !currentPrompts.includes(currentMessage.trim())) {
-        setModalMessage('Please log in to use this feature.');
-        setIsModalOpen(true);
-        return;
-      }
-      */
-      // Check if the user has reached the daily limit
-      if (!isPaliGPT && totalPromptCount >= maxPrompts) {
-        setModalMessage(
-          `You have reached the daily limit of ${maxPrompts} prompts. Please log in to continue using the service.`
-        );
-        setIsModalOpen(true);
-        return;
-      }
-      // Increment prompt count for non-logged-in users
-      setTotalPromptCount((prevCount) => prevCount + 1);
-      storageManager.save('totalPromptCount', totalPromptCount + 1);
+  // Check user authentication and prompt counts before proceeding
+  if (!user) {
+    // Handle user not logged in
+    if (!isPaliGPT && totalPromptCount >= maxPrompts) {
+      setModalMessage(
+        `You have reached the daily limit of ${maxPrompts} prompts. Please log in to continue using the service.`
+      );
+      setIsModalOpen(true);
+      return;
+    }
+    // Increment prompt count for non-logged-in users
+    setTotalPromptCount((prevCount) => prevCount + 1);
+    storageManager.save('totalPromptCount', totalPromptCount + 1);
+  } else {
+    // Fetch the latest prompt count from Firestore
+    console.log('Fetching latest prompt count from Firestore');
+    const userDoc = await getDoc(doc(db, 'users', user.uid));
+    const userData = userDoc.data();
+    const currentPromptCount = userData.totalPromptCount || 0;
+    const userAccount = userData.account || '';
+    const isNurAlHuda = chatbotType === 'nurAlHuda';
+    const isNurAlHudaForKids = chatbotType === 'nurAlHudaForKids';
+
+    // Set userMaxPrompts based on user account type and chatbot type
+    let userMaxPrompts = maxPrompts;
+    if (isPaliGPT) {
+      userMaxPrompts = Infinity;
+    } else if (userAccount === 'premium' || userAccount === 'enterprise') {
+      userMaxPrompts = 40;
+    } else if (userAccount === 'hybrid' && (isNurAlHuda || isNurAlHudaForKids)) {
+      userMaxPrompts = 40;
+    } else if (userAccount === 'basic' && isNurAlHuda) {
+      userMaxPrompts = 40;
     } else {
-      // Fetch the latest prompt count from Firestore
-      console.log('Fetching latest prompt count from Firestore');
-      const userDoc = await getDoc(doc(db, 'users', user.uid));
-      const userData = userDoc.data();
-      const currentPromptCount = userData.totalPromptCount || 0;
-      const userAccount = userData.account || '';
-      const isNurAlHuda = chatbotType === 'nurAlHuda';
-      const isNurAlHudaForKids = chatbotType === 'nurAlHudaForKids';
-
-      // Set userMaxPrompts based on user account type and chatbot type
-      let userMaxPrompts = maxPrompts;
-      if (isPaliGPT) {
-        userMaxPrompts = Infinity;
-      } else if (userAccount === 'premium'||userAccount === 'enterprise') {
-        userMaxPrompts = 40;
-      } else if (userAccount === 'hybrid' && (isNurAlHuda || isNurAlHudaForKids)) {
-        userMaxPrompts = 40;
-      } else if (userAccount === 'basic' && isNurAlHuda) {
-        userMaxPrompts = 40;
-      } else {
-        userMaxPrompts = 5;
-      }
-
-      if (currentPromptCount >= userMaxPrompts) {
-        setModalMessage(
-          `You have reached the daily limit of ${userMaxPrompts} prompts. ${
-            (userAccount === 'premium' || userAccount === 'enterprise')
-              ? 'Wait until tomorrow to learn more!'
-              : 'Upgrade to a premium or enterprise account for more prompts!'
-          }`
-        );
-        setIsModalOpen(true);
-        return;
-      }      
-
-      // Increment total prompt count using Firebase increment
-      console.log('Incrementing total prompt count');
-      await updateDoc(doc(db, 'users', user.uid), {
-        totalPromptCount: increment(1),
-      });
-
-      // Update local state and local storage
-      setTotalPromptCount((prevCount) => prevCount + 1);
-      storageManager.save('totalPromptCount', totalPromptCount + 1);
+      userMaxPrompts = 5;
     }
 
-    setIsSending(true);
-    const userMessage = { sender: 'user', text: currentMessage.trim() };
-    setMessages((prevMessages) => [...prevMessages, userMessage]);
-    setCurrentMessage('');
-    setShowImage(false);
+    if (currentPromptCount >= userMaxPrompts) {
+      setModalMessage(
+        `You have reached the daily limit of ${userMaxPrompts} prompts. ${
+          userAccount === 'premium' || userAccount === 'enterprise'
+            ? 'Wait until tomorrow to learn more!'
+            : 'Upgrade to a premium or enterprise account for more prompts!'
+        }`
+      );
+      setIsModalOpen(true);
+      return;
+    }
 
-    let localThreadId = threadId;
+    // Increment total prompt count using Firebase increment
+    console.log('Incrementing total prompt count');
+    await updateDoc(doc(db, 'users', user.uid), {
+      totalPromptCount: increment(1),
+    });
 
-    if (!localThreadId) {
+    // Update local state and local storage
+    setTotalPromptCount((prevCount) => prevCount + 1);
+    storageManager.save('totalPromptCount', totalPromptCount + 1);
+  }
+
+  setIsSending(true);
+
+  // Read and process uploaded files
+  let filesContent = '';
+  let fileProcessingErrors = [];
+  if (uploadedFiles.length > 0) {
+    const fileContentsPromises = uploadedFiles.map(async (file) => {
       try {
-        const threadResponse = await createThread(assistantTitle);
-        if (threadResponse?.id) {
-          setThreadId(threadResponse.id);
-          localThreadId = threadResponse.id;
-          // Add the thread ID to the user's Firestore document under the correct assistant/chatbot
-          if (user) {
-            const userRef = doc(db, 'users', user.uid);
-            await updateDoc(userRef, {
-              [`${assistantTitle}.Threads`]: arrayUnion(localThreadId),
-            });
-          }
+        const content = await readFileContent(file);
+        return `Content from ${file.name}:\n${content}`;
+      } catch (error) {
+        console.error(`Error processing file ${file.name}:`, error);
+        fileProcessingErrors.push(`${file.name}: ${error.message}`);
+        return null; // Exclude failed files from filesContent
+      }
+    });
+    const fileContents = await Promise.all(fileContentsPromises);
+    filesContent = fileContents.filter(Boolean).join('\n\n');
+  }
+
+  // Inform the user if any files failed to process
+  if (fileProcessingErrors.length > 0) {
+    setModalMessage(
+      `The following files could not be processed:\n${fileProcessingErrors.join('\n')}`
+    );
+    setIsModalOpen(true);
+  }
+
+  // Combine user message and files content
+  const userMessageText = currentMessage.trim();
+  const fullMessage = [userMessageText, filesContent].filter(Boolean).join('\n\n');
+
+  // If there's no message content to send, return early
+  if (!fullMessage) {
+    setIsSending(false);
+    return;
+  }
+
+  // Prepare the message to display in the chat
+  const displayMessageText =
+    userMessageText || uploadedFiles.map((f) => f.name).join(', ');
+  const userMessage = { sender: 'user', text: displayMessageText };
+
+  // Update messages
+  setMessages((prevMessages) => [...prevMessages, userMessage]);
+  setCurrentMessage('');
+  setShowImage(false);
+
+  // Clear uploaded files
+  setUploadedFiles([]);
+
+  let localThreadId = threadId;
+
+  if (!localThreadId) {
+    try {
+      const threadResponse = await createThread(assistantTitle);
+      if (threadResponse?.id) {
+        setThreadId(threadResponse.id);
+        localThreadId = threadResponse.id;
+        // Add the thread ID to the user's Firestore document under the correct assistant/chatbot
+        if (user) {
+          const userRef = doc(db, 'users', user.uid);
+          await updateDoc(userRef, {
+            [`${assistantTitle}.Threads`]: arrayUnion(localThreadId),
+          });
+        }
+      } else {
+        throw new Error('Thread creation failed: No ID returned');
+      }
+    } catch (error) {
+      console.error('Error creating thread:', error);
+      setIsSending(false);
+      return;
+    }
+  }
+
+  try {
+    await createMessage(localThreadId, fullMessage, assistantTitle);
+    createRun(
+      localThreadId,
+      assistantId,
+      handleNewMessage,
+      handleError,
+      assistantTitle
+    );
+  } catch (error) {
+    console.error('Communication error:', error);
+  } finally {
+    setIsSending(false);
+  }
+};
+const handleFileUpload = async (e) => {
+  const files = e.target.files;
+  if (files.length > 0) {
+    const newFiles = Array.from(files).filter((file) => {
+      if (file.size > MAX_FILE_SIZE) {
+        setModalMessage(`${file.name} exceeds the 10MB size limit.`);
+        setIsModalOpen(true);
+        return false;
+      }
+      return true;
+    });
+
+    // Check for unsupported file types
+    const supportedFiles = [];
+    for (const file of newFiles) {
+      try {
+        const arrayBuffer = await file.arrayBuffer();
+        const uint8Array = new Uint8Array(arrayBuffer);
+        const type = await fileTypeFromBuffer(uint8Array);
+
+        if (
+          type?.mime ===
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+          type?.mime.startsWith('image/') ||
+          type?.mime === 'text/plain'
+        ) {
+          supportedFiles.push(file);
         } else {
-          throw new Error('Thread creation failed: No ID returned');
+          setModalMessage(`${file.name} is an unsupported file type.`);
+          setIsModalOpen(true);
         }
       } catch (error) {
-        console.error('Error creating thread:', error);
-        setIsSending(false);
-        return;
+        console.error(`Error detecting file type for ${file.name}:`, error);
+        setModalMessage(`Could not determine the file type of ${file.name}.`);
+        setIsModalOpen(true);
       }
     }
 
-    try {
-      await createMessage(localThreadId, currentMessage, assistantTitle);
-      createRun(localThreadId, assistantId, handleNewMessage, handleError, assistantTitle);
-    } catch (error) {
-      console.error('Communication error:', error);
-    } finally {
-      setIsSending(false);
-    }
-  };
+    setUploadedFiles((prevFiles) => [...prevFiles, ...supportedFiles]);
+    e.target.value = null; // Reset the file input
+  }
+};
+
+const handleRemoveFile = (index) => {
+  setUploadedFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
+};
 
   const handleSelectPrompt = (prompt) => {
     if (totalPromptCount >= maxPrompts) {
@@ -411,12 +509,13 @@ const ChatScreen = () => {
 
   return (
     <div className="chatscreen-container" style={{ height: `${windowHeight}px` }}>
-      <Modal
+{/* Modal to display messages to the user */}
+<Modal
         isOpen={isModalOpen}
         onClose={handleModalClose}
-        onConfirm={handleGoToHome}
-        confirmLabel="Home"
-        closeLabel="Close"
+        onConfirm={handleModalClose}
+        confirmLabel="Close"
+        closeLabel=""
         message={<p className="modal-message">{modalMessage}</p>}
       />
 
@@ -530,21 +629,55 @@ const ChatScreen = () => {
         </div>
       )}
 
-      <div className="chatscreen-input-container">
-        <input
-          className="chatscreen-input"
-          value={currentMessage}
-          onChange={(e) => setCurrentMessage(e.target.value)}
-          placeholder="Type your message..."
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' && !isSending) handleSendMessage();
-          }}
-          disabled={isSending}
-        />
-        <button className="chatscreen-send-button" onClick={handleSendMessage} disabled={isSending}>
-          Send
-        </button>
-      </div>
+{/* Display uploaded files */}
+<div className="uploaded-files-container" style={{ display: uploadedFiles.length > 0 ? 'block' : 'none' }}>
+  {uploadedFiles.map((file, index) => (
+    <div key={index} className="uploaded-file-item">
+      <span>{file.name}</span>
+      <button className="remove-file-button" onClick={() => handleRemoveFile(index)}>
+        ✕
+      </button>
+    </div>
+  ))}
+</div>
+
+
+<div className="chatscreen-input-container">
+  
+  <input
+    className="chatscreen-input"
+    value={currentMessage}
+    onChange={(e) => setCurrentMessage(e.target.value)}
+    placeholder="Type your message..."
+    onKeyDown={(e) => {
+      if (e.key === 'Enter' && !isSending) handleSendMessage();
+    }}
+    disabled={isSending}
+  />
+
+
+
+  <label htmlFor="file-upload" className="custom-file-upload">
+    📎
+  </label>
+  <input
+    id="file-upload"
+    type="file"
+    onChange={handleFileUpload}
+    style={{ display: 'none' }}
+    multiple
+  />
+
+  <button
+    className="chatscreen-send-button"
+    onClick={handleSendMessage}
+    disabled={isSending}
+  >
+    Send
+  </button>
+</div>
+
+
     </div>
   );
 };
