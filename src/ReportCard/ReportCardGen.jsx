@@ -25,6 +25,9 @@ import ReportCardModal from './ReportCardModal';
 import { PDFDocument } from 'pdf-lib';
 import fontkit from '@pdf-lib/fontkit';
 
+import { readFileContent } from '../utils/fileUtils'; // Adjust the path as needed
+import OntarioAssessmentChart from './OntarioAssessmentChart';
+
 // Import the PDF files
 import kindergartenInitialObservation from './pdfTemplates/edu-kindergarten_report_initial_observations.pdf';
 import kindergartenFinal from './pdfTemplates/edu-Kindergarten-Communication-of-Learning.pdf';
@@ -60,7 +63,37 @@ const ReportCardGen = () => {
   const [selectedSkill, setSelectedSkill] = useState(null);
   const [selectedSkillValue, setSelectedSkillValue] = useState('');
 
+  const [uploadedFiles, setUploadedFiles] = useState([]);
+
   const responseBufferRef = useRef('');
+
+  // Handle file selection
+  const handleFileChange = (e) => {
+    const files = Array.from(e.target.files);
+    setUploadedFiles((prevFiles) => [...prevFiles, ...files]);
+  };
+
+  // Handle removing an uploaded file
+  const handleRemoveFile = (index) => {
+    setUploadedFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
+  };
+
+  // Render uploaded files
+  const renderUploadedFiles = () => (
+    <div
+      className="uploaded-files-container"
+      style={{ display: uploadedFiles.length > 0 ? 'block' : 'none' }}
+    >
+      {uploadedFiles.map((file, index) => (
+        <div key={index} className="uploaded-file-item">
+          <span>{file.name}</span>
+          <button className="remove-file-button-report" onClick={() => handleRemoveFile(index)}>
+            ✕
+          </button>
+        </div>
+      ))}
+    </div>
+  );
 
   // Function to open the modal with the selected skill
   const openModal = (skill, value) => {
@@ -98,11 +131,8 @@ const ReportCardGen = () => {
 
   const shouldShowGradeField = () => {
     const grade = parseInt(gradeLevel, 10);
-    if (reportType.includes('Progress Report') || reportType.includes('Final')) {
-      return grade >= 7 && grade <= 8;
-    }
-    if (reportType.includes('Term 1') || reportType.includes('Final')) {
-      return grade >= 1 && grade <= 6;
+    if (reportType.includes('Progress Report') || reportType.includes('Term')) {
+      return grade >= 1 && grade <= 8;
     }
     return false;
   };
@@ -587,45 +617,45 @@ const ReportCardGen = () => {
               </div>
             )}
 
-            {/* Subject with GlossaryTooltip */}
-            <div className="input-group">
-              <GlossaryTooltip name="Subject">
-                <label>
-                  <FaClipboardList /> Subject:
-                </label>
-              </GlossaryTooltip>
-              <input
-                type="text"
-                value={subject}
-                onChange={(e) => setSubject(e.target.value)}
-                placeholder="Enter the subject (e.g., Mathematics, Science)"
-                className="large-input"
-              />
-            </div>
+            {/* Subject with File Upload */}
+          <div className="input-group">
+            <label>
+              <FaClipboardList /> Subject:
+            </label>
+            <input
+              type="text"
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
+              placeholder="Enter the subject (e.g., Mathematics, Science)"
+              className="large-input"
+            />
+            <input
+              type="file"
+              onChange={handleFileChange}
+              multiple
+              className="file-input"
+            />
+            {renderUploadedFiles()}
+          </div>
 
             {/* Grade Percentage or Letter Grade */}
             {shouldShowGradeField() && (
               <div className="input-group">
-                <GlossaryTooltip name="Grade Percentage">
-                  <label>
-                    <FaChartLine />{' '}
-                    {parseInt(gradeLevel, 10) >= 7
-                      ? 'Grade Percentage:'
-                      : 'Letter Grade:'}
-                  </label>
-                </GlossaryTooltip>
-                <input
-                  type="text"
-                  value={gradePercentage}
-                  onChange={(e) => setGradePercentage(e.target.value)}
-                  placeholder={
-                    parseInt(gradeLevel, 10) >= 7
-                      ? 'Enter grade percentage (e.g., 85%)'
-                      : 'Enter letter grade (e.g., A)'
-                  }
-                  className="large-input"
-                />
-              </div>
+              <GlossaryTooltip name="Grade Percentage or Letter Grade">
+                <label>
+                  <FaChartLine /> {'Grade Percentage or Letter Grade'}
+                </label>
+              </GlossaryTooltip>
+              <input
+                type="text"
+                value={gradePercentage}
+                onChange={(e) => setGradePercentage(e.target.value)}
+                placeholder={
+                  'Enter grade percentage (e.g., 85%) or letter grade (e.g., A)'
+                }
+                className="large-input"
+              />
+            </div>
             )}
 
             {/* Conditional fields based on report type */}
@@ -701,6 +731,10 @@ const ReportCardGen = () => {
                 </div>
               </>
             )}
+
+            <div className="achievement-levels-section">
+                <OntarioAssessmentChart />
+            </div>
 
             <button
               onClick={handleGenerateComment}
@@ -947,7 +981,7 @@ const ReportCardGen = () => {
             onSave={handleSave}
             isEditing={isEditing}
           />
-          <label>Request Revision:</label>
+          <h2>Request Revision:</h2>
           <textarea
             value={revisionComment}
             onChange={(e) => setRevisionComment(e.target.value)}

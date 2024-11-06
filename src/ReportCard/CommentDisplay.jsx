@@ -53,28 +53,6 @@ const CommentDisplay = ({ comment, onEdit, onPreview, onSave, isEditing }) => {
       {renderCommentSection(comment.comments?.progressIndicators, "Progress Indicators")}
       {renderCommentSection(comment.comments?.kindergartenSpecific, "Kindergarten Assessment")}
 
-      <div className="mt-4 flex gap-2">
-        <button 
-          onClick={onEdit}
-          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
-        >
-          Edit
-        </button>
-        <button 
-          onClick={onPreview}
-          className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded"
-        >
-          Preview
-        </button>
-        {isEditing && (
-          <button 
-            onClick={onSave}
-            className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
-          >
-            Save
-          </button>
-        )}
-      </div>
     </div>
   );
 };

@@ -167,6 +167,7 @@ select:focus {
 
 /* Revision Section Styling */
 .revision-section {
+    font-size: medium;
     margin-top: 30px;
     padding: 25px;
     border-radius: 10px;
@@ -368,4 +369,53 @@ select:focus {
     font-weight: bold;
     margin-bottom: 5px;
 }
-
+/* File upload input styling */
+.file-input {
+    margin-top: 8px;
+    display: block;
+    font-size: 14px;
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
+    cursor: pointer;
+  }
+  
+  /* Uploaded files container */
+  .uploaded-files-container {
+    margin-top: 12px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+  
+  .uploaded-file-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    padding: 6px;
+    background-color: #eaeaea;
+    border-radius: 4px;
+  }
+  
+  .uploaded-file-item span {
+    font-size: 14px;
+    color: #333;
+  }
+  
+  .remove-file-button-report {
+    font-size: 16px;
+    background: transparent;
+    border: none;
+    color: #ff5e5e;
+    cursor: pointer;
+    padding: 4px;
+    transition: color 0.2s;
+  }
+  
+  .remove-file-button:hover {
+    color: #ff0000;
+  }
+  
