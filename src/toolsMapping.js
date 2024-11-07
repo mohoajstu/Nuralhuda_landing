@@ -4,7 +4,7 @@ import autograderIMG from './img/auto.png';
 import quizGenIMG from './img/quiz-gen.png';
 import fiveDThinkingImg from './img/5dlogotransparent.png';
 import slideGeneratorIMG from './img/prez-gen.png';
-import reportCardGenIMG from './img/prez-gen.png';
+import reportCardGenIMG from './img/report_card-img.png';
 
 export const titleToToolTypeMap = {
     'GraderBot': 'graderbot',
