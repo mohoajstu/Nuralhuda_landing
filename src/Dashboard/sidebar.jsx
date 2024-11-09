@@ -89,7 +89,7 @@ const Sidebar = ({ hasNavbar, accountType }) => {
                 animate={isSidebarOpen ? 'open' : 'closed'}
                 initial={false}
             >
-                <a href="/dashboard">
+                <a href="/">
                     <div className="dashbrand-container">
                         <img src={logo} alt="Nur Al Huda Logo" className="dashbrand-logo" />
                         {isSidebarOpen && (
@@ -124,7 +124,7 @@ const Sidebar = ({ hasNavbar, accountType }) => {
                         </motion.div>
 
                         {/* Conditionally render Tools section for enterprise users */}
-                        {accountType === 'enterprise' && (
+                        {(accountType === 'enterprise'||accountType === '' ) && (
                             <div>
                                 <div className="main-button underline-effect" onClick={() => handleNavigation('/dashboard')}>
                                     Tools

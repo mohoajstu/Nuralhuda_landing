@@ -45,7 +45,7 @@ const Slideshow = () => {
     return (
         <div className="slideshow">
             <button className="arrow left" onClick={handlePrev}>&#9664;</button>
-            <div className="slide">
+            <div className="slideshowSlide">
                 <img src={slides[currentSlide].image} alt={slides[currentSlide].title} className="slide-image"/>
                 <h2>{slides[currentSlide].title}</h2>
                 <h4>{slides[currentSlide].description}</h4>
