@@ -33,7 +33,7 @@ const Register = () => {
       console.log('Email sent successfully');
 
       // Save data to Firestore
-      await addDoc(collection(db, 'registrations'), {
+      await addDoc(collection(db, 'registrations-2'), {
         name: formData.name,
         email: formData.email,
         position: formData.position,

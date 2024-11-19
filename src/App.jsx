@@ -27,6 +27,10 @@ import SlideGenerator from './SlideGenerator/SlideGenerator';
 import Sidebar from './Dashboard/sidebar';
 import { SidebarProvider } from './SidebarContext'; // Import SidebarContext
 
+import Register from './register/Register';
+import Popup from './home/Popup';
+import ThankYou from './register/ThankYou'; 
+
 export const scroll = new SmoothScroll('a[href*="#"]', {
   speed: 1000,
   speedAsDuration: true,
@@ -73,6 +77,7 @@ const App = () => {
   return (
     <SidebarProvider>
       <div className="App">
+        {location.pathname === '/' && <Popup />} {/* Display Popup only on Home page */}
         {/* Conditionally render Sidebar and pass accountType */}
         {shouldShowSidebar && <Sidebar accountType={accountType} />} {/* Pass accountType as a prop */}
         {shouldShowNavbar && <Navigation />}
@@ -94,6 +99,10 @@ const App = () => {
           <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
           <Route path="/terms-of-use" element={<TermsOfUsePage />} />
           <Route path="/dashboard" element={<ProtectedRoute element={<Dashboard accountType={accountType} />} />} /> {/* Pass accountType to Dashboard */}
+          
+          <Route path="/register" element={<Register />} /> {/* Add the Register route */}
+          <Route path="/thank-you" element={<ThankYou />} /> {/* Add the Thank You route */}
+
           <Route path="*" element={<div>404 Not Found</div>} />
         </Routes>
       </div>
