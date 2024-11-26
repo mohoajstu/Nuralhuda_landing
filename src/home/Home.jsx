@@ -7,17 +7,19 @@ import { Assistants } from './assistants';
 import { Tools } from './tools';
 import { Team } from './Team';
 import { Contact } from './contact';
-import  FAQ  from './FAQ'; // Import the FAQ component
+import FAQ from './FAQ';
+import WelcomeVideo from './WelcomeVideo'; // Import the WelcomeVideo component
 
 const Home = ({ data }) => {
   return (
     <div className="home">
       <Header data={data?.Header} />
+      <WelcomeVideo /> {/* Add the WelcomeVideo component */}
       <Assistants data={data?.Assistants} />
-      <Tools data={data?.Tools}/>
+      <Tools data={data?.Tools} />
       <Features data={data?.Features} />
       <About data={data?.About} />
-      <FAQ /> 
+      <FAQ />
       {/*<Team data={data?.Team} />*/}
       <Contact data={data?.Contact} />
     </div>
