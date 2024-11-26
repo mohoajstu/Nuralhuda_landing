@@ -1987,6 +1987,8 @@ label {
 }
 
 .contact-form {
+  margin-top: auto;
+  margin-bottom: 50px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -2044,4 +2046,45 @@ label {
 /* Adjust the content area when the sidebar is closed */
 .sidebar-closed {
   margin-left: 0;
+}
+
+.welcome-video-container {
+  text-align: center;
+  margin-top: 20px;
+  padding: 10px;
+}
+
+.video-wrapper {
+  position: relative;
+  max-height: 100vh; /* Ensure it doesn't exceed the viewport height */
+  margin: 0 auto; /* Center the video */
+}
+
+.video-wrapper iframe {
+  width: 700px; /* Default width for medium to large screens */
+  height: 400px; /* Default height maintaining 16:9 aspect ratio */
+}
+
+/* Media query for tablets and smaller screens (768px and below) */
+@media (max-width: 768px) {
+  .video-wrapper iframe {
+    width: 90%; /* Take up most of the screen width */
+    height: calc(90% * 0.5625); /* Maintain 16:9 aspect ratio */
+  }
+}
+
+/* Media query for small screens (mobile devices below 480px) */
+@media (max-width: 480px) {
+  .video-wrapper iframe {
+    width: 100%; /* Full width on very small screens */
+    height: calc(100% * 0.5625); /* Maintain 16:9 aspect ratio */
+  }
+}
+
+/* Media query for large screens (above 1200px) */
+@media (min-width: 1200px) {
+  .video-wrapper iframe {
+    width: 800px; /* Slightly larger for big screens */
+    height: 450px; /* Maintain 16:9 aspect ratio */
+  }
 }

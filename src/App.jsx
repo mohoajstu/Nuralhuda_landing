@@ -77,7 +77,7 @@ const App = () => {
   return (
     <SidebarProvider>
       <div className="App">
-        {location.pathname === '/' && <Popup />} {/* Display Popup only on Home page */}
+        {/*location.pathname === '/' && <Popup />} {/* Display Popup only on Home page */}
         {/* Conditionally render Sidebar and pass accountType */}
         {shouldShowSidebar && <Sidebar accountType={accountType} />} {/* Pass accountType as a prop */}
         {shouldShowNavbar && <Navigation />}
@@ -99,10 +99,10 @@ const App = () => {
           <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
           <Route path="/terms-of-use" element={<TermsOfUsePage />} />
           <Route path="/dashboard" element={<ProtectedRoute element={<Dashboard accountType={accountType} />} />} /> {/* Pass accountType to Dashboard */}
-          
-          <Route path="/register" element={<Register />} /> {/* Add the Register route */}
-          <Route path="/thank-you" element={<ThankYou />} /> {/* Add the Thank You route */}
-
+          {/* Add more routes here 
+          <Route path="/register" element={<Register />} /> 
+          <Route path="/thank-you" element={<ThankYou />} /> 
+          */}  
           <Route path="*" element={<div>404 Not Found</div>} />
         </Routes>
       </div>
