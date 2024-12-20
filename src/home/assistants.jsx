@@ -7,6 +7,7 @@ const titleToChatbotTypeMap = {
   'Nur Al Huda For Kids': 'nurAlHudaForKids',
   'Islamic Socratic Method': 'islamicSocraticMethod',
   'Iqra With Us': 'iqraWithUs',
+  'PaliGPT': 'paliGPT',
   default: 'default',
 };
 

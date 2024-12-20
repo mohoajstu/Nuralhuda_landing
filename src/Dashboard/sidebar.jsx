@@ -70,6 +70,7 @@ const Sidebar = ({ hasNavbar, accountType }) => {
         { name: 'Nur Al Huda For Kids', path: '/chat/nurAlHudaForKids' },
         { name: 'Islamic Socratic Method', path: '/chat/islamicSocraticMethod' },
         { name: 'Iqra With Us', path: '/chat/iqraWithUs' },
+        { name: 'PaliGPT', path: '/chat/paliGPT'}
         // Add more assistants here if needed
     ];
 

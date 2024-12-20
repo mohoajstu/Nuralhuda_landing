@@ -80,6 +80,12 @@
       "title": "Iqra With Us",
       "text": "As-salam-alaikum! I am Iqra With Us, your Quran Assistant. I'm here to help you understand the Quran by providing accurate Arabic texts, English translations, and concise explanations based on traditional tafseer. My aim is to offer practical insights that you can apply in your daily life.",
       "description": ""
+    },
+    {
+      "iconImg": "img/PaliGPT.png",
+      "title": "PaliGPT",
+      "text": "As-salam-alaikum! I am PaliGPT, an AI assistant focused on providing insightful information related to Palestinian history and culture. I am here to help you explore historical timelines, cultural contexts, significant figures, and important events in Palestine’s rich heritage.",
+      "description": ""
     }
   ],
   "Assistants": [
@@ -106,9 +112,15 @@
       "smallImage": "img/Nuralhuda-applogo.png",
       "text": "As-salam-alaikum! I am Iqra With Us, your Quran Assistant. I'm here to help you understand the Quran by providing accurate Arabic texts, English translations, and concise explanations based on traditional tafseer. My aim is to offer practical insights that you can apply in your daily life.",
       "type": "iqraWithUs"
+    },
+    {
+      "title": "PaliGPT",
+      "smallImage": "img/PaliGPT.png",
+      "text": "As-salam-alaikum! I am PaliGPT, an AI assistant focused on providing insightful information related to Palestinian history and culture. I am here to help you explore historical timelines, cultural contexts, significant figures, and important events in Palestine’s rich heritage.",
+      "type": "paliGPT"
     }
   ],
-"Tools": [
+  "Tools": [
     {
       "smallImage": "img/auto.png",
       "title": "GraderBot",
@@ -132,6 +144,6 @@
       "title": "Presentation Generator",
       "description": "Create custom PowerPoint slides effortlessly, tailored to your educational needs. Input topics, grade levels, educational standards, and additional criteria to generate detailed, professional slide presentations. Export in multiple formats, including PowerPoint, with Google Slides support coming soon.",
       "type": "slidegenerator"
-    }    
+    }
   ]
 }

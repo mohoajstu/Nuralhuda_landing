@@ -108,6 +108,7 @@ export const Navigation = (props) => {
     { title: 'Nur Al Huda For Kids', type: 'nurAlHudaForKids' },
     { title: 'Islamic Socratic Method', type: 'islamicSocraticMethod' },
     { title: 'Iqra With Us', type: 'iqraWithUs' },
+    { title: 'PaliGPT', type: 'paliGPT'},
   ];
 
   useEffect(() => {

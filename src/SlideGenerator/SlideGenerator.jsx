@@ -363,8 +363,8 @@ const SlideGenerator = () => {
                 <FaGoogleDrive /> Export to Google Slides (Coming Soon!)
               </button>
             
-              <button onClick={exportToGoogleDocs}>
-                <FaGoogleDrive /> Export to Google Docs (Coming Soon!)
+              <button onClick={() => exportToGoogleDocs(slides)}>
+                <FaGoogleDrive /> Export to Google Docs
               </button>
               <button onClick={exportToWord}>
                 <FaFileWord /> Export to Microsoft Word (Coming Soon!)
