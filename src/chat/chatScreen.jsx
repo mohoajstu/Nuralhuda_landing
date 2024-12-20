@@ -189,7 +189,7 @@ const ChatScreen = () => {
     // Set maxPrompts based on user account type and chatbot type
     if (isPaliGPT) {
       setMaxPrompts(Infinity);
-    } else if (sessionAccountType === 'premium' || sessionAccountType === 'enterprise') {
+    } else if (sessionAccountType === 'pro' || sessionAccountType === 'enterprise') {
       setMaxPrompts(40);
     } else if (sessionAccountType === 'hybrid' && (isNurAlHuda || isNurAlHudaForKids)) {
       setMaxPrompts(40);
@@ -255,7 +255,7 @@ const handleSendMessage = async () => {
     let userMaxPrompts = maxPrompts;
     if (isPaliGPT) {
       userMaxPrompts = Infinity;
-    } else if (userAccount === 'premium' || userAccount === 'enterprise') {
+    } else if (userAccount === 'pro' || userAccount === 'enterprise') {
       userMaxPrompts = 40;
     } else if (userAccount === 'hybrid' && (isNurAlHuda || isNurAlHudaForKids)) {
       userMaxPrompts = 40;
@@ -268,7 +268,7 @@ const handleSendMessage = async () => {
     if (currentPromptCount >= userMaxPrompts) {
       setModalMessage(
         `You have reached the daily limit of ${userMaxPrompts} prompts. ${
-          userAccount === 'premium' || userAccount === 'enterprise'
+          userAccount === 'pro' || userAccount === 'enterprise'
             ? 'Wait until tomorrow to learn more!'
             : 'Upgrade to a premium or enterprise account for more prompts!'
         }`
@@ -430,7 +430,7 @@ const handleRemoveFile = (index) => {
     if (totalPromptCount >= maxPrompts) {
       let message = '';
   
-      if (accountType === 'premium' || accountType === 'enterprise') {
+      if (accountType === 'pro' || accountType === 'enterprise') {
         message = `You have reached the daily limit of ${maxPrompts} prompts. Wait until tomorrow to learn more!`;
       } else {
         message = `You have reached the daily limit of ${maxPrompts} prompts. Upgrade to a premium or enterprise account for more prompts!`;
@@ -620,7 +620,7 @@ const handleRemoveFile = (index) => {
               ? `${maxPrompts}/${maxPrompts}`
               : `${totalPromptCount}/${maxPrompts}`}
           </p>
-          {accountType !== 'premium' && totalPromptCount >= maxPrompts && (
+          {accountType !== 'pro' && totalPromptCount >= maxPrompts && (
             <span className="upgrade-message" onClick={() => navigate('/pricing')}>
               {' '}
               Upgrade for more prompts!
