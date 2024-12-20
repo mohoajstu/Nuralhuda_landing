@@ -9,7 +9,7 @@ const assistantApiKeyMap = {
   'Iqra With Us': process.env.REACT_APP_OPENAI_API_KEY_IQRA_WITH_US,
   'AI for Islamic Research': process.env.REACT_APP_OPENAI_API_KEY_AI_FOR_ISLAMIC_RESEARCH,
   'Muslim Reference AI': process.env.REACT_APP_OPENAI_API_KEY_MUSLIM_REFERENCE_AI,
-  'PaliGPT': process.env.REACT_APP_OPENAI_API_KEY_PALIGPT,
+  'PaliGPT': process.env.REACT_APP_OPENAI_API_KEY_NUR_ALHUDA,
   'Quiz Generator': process.env.REACT_APP_OPENAI_API_KEY_NUR_ALHUDA,
   'Auto Grader' : process.env.REACT_APP_OPENAI_API_KEY_NUR_ALHUDA,
   '5D Thinking': process.env.REACT_APP_OPENAI_API_KEY_NUR_ALHUDA,
