@@ -10,8 +10,9 @@ const auth = getAuth();
 // Map cryptic strings to account types
 const accountTypeMap = {
   'ab12cd34ef56gh78ij90': 'basic',
-  'zx98yv76wu54ts32rq10': 'premium',
+  'zx98yv76wu54ts32rq10': 'pro',
   'hy34jd45tk67lm89op00': 'hybrid', // New hybrid plan
+  'xy12kz34mn56op78qr90': 'enterprise', // Premium plan
 };
 
 const PaymentSuccess = () => {
@@ -97,14 +98,16 @@ const PaymentSuccess = () => {
     if (accountToken === 'ab12cd34ef56gh78ij90') {
       return 'Thank you for subscribing to the Basic plan. Enjoy full access to Nur Al Huda.';
     } else if (accountToken === 'zx98yv76wu54ts32rq10') {
-      return 'Thank you for subscribing to the Premium plan. Enjoy full access to Nur Al Huda, Islamic Socratic Method, Iqra with Us and more!';
+      return 'Thank you for subscribing to the Pro plan. Enjoy full access to Nur Al Huda, Islamic Socratic Method, Iqra with Us, and more!';
     } else if (accountToken === 'hy34jd45tk67lm89op00') {
       return 'Thank you for subscribing to the Hybrid plan. Enjoy full access to Nur Al Huda and Nur Al Huda for Kids!';
+    } else if (accountToken === 'xy12kz34mn56op78qr90') { // New Premium plan token
+      return 'Thank you for subscribing to the Premium plan. Experience all our exclusive features tailored for enterprises!';
     } else {
       return 'Thank you for your purchase.';
     }
   };
-
+  
   if (loading) {
     return <div className="loader">Updating payment status...</div>;
   }

@@ -4,8 +4,8 @@ import parse from 'html-react-parser';
 import DOMPurify from 'dompurify';
 
 const removeAnnotations = (text) => {
-  // Updated regex to match annotations like 【4:0†source】
-  const pattern = /【\d+:\d+†source】/g;
+  // Remove anything between 【 and 】
+  const pattern = /【[^】]*】/g;
   return text.replace(pattern, '');
 };
 
