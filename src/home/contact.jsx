@@ -154,8 +154,8 @@ export const Contact = (props) => {
         </div>
       </div>
       <div id="footer">
-        <div className="container text-center">
-          <p>
+    <div className="container text-center">
+        <p>
             Disclaimer: <br />
             At Nur Al Huda, we strive to provide insightful Islamic teachings
             using advanced AI technology. While our AI continuously evolves and
@@ -167,13 +167,20 @@ export const Contact = (props) => {
             (Islamic jurisprudence). Your journey of understanding and knowledge
             is important to us, and we are committed to supporting it with the
             most accurate and helpful information possible.
-          </p>
-          <p>
+        </p>
+        <p>
             <Link to="/privacy-policy">Privacy Policy</Link> |{" "}
-            <Link to="/terms-of-use">Terms of Use</Link>
-          </p>
-        </div>
-      </div>
+            <Link to="/terms-of-use">Terms of Use</Link> |{" "}
+            <a
+                href="https://billing.stripe.com/p/login/14kfYZ43Qa1L63K3cc"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                Customer Portal
+            </a>
+        </p>
+    </div>
+</div>
 
       {/* Modal */}
       <SimpleModal

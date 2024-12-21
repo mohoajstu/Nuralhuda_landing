@@ -159,20 +159,32 @@ const Sidebar = ({ hasNavbar, accountType }) => {
                         <button className="sub-button">Billing</button>
                     </div> */}
                     <div className="footer-buttons">
-                        {/* Uncommented footer buttons */}
-                        <button className="footer-button" onClick={() => navigate('/terms-of-use')}>
-                            Terms of Use
-                        </button>
-                        <button className="footer-button" onClick={() => navigate('/privacy-policy')}>
-                            Privacy Policy
-                        </button>
-                        <button className="footer-button" onClick={() => navigate('/contact-form')}>
-                            Contact Us
-                        </button>
-                        <p className="footer-text">© 2024 Nur Al Huda. All rights reserved.</p>
-                    </div>
+    
+                    <a
+        href="https://billing.stripe.com/p/login/14kfYZ43Qa1L63K3cc"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="footer-button"
+    >
+        Customer Portal
+    </a>
+    
+    <button className="footer-button" onClick={() => navigate('/terms-of-use')}>
+        Terms of Use
+    </button>
+    <button className="footer-button" onClick={() => navigate('/privacy-policy')}>
+        Privacy Policy
+    </button>
+    <button className="footer-button" onClick={() => navigate('/contact-form')}>
+        Contact Us
+    </button>
+    <p className="footer-text">© 2024 Nur Al Huda. All rights reserved.</p>
+</div>
+
                 </div>
             </motion.div>
+
+            
             <div className="drawer-handle" onClick={toggleSidebar}>
                 <div className="drawer-icon">
                     {isSidebarOpen ? <FaChevronLeft /> : <FaChevronRight />}
