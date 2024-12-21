@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { getAuth } from 'firebase/auth';
 import { getFirestore, doc, getDoc } from 'firebase/firestore';
-import Modal from './Modal'; // Import the Modal component
+import LoginModal from '../login/LoginModal'; // Import LoginModal
 
 const db = getFirestore();
 const auth = getAuth();
 
 const OverlayComponent = () => {
-  const navigate = useNavigate();
-  const [isModalOpen, setModalOpen] = useState(false);
+  const [isLoginModalOpen, setLoginModalOpen] = useState(false);
   const [overlayStyles, setOverlayStyles] = useState({});
 
   useEffect(() => {
@@ -18,6 +16,7 @@ const OverlayComponent = () => {
       e.stopPropagation();
 
       const user = auth.currentUser;
+
       if (user) {
         const userDoc = await getDoc(doc(db, 'users', user.uid));
         if (userDoc.exists() && userDoc.data().paymentStatus === 'paid') {
@@ -25,11 +24,11 @@ const OverlayComponent = () => {
           return;
         } else {
           console.log('User is logged in but has not paid');
-          setModalOpen(false);
+          setLoginModalOpen(false); // You can add further logic here if needed
         }
       } else {
         console.log('No user is logged in');
-        setModalOpen(true);
+        setLoginModalOpen(true); // Open the login modal
       }
     };
 
@@ -62,15 +61,11 @@ const OverlayComponent = () => {
       window.removeEventListener('resize', updateOverlaySize);
       window.removeEventListener('scroll', updateOverlaySize);
     };
-  }, [navigate]);
+  }, []);
 
-  const handleModalClose = () => {
-    setModalOpen(false);
-  };
-
-  const handleModalConfirm = () => {
-    setModalOpen(false);
-    navigate('/account-setup');
+  const handleLoginSuccess = () => {
+    setLoginModalOpen(false);
+    console.log('Login successful');
   };
 
   const accountSetupComplete = sessionStorage.getItem('accountSetupComplete');
@@ -82,11 +77,10 @@ const OverlayComponent = () => {
   return (
     <>
       <div id="pricing-overlay" className="pricing-overlay" style={overlayStyles}></div>
-      <Modal
-        isOpen={isModalOpen}
-        onClose={handleModalClose}
-        onConfirm={handleModalConfirm}
-        message="You need to setup an account before you can complete the payment process. Click Setup Account to proceed!"
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setLoginModalOpen(false)}
+        onLogin={handleLoginSuccess}
       />
     </>
   );
