@@ -223,9 +223,151 @@ const SlideGenerator = () => {
     alert('Export to Google Slides is under construction!');
   };
 
-  const exportToGoogleDocs = () => {
-    alert('Export to Google Docs is under construction!');
+  const exportToGoogleDocs = async (slides) => {
+    if (!Array.isArray(slides) || slides.length === 0) {
+      console.error('No slides available for export.');
+      alert('No slides to export.');
+      return;
+    }
+  
+    const accessToken = sessionStorage.getItem('googleAuthToken');
+    if (!accessToken) {
+      alert('You must be logged in with Google to export.');
+      return;
+    }
+  
+    try {
+      // Step 1: Create a new Google Doc
+      const createDocResponse = await fetch('https://docs.googleapis.com/v1/documents', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ title: 'Generated Slides Outline' }),
+      });
+  
+      const createDocData = await createDocResponse.json();
+      const documentId = createDocData.documentId;
+      console.log(`Document created with ID: ${documentId}`);
+  
+      // Step 2: Prepare requests to insert styled text
+      const requests = slides.map((slide, index) => {
+        const slideNumber = `--- Slide ${index + 1} ---\n`;
+        const slideTitle = slide.slideTitle ? `${slide.slideTitle}\n` : '';
+        const slideContent = extractStyledContent(slide.slideContent);
+  
+        return [
+          // Slide Number: Bold
+          {
+            insertText: {
+              location: { index: 1 },
+              text: slideNumber,
+            },
+          },
+          {
+            updateTextStyle: {
+              range: {
+                startIndex: 1,
+                endIndex: slideNumber.length + 1,
+              },
+              textStyle: {
+                bold: true,
+                fontSize: { magnitude: 14, unit: 'PT' },
+              },
+              fields: 'bold,fontSize',
+            },
+          },
+          // Slide Title: Bold + Larger Font
+          {
+            insertText: {
+              location: { index: slideNumber.length + 1 },
+              text: slideTitle,
+            },
+          },
+          {
+            updateTextStyle: {
+              range: {
+                startIndex: slideNumber.length + 1,
+                endIndex: slideNumber.length + slideTitle.length + 1,
+              },
+              textStyle: {
+                bold: true,
+                fontSize: { magnitude: 16, unit: 'PT' },
+              },
+              fields: 'bold,fontSize',
+            },
+          },
+          // Slide Content: Regular Text
+          {
+            insertText: {
+              location: { index: slideNumber.length + slideTitle.length + 1 },
+              text: slideContent,
+            },
+          },
+        ].flat();
+      }).flat();
+  
+      // Step 3: Send batch update to add content with styling
+      const batchUpdateUrl = `https://docs.googleapis.com/v1/documents/${documentId}:batchUpdate`;
+      await fetch(batchUpdateUrl, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ requests }),
+      });
+  
+      alert(`Slides exported to Google Docs successfully! View it here: https://docs.google.com/document/d/${documentId}`);
+    } catch (error) {
+      console.error('Error exporting to Google Docs:', error);
+      alert('Failed to export slides to Google Docs.');
+    }
   };
+  
+  const extractStyledContent = (content) => {
+    if (typeof content === 'string') {
+      return content;
+    }
+  
+    if (Array.isArray(content)) {
+      return content.map(extractStyledContent).join('\n');
+    }
+  
+    if (typeof content === 'object' && content !== null) {
+      if (content.paragraphs) {
+        return content.paragraphs.join('\n');
+      }
+      if (content.bulletPoints) {
+        return content.bulletPoints.map((point) => `• ${point}`).join('\n');
+      }
+    }
+  
+    return '[Unsupported Content]';
+  };  
+  
+  const extractSlideContent = (content) => {
+    if (typeof content === 'string') {
+      return content; // Direct text
+    }
+  
+    if (Array.isArray(content)) {
+      return content.map(extractSlideContent).join('\n'); // Concatenate array elements
+    }
+  
+    if (typeof content === 'object' && content !== null) {
+      if (content.paragraphs) {
+        return content.paragraphs.join('\n'); // Combine paragraphs
+      }
+      if (content.bulletPoints) {
+        return content.bulletPoints.map((point) => `• ${point}`).join('\n'); // Format bullet points
+      }
+    }
+  
+    return '[Unsupported Content]'; // Fallback for unknown structures
+  };
+  
 
   const exportToWord = () => {
     alert('Export to Microsoft Word is under construction!');

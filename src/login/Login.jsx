@@ -12,6 +12,7 @@ const provider = new GoogleAuthProvider();
 provider.addScope('https://www.googleapis.com/auth/forms.body'); // Existing scope for Google Forms
 provider.addScope('https://www.googleapis.com/auth/presentations'); // Add scope for Google Slides
 provider.addScope('https://www.googleapis.com/auth/drive.file'); // Add scope for Google Drive access
+provider.addScope('https://www.googleapis.com/auth/documents'); // Add this scope for Google Docs
 
 const db = getFirestore();
 
