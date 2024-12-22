@@ -2,26 +2,21 @@
   position: fixed;
   top: 0;
   left: 0;
+  /* Instead of controlling with transform: translateX(),
+     we'll rely on the circle-based clipPath in the .sidebar itself. */
   height: 100vh;
-  width: 250px;
-  transition: transform 0.3s ease-in-out;
+  width: 250px; /* This is the "default" space for the container */
   display: flex;
   z-index: 1000;
 }
 
+/* If there's a navbar, offset the sidebar from the top by that height */
 .sidebar-container.with-navbar {
   margin-top: 60px; /* Adjust this value based on your navbar's height */
 }
 
-.sidebar-container.open {
-  transform: translateX(0);
-}
-
-.sidebar-container.closed {
-  transform: translateX(-250px);
-}
-
 .sidebar {
+  position: relative; /* ensures clipPath anchors properly */
   height: 100%;
   width: 100%;
   background-color: #144c4c;
@@ -32,21 +27,36 @@
   overflow-y: auto;
 }
 
+/* This is the "white background" layer matching the circle shape, if desired */
+.sidebar-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #144c4c; /* Or #fff if you want white */
+  z-index: 0;
+}
+
 .sidebar-content {
   flex: 1;
   display: flex;
   flex-direction: column;
+  z-index: 1; /* Put it above the .sidebar-bg */
 }
 
-.logo-container {
+/* The rest of your existing styling below... */
+.dashbrand-container {
+  margin-top: 50px;
   display: flex;
   align-items: center;
   margin-bottom: 10px;
+  z-index: 1;
 }
 
-.logo {
-  width: 40px;
-  height: 40px;
+.dashbrand-logo {
+  width: 50px;
+  height: auto;
   margin-right: 10px;
 }
 
@@ -56,44 +66,20 @@
   font-weight: 700;
   color: #dcca98;
   text-transform: uppercase;
-  display: block;
   line-height: 1;
 }
 
 .dashbrand-subtitle {
-  display: block;
   line-height: 1;
   color: #dcca98;
   font-size: 14px;
-}
-
-.dashbrand-container {
-  display: flex;
-  align-items: center;
-}
-
-.dashbrand-logo {
-  width: 50px;
-  height: auto;
-  margin-right: 10px;
-}
-
-.dashbrand-text {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.company-name {
-  font-size: 1.2em;
-  font-weight: bold;
-  letter-spacing: 0.08em;
 }
 
 .main-buttons {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
+  z-index: 1;
 }
 
 .main-button {
@@ -129,16 +115,6 @@
   color: #f0e6cb;
 }
 
-.main-button.active {
-  color: #e1d6b8;
-  font-weight: bold;
-}
-
-.main-button.active::after {
-  opacity: 1;
-  height: 2px;
-}
-
 .sub-buttons {
   display: grid;
   grid-template-columns: 1fr;
@@ -164,6 +140,7 @@
   flex-direction: column;
   align-items: flex-start;
   margin-top: auto;
+  z-index: 1;
 }
 
 .footer-button {
@@ -192,25 +169,27 @@
 
 .drawer-handle {
   position: absolute;
-  top: 50%;
-  right: -20px;
-  width: 20px;
-  height: 50px;
+  top: 20px;   /* Move it down from the top edge */
+  left: 20px;  /* Move it from the left edge */
+  width: 40px;
+  height: 40px;
   background-color: #144c4c;
-  transform: translateY(-50%);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-top-right-radius: 5px;
-  border-bottom-right-radius: 5px;
+  border-radius: 50%; /* round button if you like */
+  z-index: 2;
+  /* remove transform: translateY(-50%) */
 }
+
 
 .drawer-icon {
   color: #dcca98;
-  font-size: 12px;
+  font-size: 20px;
 }
 
+/* Scrollbar, etc. ... */
 .sidebar::-webkit-scrollbar {
   width: 8px;
 }
@@ -236,14 +215,16 @@
     z-index: 1050;
   }
 
-  .sidebar-container.closed {
-    transform: translateX(-200px);
+  .drawer-handle {
+    top: 10px;
+    left: 10px;
+    width: 60px;
+    height: 60px;
+    z-index: 1100;
   }
 
-  .drawer-handle {
-    right: -15px;
-    width: 15px;
-    height: 40px;
+  .dashbrand-container {
+    margin-top: 50px;
   }
 
   .main-button {
@@ -267,38 +248,75 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 768px) {
   .sidebar-container {
-    width: 180px;
+    /* Make the sidebar span the full viewport width 
+       so it overlays the content on small screens */
+    width: 100%;
+    margin-top: 0;    /* remove if you had .with-navbar margin */
+    position: fixed;  /* keep it pinned on top-left */
+    left: 0;
+    top: 0;
   }
 
-  .sidebar-container.closed {
-    transform: translateX(-180px);
+  .dashbrand-container {
+    margin-top: 20px; /* if you need more spacing from the top for your brand */
+  }
+
+  /* If you want the handle in the top-right corner on mobile: */
+  .drawer-handle {
+    top: 10px;
+    left: 10px;
+    width: 60px;
+    height: 60px;
+    z-index: 1100;
+  }
+
+  .dashbrand-container {
+    margin-top: 50px;
+  }
+
+  /* Possibly reduce overall padding/font sizes for smaller screens: */
+  .main-button {
+    font-size: 1em;
+    padding: 8px 0;
+  }
+
+  .sub-button {
+    font-size: 0.9em;
+    padding: 4px 0;
+  }
+
+  .footer-button {
+    font-size: 1em;
+    padding: 4px 0;
+  }
+
+  .footer-text {
+    font-size: 0.7em;
+    padding: 4px 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .sidebar-container {
+    width: 100%; /* or 90%, up to you */
+  }
+
+  .dashbrand-container {
+    margin-top: 50px;
   }
 
   .drawer-handle {
-    right: -12px;
-    width: 12px;
-    height: 35px;
+    top: 10px;
+    left: 10px;
+    width: 60px;
+    height: 60px;
+    z-index: 1100;
   }
 
   .main-button {
     font-size: 0.9em;
-    padding: 7px 0;
-  }
-
-  .sub-button {
-    font-size: 0.8em;
-    padding: 3px 0;
-  }
-
-  .footer-button {
-    font-size: 0.9em;
-    padding: 3px 0;
-  }
-
-  .footer-text {
-    font-size: 0.6em;
-    padding: 3px 0;
+    padding: 6px 0;
   }
 }
