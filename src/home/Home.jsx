@@ -9,10 +9,12 @@ import { Team } from './Team';
 import { Contact } from './contact';
 import FAQ from './FAQ';
 import WelcomeVideo from './WelcomeVideo'; // Import the WelcomeVideo component
+import FancyBanner from '../Banner/FancyBanner'; // Adjust path if needed
 
 const Home = ({ data }) => {
   return (
     <div className="home">
+      <FancyBanner/>
       <Header data={data?.Header} />
       <WelcomeVideo /> {/* Add the WelcomeVideo component */}
       <Assistants data={data?.Assistants} />

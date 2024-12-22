@@ -1,0 +1,332 @@
+/* 1) The overlay wrapper covers the full viewport */
+.banner-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  /* Semi-transparent black overlay to dim background */
+  background-color: rgba(0, 0, 0, 0.5);
+
+  /* Place behind the banner but above everything else on the page */
+  z-index: 9998;
+}
+
+/* 2) The actual slanted banner is on top of the overlay */
+.trial-banner {
+  position: absolute;
+  top: 25%;   /* Adjust as needed */
+  left: 0;
+  width: 100%;
+
+  /* Dark greenish tone */
+  background-color: #144044;
+  color: #dcca98;
+
+  /* Slant the banner slightly */
+  transform: skewY(-3deg);
+  transform-origin: top left;
+
+  border: 4px double #dcca98;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+
+  /* Extra padding so text isn't cut off due to the skew */
+  padding: 1.5rem 1rem;
+
+  /* Above the overlay but below 9999 so the content inside can have 9999+ if needed */
+  z-index: 9999;
+}
+
+  /* -----------------------------------------
+     Slanted Banner Content Wrapper (un-skew)
+     ----------------------------------------- */
+  .banner-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+  
+    /* Reverse the skew so child elements appear straight */
+    transform: skewY(3deg);
+  
+    /* Center content in a column */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  
+    min-height: 140px;    /* Increase for a taller banner if desired */
+    text-align: center;   /* Center text within the flex column */
+  }
+  
+  /* -------------------------------------
+     Optional Darkened Overlay Background
+     ------------------------------------- */
+  .trial-banner::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    opacity: 0.1; /* Adjust to taste for darker or lighter overlay */
+    z-index: 1;   /* Sits behind text and shapes, but over the base color */
+    pointer-events: none;
+  }
+  
+  /* ---------------------
+     Abstract Shapes Layer
+     --------------------- */
+  .shapes-bg {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    overflow: hidden; /* hides parts of shapes extending beyond the banner */
+    z-index: 2;       /* behind the text/container but above the dark overlay */
+  }
+  
+  .shape {
+    position: absolute;
+    opacity: 0.3;            /* Semi-transparent so text remains legible */
+    background-color: #dcca98; /* Light gold for shapes */
+  }
+  
+  /* Example circle shape #1 */
+  .circle1 {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    top: 15%;
+    left: 15%;
+  }
+  
+  /* Example circle shape #2 */
+  .circle2 {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    bottom: 10%;
+    right: 10%;
+  }
+  
+  /* A “blob” shape made with border-radius & rotation */
+  .blob {
+    width: 350px;
+    height: 150px;
+    border-radius: 50% 15% 50% 15%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(15deg);
+  }
+  
+  /* -----------------------------
+     Text + CTA Container on top
+     ----------------------------- */
+  .text-container {
+    z-index: 3; /* ensures it's above shapes and the overlay */
+    padding: 0.5rem 1rem;
+  }
+  
+  /* Highlight text (e.g., "1 WEEK") */
+  .highlight-text {
+    font-size: 3rem;
+    font-weight: 700;
+    background-color: #dcca98; /* Light gold background */
+    color: #144044;            /* Dark text */
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+    margin-bottom: 0.4rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  
+  /* Main text (e.g., "FREE TRIAL") */
+  .main-text {
+    font-size: 2rem;   /* Larger for emphasis */
+    font-weight: 800;
+    line-height: 1.2;
+  }
+  
+  /* CTA Button container (just for spacing) */
+  .cta-wrapper {
+    margin-top: 1rem;
+  }
+  
+  /* CTA Button styles - Light gold background, dark text */
+  .cta-button {
+    background-color: #dcca98;
+    color: #144044;
+    border: none;
+    padding: 0.8rem 1.4rem;
+    border-radius: 4px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-size: 1rem; /* Increase for bigger button */
+  }
+  
+  .cta-button:hover {
+    background-color: #c0b085; /* Slightly darker gold on hover */
+  }
+  
+  /* 
+     Dismiss (X) button in the top-right corner of the banner
+     (technically top-right corner after skew, so might appear offset—adjust as needed)
+  */
+  .dismiss-button {
+    position: absolute;
+    top: 0.5rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    color: #dcca98;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: color 0.2s ease;
+    z-index: 4; /* above shapes and text container */
+  }
+  
+  .dismiss-button:hover {
+    color: #ffffff;
+  }
+  
+  /* "FOR A LIMITED TIME" label on the side of the banner */
+  .limited-time-text {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: rotate(-30deg) translateY(50%);
+    transform-origin: center;
+  
+    background-color: #dcca98; /* Light gold */
+    color: #144044;           /* Dark greenish tone */
+    font-weight: 700;
+    padding: 0.4rem 0.6rem;
+    border-radius: 4px;
+    letter-spacing: 1px;
+    z-index: 3; /* Above shapes but below the .text-container */
+  }
+  
+  /* ---------------------------------
+     MEDIA QUERIES FOR RESPONSIVENESS
+     --------------------------------- */
+  
+  /* Tablet breakpoint (max-width: 768px) */
+  @media (max-width: 768px) {
+    .trial-banner {
+      /* Move the banner up or down for smaller screens if needed */
+      top: 15%;
+      padding: 1rem;
+    }
+  
+    .banner-content {
+      min-height: 120px; /* Slightly smaller height */
+    }
+  
+    /* Reduce shape sizes or hide them if they overlap content */
+    .circle1 {
+      width: 90px;
+      height: 90px;
+      top: 10%;
+      left: 10%;
+    }
+    .circle2 {
+      width: 60px;
+      height: 60px;
+      bottom: 10%;
+      right: 10%;
+    }
+    .blob {
+      width: 280px;
+      height: 120px;
+    }
+  
+    /* Scale text sizes slightly */
+    .highlight-text {
+      font-size: 2rem;
+    }
+    .main-text {
+      font-size: 1.6rem;
+    }
+    .cta-button {
+      font-size: 0.9rem;
+      padding: 0.6rem 1rem;
+    }
+  
+    /* Adjust "LIMITED TIME" label */
+    .limited-time-text {
+      font-size: 1.3rem;
+      transform: rotate(-25deg) translateY(50%);
+    }
+  }
+  
+  /* Mobile breakpoint (max-width: 480px) */
+  @media (max-width: 480px) {
+    .trial-banner {
+      padding: 1rem;
+    }
+  
+    .banner-content {
+      min-height: 100px;
+    }
+  
+    /* If shapes cause overlap on mobile, you can hide them entirely
+       or drastically reduce their size. Example: 
+       .circle1, .circle2, .blob { display: none; }
+    */
+    .circle1 {
+      width: 60px;
+      height: 60px;
+      top: 10%;
+      left: 5%;
+    }
+    .circle2 {
+      width: 40px;
+      height: 40px;
+      bottom: 5%;
+      right: 5%;
+    }
+    .blob {
+      width: 200px;
+      height: 100px;
+    }
+  
+    /* Scale text further on mobile */
+    .highlight-text {
+      font-size: 0.8rem;
+    }
+    .main-text {
+      font-size: 1.4rem;
+    }
+    .cta-button {
+      font-size: 0.8rem;
+      padding: 0.5rem 0.8rem;
+    }
+  
+    .dismiss-button {
+      font-size: 1.2rem;
+      top: 0.3rem;
+    }
+  
+    /* Adjust "LIMITED TIME" label for mobile */
+    .limited-time-text {
+      font-size: 0.7rem;
+      transform: rotate(-20deg) translateY(50%);
+    }
+  }
+  
+  /* 
+     If your page content is hidden behind the banner, 
+     add some top padding to the body or main container. 
+     Adjust according to the final banner height.
+  */
+  body {
+    font-family: sans-serif;
+    /* Example:
+    padding-top: 200px; 
+    */
+  }
+  

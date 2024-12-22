@@ -19,7 +19,7 @@ const Dashboard = () => {
     }, []);
 
     return (
-        <div className={`main-layout ${isSidebarOpen ? 'sidebar-open' : 'sidebar-closed'}`}>
+        <div className="main-layout">
             <ContentArea accountType={accountType} />
         </div>
     );

@@ -1,15 +1,7 @@
 .main-layout {
   display: flex;
   height: 100vh;
-  transition: margin-left 0.3s ease;
-}
-
-.sidebar-open {
-  margin-left: 250px; /* Adjust based on sidebar width */
-}
-
-.sidebar-closed {
-  margin-left: 0;
+  margin-left: 250px;
 }
 
 .sidebar {
@@ -19,4 +11,21 @@
 
 .sidebar.closed {
   transform: translateX(-100%);
+}
+
+@media (max-width: 768px) {
+  .main-layout {
+    /* Remove the margin so content is not pushed to the right */
+    margin-left: 0;
+  }
+
+  .sidebar {
+    /* Typically, position fixed so it sits on top of content */
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh; /* full height */
+    width: 250px;  /* same or smaller, up to you */
+    z-index: 1000; /* above main content */
+  }
 }
