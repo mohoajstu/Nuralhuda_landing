@@ -84,26 +84,39 @@ const CompareContent = ({ analogy = '', content = '', explanation = '', comparis
   </div>
 );
 
-const QuestionContent = ({ questions = [], conclusion = '' }) => (
-  <div className="slide question-content">
-    <h2>Question</h2>
-    {questions.length > 0 && (
-      <div className="content-section">
-        <h3>Questions</h3>
-        <ul>
-          {questions.map((question, index) => (
-            <li key={index}>{question}</li>
-          ))}
-        </ul>
+const capitalizeWords = (text) => {
+  return text
+    .replace(/_/g, ' ') // Replace underscores with spaces
+    .split(' ') // Split the text into words
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1)) // Capitalize the first letter of each word
+    .join(' '); // Join the words back into a single string
+};
+
+const QuestionContent = ({ questions = {}, conclusion = '' }) => (
+  <>
+    {Object.entries(questions).map(([category, questionList]) => (
+      <div key={category} className="slide question-content">
+        <h2>Question</h2>
+        <div className="content-section">
+          <h3>{capitalizeWords(category)}</h3>
+          <ul>
+            {questionList.map((question, index) => (
+              <li key={index}>{question}</li>
+            ))}
+          </ul>
+        </div>
       </div>
-    )}
+    ))}
     {conclusion && (
-      <div className="content-section">
-        <h3>Conclusion</h3>
-        <p>{conclusion}</p>
+      <div className="slide question-content">
+        <h2>Question</h2>
+        <div className="content-section">
+          <h3>Conclusion</h3>
+          <p>{conclusion}</p>
+        </div>
       </div>
     )}
-  </div>
+  </>
 );
 
 const ConnectContent = ({
