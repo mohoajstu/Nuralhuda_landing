@@ -59,6 +59,52 @@
 .slide-container .appreciate-content {
     background: linear-gradient(135deg, #dda0dd 0%, #ba55d3 100%); /* Plum to Medium orchid */
 }
+/* Objectives Slide Specific Styling */
+.slide-container .objectives-content {
+    background: linear-gradient(135deg, #0070C0 0%, #4095d2 100%); /* Gold gradient */
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    color: #fff;
+    text-align: center;
+}
+
+.slide-container .objectives-content h2 {
+    font-size: 2em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    color: #fff;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.slide-container .objectives-content .content-section {
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.slide-container .objectives-content .content-section h3 {
+    font-size: 1.4em;
+    color: #333;
+    margin-bottom: 15px;
+    border-bottom: 2px solid currentColor;
+    padding-bottom: 5px;
+}
+
+.slide-container .objectives-content .content-section ul {
+    list-style-type: disc;
+    padding-left: 20px;
+}
+
+.slide-container .objectives-content .content-section li {
+    font-size: 1.1em;
+    color: #444;
+    line-height: 1.6;
+    margin-bottom: 10px;
+}
+
   
 .slide-container table {
     width: 100%;
@@ -109,3 +155,4 @@
         font-size: 1em;
     }
 }
+

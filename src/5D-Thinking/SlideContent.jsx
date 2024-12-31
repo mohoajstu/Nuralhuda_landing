@@ -6,6 +6,8 @@ const SlideContent = ({ slide }) => {
     <div className="slide-container">
       {(() => {
         switch (slide.dimension) {
+          case 'Objectives':
+            return <ObjectivesContent {...slide} />;
           case 'Explore':
             return <ExploreContent {...slide} />;
           case 'Compare':
@@ -23,6 +25,22 @@ const SlideContent = ({ slide }) => {
     </div>
   );
 };
+
+const ObjectivesContent = ({ learningObjectives = {} }) => (
+  <div className="slide objectives-content">
+    <h2>Learning Objectives</h2>
+    {Object.entries(learningObjectives).map(([category, objectives]) => (
+      <div key={category} className="content-section">
+        <h3>{capitalizeWords(category)}</h3>
+        <ul>
+          {objectives.map((objective, index) => (
+            <li key={index}>{objective}</li>
+          ))}
+        </ul>
+      </div>
+    ))}
+  </div>
+);
 
 const ExploreContent = ({ content = '', explanation = '', observations = '', fascinatingFacts = '' }) => (
   <div className="slide explore-content">
@@ -92,101 +110,116 @@ const capitalizeWords = (text) => {
     .join(' '); // Join the words back into a single string
 };
 
-const QuestionContent = ({ questions = {}, conclusion = '' }) => (
-  <>
-    {Object.entries(questions).map(([category, questionList]) => (
-      <div key={category} className="slide question-content">
-        <h2>Question</h2>
+// 1) Import or define titleSubtopicMap in SlideContent.jsx
+//    or pass it in as a prop. For example, if you keep it
+//    in the same file, do something like this:
+
+const titleSubtopicMap = {
+  Explore: ['Content', 'Explanation', 'Observations', 'Fascinating Facts'],
+  Compare: ['Analogy', 'Content', 'Explanation', 'Comparison'],
+  Question: [
+    'Negation of Chance',
+    'Negation of Material Causes',
+    'Negation of Nature',
+    'Conclusion',
+  ],
+  Connect: ['Interdependency', 'Interconnectedness', "Allah's Names"],
+  Appreciate: ['What ifs', 'Zikr Fikr Shukr', 'Character Lessons', 'Connect With Quran', 'Connect With Hadith'],
+};
+
+
+const QuestionContent = ({
+  questions = [],
+  conclusion = '',
+  subtopicIndex = 0,
+}) => {
+  const subtopicTitle = titleSubtopicMap.Question[subtopicIndex];
+
+  return (
+    <div className="slide question-content">
+      <h2>Question</h2>
+
+      {/* Show "questions" container only if it's NOT the conclusion */}
+      {subtopicIndex !== 3 && (
         <div className="content-section">
-          <h3>{capitalizeWords(category)}</h3>
+          <h3>{subtopicTitle}</h3>
           <ul>
-            {questionList.map((question, index) => (
-              <li key={index}>{question}</li>
+            {questions.map((q, i) => (
+              <li key={i}>{q}</li>
             ))}
           </ul>
         </div>
-      </div>
-    ))}
-    {conclusion && (
-      <div className="slide question-content">
-        <h2>Question</h2>
+      )}
+
+      {/* Show conclusion container only if it IS the conclusion */}
+      {subtopicIndex === 3 && conclusion && (
         <div className="content-section">
           <h3>Conclusion</h3>
           <p>{conclusion}</p>
         </div>
-      </div>
-    )}
-  </>
-);
+      )}
+    </div>
+  );
+};
+
+
+
 
 const ConnectContent = ({
-  connections = '',
+  interdependency = '',
+  interconnectedness = '',
   allahNames = {},
-  analogicalReflection = [],
-  questionsForDeeperConnection = [],
-  contemplationAndAppreciation = '',
-}) => (
-  <div className="slide connect-content">
-    <h2>Connect</h2>
-    {connections && (
-      <div className="content-section">
-        <h3>Connections</h3>
-        <p>{connections}</p>
-      </div>
-    )}
-    {allahNames.whatItTells?.length > 0 &&
-      allahNames.namesInEnglish?.length > 0 &&
-      allahNames.namesInArabic?.length > 0 && (
+  subtopicIndex = 0,
+}) => {
+  const subtopicTitle = titleSubtopicMap.Connect[subtopicIndex];
+  
+  return (
+    <div className="slide connect-content">
+      <h2>Connect</h2>
+
+      {/* Slide 0 => Interdependency */}
+      {subtopicIndex === 0 && interdependency && (
         <div className="content-section">
-          <h3>Allah's Names</h3>
+          <h3>{subtopicTitle}</h3>
+          <p>{interdependency}</p>
+        </div>
+      )}
+
+      {/* Slide 1 => Interconnectedness */}
+      {subtopicIndex === 1 && interconnectedness && (
+        <div className="content-section">
+          <h3>{subtopicTitle}</h3>
+          <p>{interconnectedness}</p>
+        </div>
+      )}
+
+      {/* Slide 2 => Allah's Names */}
+      {subtopicIndex === 2 && allahNames.whatItTells?.length > 0 && (
+        <div className="content-section">
+          <h3>{subtopicTitle}</h3>
           <table>
             <thead>
               <tr>
-                <th>What it tells us about Allah</th>
+                <th>What it tells us</th>
                 <th>Names in English</th>
                 <th>Names in Arabic</th>
               </tr>
             </thead>
             <tbody>
-              {allahNames.whatItTells.map((item, index) => (
-                <tr key={index}>
-                  <td>{item}</td>
-                  <td>{allahNames.namesInEnglish[index] || ''}</td>
-                  <td>{allahNames.namesInArabic[index] || ''}</td>
+              {allahNames.whatItTells.map((desc, i) => (
+                <tr key={i}>
+                  <td>{desc}</td>
+                  <td>{allahNames.namesInEnglish[i] || ''}</td>
+                  <td>{allahNames.namesInArabic[i] || ''}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       )}
-    {analogicalReflection.length > 0 && (
-      <div className="content-section">
-        <h3>Analogical Reflection</h3>
-        <ul>
-          {analogicalReflection.map((reflection, index) => (
-            <li key={index}>{reflection}</li>
-          ))}
-        </ul>
-      </div>
-    )}
-    {questionsForDeeperConnection.length > 0 && (
-      <div className="content-section">
-        <h3>Questions for Deeper Connection</h3>
-        <ul>
-          {questionsForDeeperConnection.map((question, index) => (
-            <li key={index}>{question}</li>
-          ))}
-        </ul>
-      </div>
-    )}
-    {contemplationAndAppreciation && (
-      <div className="content-section">
-        <h3>Contemplation and Appreciation</h3>
-        <p>{contemplationAndAppreciation}</p>
-      </div>
-    )}
-  </div>
-);
+    </div>
+  );
+};
 
 
 
