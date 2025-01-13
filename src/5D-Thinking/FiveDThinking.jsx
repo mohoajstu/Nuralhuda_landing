@@ -22,6 +22,7 @@ const titleSubtopicMap = {
   // Old: Connect: ['Connections', "Allah's Names", 'Analogical Reflection', 'Deeper Connection', 'Contemplation'],
   Connect: ['Interdependency', 'Interconnectedness', "Allah's Names"], 
   Appreciate: ['What ifs', 'Zikr Fikr Shukr', 'Character Lessons', 'Connect With Quran', 'Connect With Hadith','Dua'],
+  Activities: ['Explore', 'Compare', 'Question', 'Connect', 'Appreciate'],
 };
 
 
@@ -32,6 +33,7 @@ const dimensionColors = {
   Question: '64aae8',
   Connect: 'ffa600',
   Appreciate: '35b8b1',
+  Activities: 'ffcccb',
 };
 
 const logoUrl = 'https://drive.google.com/uc?export=view&id=1WoF-kUTfs6mxgeXao2gmM9flISNLkbHT';
@@ -56,6 +58,8 @@ const FiveDAssistant = () => {
   const [objectivesInput, setObjectivesInput] = useState('');
   const [objectivesFile, setObjectivesFile] = useState(null);
 
+  const [activitiesInput, setActivitiesInput] = useState('');
+  const [activitiesFile, setActivitiesFile] = useState(null);
 
   const [exploreInput, setExploreInput] = useState('');
   const [exploreFile, setExploreFile] = useState(null);
@@ -204,13 +208,21 @@ const capitalizeWords = (text = '') => {
 
     // Prepare dimension inputs
     const dimensionInputs = {};
-    const dimensionsList = ['Objectives', 'Explore', 'Compare', 'Question', 'Connect', 'Appreciate'];
+    const dimensionsList = ['Objectives', 'Explore', 'Compare', 'Question', 'Connect', 'Appreciate', 'Activities'];
 
     for (const dimension of dimensionsList) {
       let inputText = '';
       let inputFile = null;
 
       switch (dimension) {
+        case 'Activities':
+          inputText = activitiesInput;
+          inputFile = activitiesFile;
+          break;
+        case 'Objectives':
+          inputText = objectivesInput;
+          inputFile = objectivesFile;
+          break;
         case 'Explore':
           inputText = exploreInput;
           inputFile = exploreFile;
@@ -255,6 +267,7 @@ const capitalizeWords = (text = '') => {
       { name: 'Question', title: 'Critical thinking - Question', input: dimensionInputs['Question'] },
       { name: 'Connect', title: 'Meditative thinking - Connect', input: dimensionInputs['Connect'] },
       { name: 'Appreciate', title: 'Moral thinking - Appreciate', input: dimensionInputs['Appreciate'] },
+      { name: 'Activities', title: 'Activities', input: dimensionInputs['Activities'] },
     ];
 
     try {
@@ -517,9 +530,22 @@ Focus only on creating a comprehensive ${dimension.title} thinking response.
         dua: response.dua,
         subtopicIndex: subtopicIndex++,
       });
+    } 
+  } else if (dimensionName === 'Activities') {
+      // Map each activity into the expected structure for ActivitiesContent
+      const activities = response.activities || [];
+      slides.push({
+        dimension: 'Activities',
+        activities: activities.map((activity, index) => ({
+          title: activity.title,
+          dimension: activity.dimension,
+          objective: activity.objective,
+          materials: activity.materials || [],
+          instructions: activity.instructions || [],
+        })),
+      });
     }
   
-    }
 
     return slides;
   };
@@ -538,8 +564,114 @@ Focus only on creating a comprehensive ${dimension.title} thinking response.
     };
   
     slides.forEach((slideContent) => {
+        const dimension = slideContent.dimension;
+    
+        // Handle "Activities" dimension differently
+        if (dimension === 'Activities') {
+          const activities = slideContent.activities || [];
+    
+          activities.forEach((activity) => {
+            const activitySlide = pptx.addSlide(); // Create a new slide for each activity
+    
+            // Add the colored title bar across the top
+            activitySlide.addShape(pptx.ShapeType.rect, {
+              x: 0.5,
+              y: 0.3,
+              w: 9,
+              h: 0.7,
+              fill: { color: dimensionColors[activity.dimension] || '000000' },
+              line: { color: 'FFFFFF' },
+              radius: 10,
+            });
+    
+            activitySlide.addText(`Activity - ${activity.dimension}: ${activity.title}`, {
+              x: 0.5,
+              y: 0.3,
+              w: 9,
+              h: 0.7,
+              fontSize: 25,
+              bold: true,
+              color: 'FFFFFF',
+              align: 'center',
+              valign: 'middle',
+            });
+    
+            let yOffset = 1.5;
+    
+            // Add the objective
+            activitySlide.addText(`Objective: ${activity.objective}`, {
+              x: 0.7,
+              y: yOffset,
+              w: 8.6,
+              fontSize: 18,
+              color: '000000',
+              align: 'left',
+            });
+            yOffset += 0.6;
+    
+            // Add materials
+            if (activity.materials?.length > 0) {
+              activitySlide.addText('Materials:', {
+                x: 0.7,
+                y: yOffset,
+                w: 8.6,
+                fontSize: 16,
+                bold: true,
+                color: '000000',
+                align: 'left',
+              });
+              yOffset += 0.4;
+    
+              activitySlide.addText(activity.materials.join('\n'), {
+                x: 1.0,
+                y: yOffset,
+                w: 8.3,
+                fontSize: 14,
+                color: '000000',
+                align: 'left',
+              });
+              yOffset += 0.5 + activity.materials.length * 0.2;
+            }
+    
+            // Add instructions
+            if (activity.instructions?.length > 0) {
+              activitySlide.addText('Instructions:', {
+                x: 0.7,
+                y: yOffset-0.2,
+                w: 8.6,
+                fontSize: 16,
+                bold: true,
+                color: '000000',
+                align: 'left',
+              });
+              yOffset += 0.3;
+    
+              activitySlide.addText(activity.instructions.join('\n'), {
+                x: 1.0,
+                y: yOffset+0.2,
+                w: 8.3,
+                fontSize: 14,
+                color: '000000',
+                align: 'left',
+              });
+            }
+    
+            // Add the logo
+            activitySlide.addImage({
+              x: 8.5,
+              y: 0.3,
+              w: 0.7,
+              h: 0.7,
+              data: base64ImageString,
+            });
+          });
+    
+          return; // Skip the rest of the loop for "Activities" dimension
+        }
+  
+      // ─────────────────────────────────────────────────────────  
       const slide = pptx.addSlide();
-      const dimension = slideContent.dimension;
+
   
       // Get subtopic index and increment
       const subtopicIndex = subtopicIndexes[dimension];
@@ -572,7 +704,7 @@ Focus only on creating a comprehensive ${dimension.title} thinking response.
         align: 'center',
         valign: 'middle',
       });
-  
+
       // ─────────────────────────────────────────────────────────
       // 2) If it's the Objectives dimension, do a custom layout.
       //    Otherwise, check contentText or special cases.
@@ -706,7 +838,8 @@ Focus only on creating a comprehensive ${dimension.title} thinking response.
         //
         // --- 3d) Otherwise, check if there's generic contentText:
         //
-        } else {
+        } 
+         else {
           const contentText = getContentText(slideContent);
   
           // If generic contentText is non-empty
@@ -801,13 +934,207 @@ Focus only on creating a comprehensive ${dimension.title} thinking response.
   };
 
 // Updated updatePresentation function
-// Updated updatePresentation function
 const updatePresentation = async (presentationId, accessToken, slides) => {
   const requests = [];
 
   for (const [index, slideContent] of slides.entries()) {
     const dimension = slideContent.dimension;
+    
     const pageObjectId = `slide_${index + 1}`;
+
+  
+    //  Handle "Objectives" Dimension (bullet list)
+    // ─────────────────────────────────────────────
+            // Handle "Activities" dimension
+            if (dimension === 'Activities') {
+              const activities = slideContent.activities || [];
+        
+              activities.forEach((activity, activityIndex) => {
+                const activityPageObjectId = `activity_slide_${index}_${activityIndex}`;
+        
+                // 1) Create a new slide for each activity
+                requests.push({
+                  createSlide: {
+                    objectId: activityPageObjectId,
+                    insertionIndex: index + activityIndex, // Insert each activity sequentially
+                  },
+                });
+        
+                // 2) Set slide background color to white
+                requests.push({
+                  updatePageProperties: {
+                    objectId: activityPageObjectId,
+                    pageProperties: {
+                      pageBackgroundFill: {
+                        solidFill: {
+                          color: {
+                            rgbColor: { red: 1, green: 1, blue: 1 }, // White
+                          },
+                        },
+                      },
+                    },
+                    fields: 'pageBackgroundFill.solidFill.color',
+                  },
+                });
+        
+                // 3) Create a title rectangle (header bar)
+                const titleElementId = `title_${activityPageObjectId}`;
+                requests.push({
+                  createShape: {
+                    objectId: titleElementId,
+                    shapeType: 'RECTANGLE',
+                    elementProperties: {
+                      pageObjectId: activityPageObjectId,
+                      size: {
+                        height: { magnitude: 50, unit: 'PT' },
+                        width: { magnitude: 600, unit: 'PT' },
+                      },
+                      transform: {
+                        scaleX: 1,
+                        scaleY: 1,
+                        translateX: 50, // ~0.7 in from left
+                        translateY: 20, // ~0.28 in from top
+                        unit: 'PT',
+                      },
+                    },
+                  },
+                });
+        
+                // 4) Fill the rectangle with the dimension color
+                requests.push({
+                  updateShapeProperties: {
+                    objectId: titleElementId,
+                    shapeProperties: {
+                      shapeBackgroundFill: {
+                        solidFill: {
+                          color: {
+                            rgbColor: hexToRgb(dimensionColors[dimension] || '#000000'),
+                          },
+                        },
+                      },
+                    },
+                    fields: 'shapeBackgroundFill.solidFill.color',
+                  },
+                });
+        
+                // 5) Insert the activity title text
+                requests.push({
+                  insertText: {
+                    objectId: titleElementId,
+                    insertionIndex: 0,
+                    text: `Activity - ${activity.dimension}: ${activity.title}`,
+                  },
+                });
+        
+                // 6) Style the title text
+                requests.push({
+                  updateTextStyle: {
+                    objectId: titleElementId,
+                    style: {
+                      fontSize: { magnitude: 25, unit: 'PT' },
+                      bold: true,
+                      foregroundColor: {
+                        opaqueColor: {
+                          rgbColor: { red: 1, green: 1, blue: 1 }, // White text
+                        },
+                      },
+                    },
+                    textRange: { type: 'ALL' },
+                    fields: 'bold,fontSize,foregroundColor',
+                  },
+                });
+        
+                // 7) Add content for activity (Objective, Materials, Instructions)
+                let yOffset = 100; // Start below the title bar
+                const addContentText = (content, fontSize = 16, bold = false) => {
+                  const contentElementId = `content_${activityPageObjectId}_${yOffset}`;
+                  requests.push({
+                    createShape: {
+                      objectId: contentElementId,
+                      shapeType: 'TEXT_BOX',
+                      elementProperties: {
+                        pageObjectId: activityPageObjectId,
+                        size: {
+                          height: { magnitude: 50, unit: 'PT' },
+                          width: { magnitude: 600, unit: 'PT' },
+                        },
+                        transform: {
+                          scaleX: 1,
+                          scaleY: 1,
+                          translateX: 50,
+                          translateY: yOffset,
+                          unit: 'PT',
+                        },
+                      },
+                    },
+                  });
+        
+                  requests.push({
+                    insertText: {
+                      objectId: contentElementId,
+                      insertionIndex: 0,
+                      text: content,
+                    },
+                  });
+        
+                  requests.push({
+                    updateTextStyle: {
+                      objectId: contentElementId,
+                      style: {
+                        fontSize: { magnitude: fontSize, unit: 'PT' },
+                        bold,
+                        foregroundColor: {
+                          opaqueColor: { rgbColor: { red: 0, green: 0, blue: 0 } },
+                        },
+                      },
+                      textRange: { type: 'ALL' },
+                      fields: 'fontSize,bold,foregroundColor',
+                    },
+                  });
+        
+                  yOffset += 50; // Adjust Y offset for next content
+                };
+        
+                // Add objective
+                addContentText(`Objective: ${activity.objective}`, 18, true);
+        
+                // Add materials if available
+                if (activity.materials?.length > 0) {
+                  addContentText('Materials:', 16, true);
+                  addContentText(activity.materials.join('\n'), 14);
+                }
+        
+                // Add instructions if available
+                if (activity.instructions?.length > 0) {
+                  addContentText('Instructions:', 16, true);
+                  addContentText(activity.instructions.join('\n'), 14);
+                }
+
+                // 8) Add your logo image
+    const logoElementId = `logo_${activityPageObjectId}`;
+    requests.push({
+      createImage: {
+        objectId: logoElementId,
+        url: logoUrl,
+        elementProperties: {
+          pageObjectId: activityPageObjectId,
+          size: {
+            height: { magnitude: 50, unit: 'PT' },
+            width: { magnitude: 50, unit: 'PT' },
+          },
+          transform: {
+            scaleX: 1,
+            scaleY: 1,
+            translateX: 600,
+            translateY: 20,
+            unit: 'PT',
+          },
+        },
+      },
+    });
+              });
+              continue;
+              }
 
     // 1) Create a new slide
     requests.push({
@@ -914,10 +1241,7 @@ const updatePresentation = async (presentationId, accessToken, slides) => {
         fields: 'alignment',
       },
     });
-
-    // ─────────────────────────────────────────────
-    //  Handle "Objectives" Dimension (bullet list)
-    // ─────────────────────────────────────────────
+              
     if (dimension === 'Objectives') {
       const lo = slideContent.learningObjectives || {};
       const bulletPoints = Object.values(lo).flat().filter((obj) => obj.trim() !== '');
