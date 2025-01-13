@@ -59,6 +59,109 @@
 .slide-container .appreciate-content {
     background: linear-gradient(135deg, #dda0dd 0%, #ba55d3 100%); /* Plum to Medium orchid */
 }
+
+/* General Styling for Activities Slide */
+.slide-container .activities-content {
+    background: linear-gradient(135deg, #ffcccb 0%, #d0968c 100%); /* Light Coral to Tomato Gradient */
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    color: #fff;
+}
+
+.slide-container .activities-content h2 {
+    font-size: 2em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    color: #fff;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+/* Styling for Each Activity Section */
+.slide-container .activities-content .activity-section {
+    background-color: rgba(255, 255, 255, 0.9); /* Light white overlay */
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.slide-container .activities-content .activity-section h3 {
+    font-size: 1.6em;
+    color: #333;
+    margin-bottom: 15px;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+    padding-bottom: 5px;
+}
+
+/* Styling for Text Content in Each Activity */
+.slide-container .activities-content .activity-section p {
+    font-size: 1.2em;
+    color: #444;
+    margin-bottom: 15px;
+    line-height: 1.6;
+}
+
+/* Styling for Materials and Instructions */
+.slide-container .activities-content .content-section h4 {
+    font-size: 1.4em;
+    color: #666;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+    padding-bottom: 5px;
+}
+
+.slide-container .activities-content .content-section ul,
+.slide-container .activities-content .content-section ol {
+    padding-left: 20px;
+    margin-top: 10px;
+}
+
+.slide-container .activities-content .content-section li {
+    font-size: 1.1em;
+    color: #555;
+    margin-bottom: 8px;
+    line-height: 1.5;
+}
+
+.slide-container .activities-content .content-section ol li {
+    list-style-type: decimal;
+}
+
+.slide-container .activities-content .content-section ul li {
+    list-style-type: disc;
+}
+
+/* Responsive Design Adjustments */
+@media (max-width: 768px) {
+    .slide-container .activities-content {
+        padding: 20px;
+    }
+
+    .slide-container .activities-content h2 {
+        font-size: 1.8em;
+    }
+
+    .slide-container .activities-content .activity-section {
+        padding: 15px;
+    }
+
+    .slide-container .activities-content .activity-section h3 {
+        font-size: 1.4em;
+    }
+
+    .slide-container .activities-content .content-section h4 {
+        font-size: 1.2em;
+    }
+
+    .slide-container .activities-content .content-section p,
+    .slide-container .activities-content .content-section li {
+        font-size: 1em;
+    }
+}
+
 /* Objectives Slide Specific Styling */
 .slide-container .objectives-content {
     background: linear-gradient(135deg, #0070C0 0%, #4095d2 100%); /* Gold gradient */

@@ -18,6 +18,8 @@ const SlideContent = ({ slide }) => {
             return <ConnectContent {...slide} />;
           case 'Appreciate':
             return <AppreciateContent {...slide} />;
+          case 'Activities':
+            return <ActivitiesContent {...slide} />;
           default:
             return null;
         }
@@ -37,6 +39,35 @@ const ObjectivesContent = ({ learningObjectives = {} }) => (
             <li key={index}>{objective}</li>
           ))}
         </ul>
+      </div>
+    ))}
+  </div>
+);
+
+const ActivitiesContent = ({ activities = [] }) => (
+  <div className="slide activities-content">
+    <h2>Activities</h2>
+    {activities.map((activity, index) => (
+      <div key={index} className="activity-section">
+        <h3>{activity.title}</h3>
+        <p><strong>Dimension:</strong> {activity.dimension}</p>
+        <p><strong>Objective:</strong> {activity.objective}</p>
+        <div className="content-section">
+          <h4>Materials</h4>
+          <ul>
+            {activity.materials.map((material, idx) => (
+              <li key={idx}>{material}</li>
+            ))}
+          </ul>
+        </div>
+        <div className="content-section">
+          <h4>Instructions</h4>
+          <ol>
+            {activity.instructions.map((instruction, idx) => (
+              <li key={idx}>{instruction}</li>
+            ))}
+          </ol>
+        </div>
       </div>
     ))}
   </div>
