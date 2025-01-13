@@ -223,57 +223,96 @@ const ConnectContent = ({
 
 
 
-const AppreciateContent = ({ whatIfs = '', zikrFikrShukr = {}, characterLessons = '', connectWithQuran = '', connectWithHadith = '' }) => (
+const AppreciateContent = ({
+  whatIfs = '',
+  zikrFikrShukr = {},
+  characterLessons = '',
+  connectWithQuran = [],
+  connectWithHadith = [],
+  dua = ''
+}) => (
   <div className="slide appreciate-content">
     <h2>Appreciate</h2>
+
+    {/* What Ifs Section */}
     {whatIfs && (
       <div className="content-section">
-        <h3>What If's</h3>
+        <h3>What Ifs</h3>
         <p>{whatIfs}</p>
       </div>
     )}
-    {zikrFikrShukr.zikr?.length > 0 && zikrFikrShukr.fikr?.length > 0 && zikrFikrShukr.shukr?.length > 0 && (
-      <div className="content-section">
-        <h3>Zikr, Fikr, Shukr</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Zikr</th>
-              <th>Fikr</th>
-              <th>Shukr</th>
-            </tr>
-          </thead>
-          <tbody>
-            {zikrFikrShukr.zikr.map((item, index) => (
-              <tr key={index}>
-                <td>{item}</td>
-                <td>{zikrFikrShukr.fikr[index]}</td>
-                <td>{zikrFikrShukr.shukr[index]}</td>
+
+    {/* Zikr, Fikr, Shukr Section */}
+    {zikrFikrShukr.zikr?.length > 0 &&
+      zikrFikrShukr.fikr?.length > 0 &&
+      zikrFikrShukr.shukr?.length > 0 && (
+        <div className="content-section">
+          <h3>Zikr, Fikr, Shukr</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Zikr</th>
+                <th>Fikr</th>
+                <th>Shukr</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    )}
+            </thead>
+            <tbody>
+              {zikrFikrShukr.zikr.map((zikrItem, index) => (
+                <tr key={index}>
+                  <td>{zikrItem}</td>
+                  <td>{zikrFikrShukr.fikr[index]}</td>
+                  <td>{zikrFikrShukr.shukr[index]}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+    {/* Character Lessons Section */}
     {characterLessons && (
       <div className="content-section">
         <h3>Character Lessons</h3>
         <p>{characterLessons}</p>
       </div>
     )}
-    {connectWithQuran && (
+
+    {/* Connect with Quran Section */}
+    {connectWithQuran.length > 0 && (
       <div className="content-section">
         <h3>Connect with Quran</h3>
-        <p>{connectWithQuran}</p>
+        {connectWithQuran.map((quranItem, index) => (
+          <div key={index} className="quran-item">
+            <p><strong>Verse:</strong> {quranItem.verse}</p>
+            <p><strong>Translation:</strong> {quranItem.translation}</p>
+            <p><strong>Explanation:</strong> {quranItem.explanation}</p>
+          </div>
+        ))}
       </div>
     )}
-    {connectWithHadith && (
+
+    {/* Connect with Hadith Section */}
+    {connectWithHadith.length > 0 && (
       <div className="content-section">
         <h3>Connect with Hadith</h3>
-        <p>{connectWithHadith}</p>
+        {connectWithHadith.map((hadithItem, index) => (
+          <div key={index} className="hadith-item">
+            <p><strong>Hadith:</strong> {hadithItem.hadith}</p>
+            <p><strong>Explanation:</strong> {hadithItem.explanation}</p>
+          </div>
+        ))}
+      </div>
+    )}
+
+    {/* Dua Section */}
+    {dua && (
+      <div className="content-section">
+        <h3>Dua</h3>
+        <p>{dua}</p>
       </div>
     )}
   </div>
 );
+
 
 export default SlideContent;

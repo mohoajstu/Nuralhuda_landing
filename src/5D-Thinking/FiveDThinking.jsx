@@ -21,7 +21,7 @@ const titleSubtopicMap = {
   Question: ['Negation of Chance', 'Negation of Material Causes', 'Negation of Nature', 'Conclusion'],
   // Old: Connect: ['Connections', "Allah's Names", 'Analogical Reflection', 'Deeper Connection', 'Contemplation'],
   Connect: ['Interdependency', 'Interconnectedness', "Allah's Names"], 
-  Appreciate: ['What ifs', 'Zikr Fikr Shukr', 'Character Lessons', 'Connect With Quran', 'Connect With Hadith'],
+  Appreciate: ['What ifs', 'Zikr Fikr Shukr', 'Character Lessons', 'Connect With Quran', 'Connect With Hadith','Dua'],
 };
 
 
@@ -509,6 +509,16 @@ Focus only on creating a comprehensive ${dimension.title} thinking response.
       addSlideIfContentExists('characterLessons', { characterLessons: response.characterLessons });
       addSlideIfContentExists('connectWithQuran', { connectWithQuran: response.connectWithQuran });
       addSlideIfContentExists('connectWithHadith', { connectWithHadith: response.connectWithHadith });
+
+       // Handle dua
+    if (response.dua) {
+      slides.push({
+        dimension: 'Appreciate',
+        dua: response.dua,
+        subtopicIndex: subtopicIndex++,
+      });
+    }
+  
     }
 
     return slides;
@@ -542,13 +552,13 @@ Focus only on creating a comprehensive ${dimension.title} thinking response.
       // 1) Draw the colored title bar across the top
       // ─────────────────────────────────────────────────────────
       slide.addShape(pptx.ShapeType.rect, {
-        x: 0.5,         // 0.5 inch from left
-        y: 0.3,         // 0.3 inch from top (so it's higher up)
-        w: 9,           // 9 inches wide
-        h: 0.7,         // 0.7 inch tall
+        x: 0.5,       // 0.5 inch from left
+        y: 0.3,       // 0.3 inch from top
+        w: 9,         // 9 inches wide
+        h: 0.7,       // 0.7 inch tall
         fill: { color: dimensionColors[dimension] },
         line: { color: 'FFFFFF' },
-        radius: 10,     // Rounded corners
+        radius: 10,   // Rounded corners
       });
   
       slide.addText(`${dimension} - ${subtopic}`, {
@@ -578,7 +588,7 @@ Focus only on creating a comprehensive ${dimension.title} thinking response.
         // Intro text
         slide.addText('After this lesson, learners will be able to:', {
           x: 0.7,
-          y: 1.2,        // start below the title bar
+          y: 1.2,       
           w: 8.6,
           fontSize: 20,
           bold: true,
@@ -590,9 +600,9 @@ Focus only on creating a comprehensive ${dimension.title} thinking response.
           // Add bullet list
           slide.addText(bulletPoints.join('\n'), {
             x: 0.7,
-            y: 1.8,       // a bit lower
+            y: 1.8,
             w: 8.6,
-            h: 3.5,       // reserve vertical space
+            h: 3.5,
             fontSize: 18,
             color: '000000',
             align: 'left',
@@ -612,57 +622,142 @@ Focus only on creating a comprehensive ${dimension.title} thinking response.
   
       } else {
         // ─────────────────────────────────────────────────────────
-        // 3) For other dimensions, see if we have contentText
+        // 3) Check if we have (Appreciate => connectWithQuran/hadith/dua)
+        //    or just generic contentText. Then handle the table cases.
         // ─────────────────────────────────────────────────────────
-        const contentText = getContentText(slideContent);
   
-        // If contentText is non-empty
-        if (contentText && contentText.trim() !== '') {
-          slide.addText(contentText, {
+        //
+        // --- 3a) If dimension is "Appreciate" with connectWithQuran:
+        //
+        if (dimension === 'Appreciate' && slideContent.connectWithQuran) {
+          // Build a single text block for multiple Quran entries
+          const quranTextArr = slideContent.connectWithQuran.map(({ verse, translation, explanation }) => {
+            return (
+              `Verse:\n${verse}\n\n` +
+              `Translation:\n"${translation}"\n\n` +
+              `Explanation:\n${explanation}\n\n` 
+            );
+          });
+  
+          // Also append any "dua" if present
+          let duaText = '';
+          if (slideContent.dua && slideContent.dua.trim().length > 0) {
+            duaText = `\nDua:\n${slideContent.dua}\n`;
+          }
+  
+          slide.addText(quranTextArr.join('') + duaText, {
             x: 0.7,
             y: 1.2,
             w: 8.6,
             h: 3.5,
             fontSize: 20,
             color: '000000',
-            align: 'center',
-            valign: 'middle',
-            autoFit: true,  // helps if text is large
+            align: 'left',
+            valign: 'top',
+            autoFit: true,
           });
+  
+        //
+        // --- 3b) If dimension is "Appreciate" with connectWithHadith:
+        //
+        } else if (dimension === 'Appreciate' && slideContent.connectWithHadith) {
+          // Build a single text block for multiple Hadith entries
+          const hadithTextArr = slideContent.connectWithHadith.map(({ hadith, explanation }) => {
+            return (
+              `Hadith:\n"${hadith}"\n\n` +
+              `Explanation:\n${explanation}\n\n` 
+            );
+          });
+  
+          // Also append any "dua" if present
+          let duaText = '';
+          if (slideContent.dua && slideContent.dua.trim().length > 0) {
+            duaText = `\nDua:\n${slideContent.dua}\n`;
+          }
+  
+          slide.addText(hadithTextArr.join('') + duaText, {
+            x: 0.7,
+            y: 1.2,
+            w: 8.6,
+            h: 3.5,
+            fontSize: 20,
+            color: '000000',
+            align: 'left',
+            valign: 'top',
+            autoFit: true,
+          });
+  
+        //
+        // --- 3c) If "Appreciate" has no Quran/Hadith but has a "dua" alone:
+        //
+        } else if (dimension === 'Appreciate' && slideContent.dua) {
+          slide.addText(`Dua:\n${slideContent.dua}`, {
+            x: 0.7,
+            y: 1.2,
+            w: 8.6,
+            h: 3.5,
+            fontSize: 20,
+            color: '000000',
+            align: 'left',
+            valign: 'top',
+            autoFit: true,
+          });
+  
+        //
+        // --- 3d) Otherwise, check if there's generic contentText:
+        //
         } else {
-          // 4) Special-case for Connect or Appreciate tables
-          if (dimension === 'Connect' && slideContent.allahNames) {
-            const { whatItTells, namesInEnglish, namesInArabic } = slideContent.allahNames;
-            const tableData = [
-              ['What it tells us about Allah', 'Names in English', 'Names in Arabic'],
-              ...whatItTells.map((item, idx) => [
-                item,
-                namesInEnglish[idx],
-                namesInArabic[idx],
-              ]),
-            ];
-            slide.addTable(tableData, {
+          const contentText = getContentText(slideContent);
+  
+          // If generic contentText is non-empty
+          if (contentText && contentText.trim() !== '') {
+            slide.addText(contentText, {
               x: 0.7,
-              y: 1.8,
+              y: 1.2,
               w: 8.6,
-              fontSize: 14,
+              h: 3.5,
+              fontSize: 20,
               color: '000000',
               align: 'center',
+              valign: 'middle',
+              autoFit: true,  
             });
-          } else if (dimension === 'Appreciate' && slideContent.zikrFikrShukr) {
-            const { zikr, fikr, shukr } = slideContent.zikrFikrShukr;
-            const tableData = [
-              ['Zikr', 'Fikr', 'Shukr'],
-              ...zikr.map((item, idx) => [item, fikr[idx], shukr[idx]]),
-            ];
-            slide.addTable(tableData, {
-              x: 0.7,
-              y: 1.8,
-              w: 8.6,
-              fontSize: 14,
-              color: '000000',
-              align: 'center',
-            });
+          } else {
+            // 4) Otherwise check for Connect or Appreciate tables
+            if (dimension === 'Connect' && slideContent.allahNames) {
+              const { whatItTells, namesInEnglish, namesInArabic } = slideContent.allahNames;
+              const tableData = [
+                ['What it tells us about Allah', 'Names in English', 'Names in Arabic'],
+                ...whatItTells.map((item, idx) => [
+                  item,
+                  namesInEnglish[idx],
+                  namesInArabic[idx],
+                ]),
+              ];
+              slide.addTable(tableData, {
+                x: 0.7,
+                y: 1.5,
+                w: 8.6,
+                fontSize: 14,
+                color: '000000',
+                align: 'center',
+              });
+  
+            } else if (dimension === 'Appreciate' && slideContent.zikrFikrShukr) {
+              const { zikr, fikr, shukr } = slideContent.zikrFikrShukr;
+              const tableData = [
+                ['Zikr', 'Fikr', 'Shukr'],
+                ...zikr.map((item, idx) => [item, fikr[idx], shukr[idx]]),
+              ];
+              slide.addTable(tableData, {
+                x: 0.7,
+                y: 1.8,
+                w: 8.6,
+                fontSize: 14,
+                color: '000000',
+                align: 'center',
+              });
+            }
           }
         }
       }
@@ -705,7 +800,8 @@ Focus only on creating a comprehensive ${dimension.title} thinking response.
     return presentation.presentationId;
   };
 
-  // Updated updatePresentation function
+// Updated updatePresentation function
+// Updated updatePresentation function
 const updatePresentation = async (presentationId, accessToken, slides) => {
   const requests = [];
 
@@ -740,6 +836,8 @@ const updatePresentation = async (presentationId, accessToken, slides) => {
 
     // 3) Create a title rectangle (like a header bar)
     const titleElementId = `title_${pageObjectId}`;
+
+    // Use the new subtopic logic:
     const subtopicTitle = `${dimension} - ${getSubtopicTitle(slideContent)}`;
 
     requests.push({
@@ -818,14 +916,13 @@ const updatePresentation = async (presentationId, accessToken, slides) => {
     });
 
     // ─────────────────────────────────────────────
-    //  Special Handling for "Objectives" Dimension
+    //  Handle "Objectives" Dimension (bullet list)
     // ─────────────────────────────────────────────
     if (dimension === 'Objectives') {
-      // Flatten all categories of learningObjectives
       const lo = slideContent.learningObjectives || {};
       const bulletPoints = Object.values(lo).flat().filter((obj) => obj.trim() !== '');
 
-      // 1) Create shape for the intro text
+      // Intro text
       const introElementId = `intro_${pageObjectId}`;
       requests.push({
         createShape: {
@@ -848,7 +945,6 @@ const updatePresentation = async (presentationId, accessToken, slides) => {
         },
       });
 
-      // Insert "After this lesson..." text
       requests.push({
         insertText: {
           objectId: introElementId,
@@ -857,7 +953,6 @@ const updatePresentation = async (presentationId, accessToken, slides) => {
         },
       });
 
-      // Style the intro text
       requests.push({
         updateTextStyle: {
           objectId: introElementId,
@@ -873,7 +968,7 @@ const updatePresentation = async (presentationId, accessToken, slides) => {
         },
       });
 
-      // 2) If we have bullet points, create a shape for them
+      // Bullet points
       if (bulletPoints.length > 0) {
         const bulletsElementId = `objectivesBullets_${pageObjectId}`;
         requests.push({
@@ -890,14 +985,13 @@ const updatePresentation = async (presentationId, accessToken, slides) => {
                 scaleX: 1,
                 scaleY: 1,
                 translateX: 50,
-                translateY: 140, 
+                translateY: 140,
                 unit: 'PT',
               },
             },
           },
         });
 
-        // Insert the bullet text
         requests.push({
           insertText: {
             objectId: bulletsElementId,
@@ -906,7 +1000,6 @@ const updatePresentation = async (presentationId, accessToken, slides) => {
           },
         });
 
-        // Style bullet text
         requests.push({
           updateTextStyle: {
             objectId: bulletsElementId,
@@ -921,7 +1014,6 @@ const updatePresentation = async (presentationId, accessToken, slides) => {
           },
         });
 
-        // Turn each line into bullets
         requests.push({
           createParagraphBullets: {
             objectId: bulletsElementId,
@@ -962,16 +1054,37 @@ const updatePresentation = async (presentationId, accessToken, slides) => {
       }
 
     } else {
-      // ──────────────────────────────────────────────────
-      // For other dimensions, we do the contentText logic
-      // ──────────────────────────────────────────────────
-      const contentText = getContentText(slideContent);
+      // ──────────────────────────────────────────────────────────
+      //  Handle "Appreciate" for Quran/Hadith/Dua OR fallback text
+      // ──────────────────────────────────────────────────────────
 
-      if (contentText && contentText.trim() !== '') {
-        const contentElementId = `content_${pageObjectId}`;
+      // 3a) If dimension=Appreciate && connectWithQuran
+      if (dimension === 'Appreciate' && slideContent.connectWithQuran) {
+        const appreciateElementId = `appreciateQuran_${pageObjectId}`;
+
+        // Ensure we have an array
+        const quranItems = Array.isArray(slideContent.connectWithQuran)
+          ? slideContent.connectWithQuran
+          : [slideContent.connectWithQuran];
+
+        // Build a single big string from all connectWithQuran items
+        const quranTextArr = quranItems.map(({ verse, translation, explanation }) => {
+          return (
+            `Verse:\n${verse}\n\n` +
+            `Translation:\n"${translation}"\n\n` +
+            `Explanation:\n${explanation}\n\n`
+          );
+        });
+
+        // If there's a dua, append it
+        let duaText = '';
+        if (slideContent.dua && slideContent.dua.trim().length > 0) {
+          duaText = `Dua:\n${slideContent.dua}\n`;
+        }
+
         requests.push({
           createShape: {
-            objectId: contentElementId,
+            objectId: appreciateElementId,
             shapeType: 'TEXT_BOX',
             elementProperties: {
               pageObjectId: pageObjectId,
@@ -992,16 +1105,15 @@ const updatePresentation = async (presentationId, accessToken, slides) => {
 
         requests.push({
           insertText: {
-            objectId: contentElementId,
+            objectId: appreciateElementId,
             insertionIndex: 0,
-            text: contentText,
+            text: quranTextArr.join('') + duaText,
           },
         });
 
-        // Style the content text
         requests.push({
           updateTextStyle: {
-            objectId: contentElementId,
+            objectId: appreciateElementId,
             style: {
               fontSize: { magnitude: 20, unit: 'PT' },
               foregroundColor: {
@@ -1013,32 +1125,165 @@ const updatePresentation = async (presentationId, accessToken, slides) => {
           },
         });
 
-        // Center align
+        // Left-align paragraphs
         requests.push({
           updateParagraphStyle: {
-            objectId: contentElementId,
-            style: { alignment: 'CENTER' },
+            objectId: appreciateElementId,
+            style: { alignment: 'START' },
             textRange: { type: 'ALL' },
             fields: 'alignment',
           },
         });
-      } 
-      else if (slideContent.allahNames || slideContent.zikrFikrShukr) {
-        // Handle special cases where we need to create a table
-        if (slideContent.dimension === 'Connect' && slideContent.allahNames) {
-          // Create a table for Allah's Names
-          const tableElementId = `table_${pageObjectId}`;
-          const { whatItTells, namesInEnglish, namesInArabic } = slideContent.allahNames;
 
-          const numRows = namesInEnglish.length + 1; // +1 for header row
+      // 3b) If dimension=Appreciate && connectWithHadith
+      } else if (dimension === 'Appreciate' && slideContent.connectWithHadith) {
+        const appreciateElementId = `appreciateHadith_${pageObjectId}`;
 
+        // Ensure we have an array
+        const hadithItems = Array.isArray(slideContent.connectWithHadith)
+          ? slideContent.connectWithHadith
+          : [slideContent.connectWithHadith];
+
+        // Build a single big string from all connectWithHadith items
+        const hadithTextArr = hadithItems.map(({ hadith, explanation }) => {
+          return (
+            `Hadith:\n"${hadith}"\n\n` +
+            `Explanation:\n${explanation}\n\n`
+          );
+        });
+
+        // If there's a dua, append it
+        let duaText = '';
+        if (slideContent.dua && slideContent.dua.trim().length > 0) {
+          duaText = `Dua:\n${slideContent.dua}\n`;
+        }
+
+        requests.push({
+          createShape: {
+            objectId: appreciateElementId,
+            shapeType: 'TEXT_BOX',
+            elementProperties: {
+              pageObjectId: pageObjectId,
+              size: {
+                height: { magnitude: 350, unit: 'PT' },
+                width: { magnitude: 600, unit: 'PT' },
+              },
+              transform: {
+                scaleX: 1,
+                scaleY: 1,
+                translateX: 50,
+                translateY: 100,
+                unit: 'PT',
+              },
+            },
+          },
+        });
+
+        requests.push({
+          insertText: {
+            objectId: appreciateElementId,
+            insertionIndex: 0,
+            text: hadithTextArr.join('') + duaText,
+          },
+        });
+
+        requests.push({
+          updateTextStyle: {
+            objectId: appreciateElementId,
+            style: {
+              fontSize: { magnitude: 20, unit: 'PT' },
+              foregroundColor: {
+                opaqueColor: { rgbColor: { red: 0, green: 0, blue: 0 } },
+              },
+            },
+            textRange: { type: 'ALL' },
+            fields: 'fontSize,foregroundColor',
+          },
+        });
+
+        // Left-align paragraphs
+        requests.push({
+          updateParagraphStyle: {
+            objectId: appreciateElementId,
+            style: { alignment: 'START' },
+            textRange: { type: 'ALL' },
+            fields: 'alignment',
+          },
+        });
+
+      // 3c) If dimension=Appreciate && only "dua"
+      } else if (dimension === 'Appreciate' && slideContent.dua) {
+        const duaElementId = `appreciateDua_${pageObjectId}`;
+
+        requests.push({
+          createShape: {
+            objectId: duaElementId,
+            shapeType: 'TEXT_BOX',
+            elementProperties: {
+              pageObjectId: pageObjectId,
+              size: {
+                height: { magnitude: 350, unit: 'PT' },
+                width: { magnitude: 600, unit: 'PT' },
+              },
+              transform: {
+                scaleX: 1,
+                scaleY: 1,
+                translateX: 50,
+                translateY: 100,
+                unit: 'PT',
+              },
+            },
+          },
+        });
+
+        requests.push({
+          insertText: {
+            objectId: duaElementId,
+            insertionIndex: 0,
+            text: `Dua:\n${slideContent.dua}`,
+          },
+        });
+
+        requests.push({
+          updateTextStyle: {
+            objectId: duaElementId,
+            style: {
+              fontSize: { magnitude: 20, unit: 'PT' },
+              foregroundColor: {
+                opaqueColor: { rgbColor: { red: 0, green: 0, blue: 0 } },
+              },
+            },
+            textRange: { type: 'ALL' },
+            fields: 'fontSize,foregroundColor',
+          },
+        });
+
+        requests.push({
+          updateParagraphStyle: {
+            objectId: duaElementId,
+            style: { alignment: 'START' },
+            textRange: { type: 'ALL' },
+            fields: 'alignment',
+          },
+        });
+
+      // ─────────────────────────────────────────────
+      //  Otherwise, handle normal content or table
+      // ─────────────────────────────────────────────
+      } else {
+        const contentText = getContentText(slideContent);
+
+        // If generic contentText is non-empty
+        if (contentText && contentText.trim() !== '') {
+          const contentElementId = `content_${pageObjectId}`;
           requests.push({
-            createTable: {
-              objectId: tableElementId,
+            createShape: {
+              objectId: contentElementId,
+              shapeType: 'TEXT_BOX',
               elementProperties: {
                 pageObjectId: pageObjectId,
                 size: {
-                  height: { magnitude: 300, unit: 'PT' },
+                  height: { magnitude: 350, unit: 'PT' },
                   width: { magnitude: 600, unit: 'PT' },
                 },
                 transform: {
@@ -1049,106 +1294,164 @@ const updatePresentation = async (presentationId, accessToken, slides) => {
                   unit: 'PT',
                 },
               },
-              rows: numRows,
-              columns: 3,
             },
           });
 
-          // Insert header row and style it
-          const headerCells = ['What it tells us about Allah', 'Names in English', 'Names in Arabic'];
-          for (let col = 0; col < 3; col++) {
-            requests.push(
-              ...insertTableCellTextAndStyle(
-                tableElementId,
-                0,
-                col,
-                headerCells[col],
-                true // isHeader
-              )
-            );
-          }
+          requests.push({
+            insertText: {
+              objectId: contentElementId,
+              insertionIndex: 0,
+              text: contentText,
+            },
+          });
 
-          // Insert data rows and style them
-          for (let row = 1; row < numRows; row++) {
-            const data = [
-              whatItTells[row - 1] || '',
-              namesInEnglish[row - 1] || '',
-              namesInArabic[row - 1] || '',
+          // Style the content text
+          requests.push({
+            updateTextStyle: {
+              objectId: contentElementId,
+              style: {
+                fontSize: { magnitude: 20, unit: 'PT' },
+                foregroundColor: {
+                  opaqueColor: { rgbColor: { red: 0, green: 0, blue: 0 } },
+                },
+              },
+              textRange: { type: 'ALL' },
+              fields: 'fontSize,foregroundColor',
+            },
+          });
+
+          // Center align (as per your original code)
+          requests.push({
+            updateParagraphStyle: {
+              objectId: contentElementId,
+              style: { alignment: 'CENTER' },
+              textRange: { type: 'ALL' },
+              fields: 'alignment',
+            },
+          });
+        } else {
+          // If we have no contentText, check for Connect or Appreciate tables
+          if (dimension === 'Connect' && slideContent.allahNames) {
+            // Create a table for Allah's Names
+            const tableElementId = `table_${pageObjectId}`;
+            const { whatItTells, namesInEnglish, namesInArabic } = slideContent.allahNames;
+
+            const numRows = namesInEnglish.length + 1; // +1 for header
+            requests.push({
+              createTable: {
+                objectId: tableElementId,
+                elementProperties: {
+                  pageObjectId: pageObjectId,
+                  size: {
+                    height: { magnitude: 300, unit: 'PT' },
+                    width: { magnitude: 600, unit: 'PT' },
+                  },
+                  transform: {
+                    scaleX: 1,
+                    scaleY: 1,
+                    translateX: 50,
+                    translateY: 100,
+                    unit: 'PT',
+                  },
+                },
+                rows: numRows,
+                columns: 3,
+              },
+            });
+
+            // Insert header row
+            const headerCells = [
+              'What it tells us about Allah',
+              'Names in English',
+              'Names in Arabic',
             ];
             for (let col = 0; col < 3; col++) {
               requests.push(
                 ...insertTableCellTextAndStyle(
                   tableElementId,
-                  row,
+                  0,
                   col,
-                  data[col],
-                  false, // isHeader
-                  row
+                  headerCells[col],
+                  true // isHeader
                 )
               );
             }
-          }
-        } else if (slideContent.dimension === 'Appreciate' && slideContent.zikrFikrShukr) {
-          // Create a table for Zikr Fikr Shukr
-          const tableElementId = `table_${pageObjectId}`;
-          const { zikr, fikr, shukr } = slideContent.zikrFikrShukr;
 
-          const numRows = zikr.length + 1; // +1 for header row
+            // Insert data rows
+            for (let row = 1; row < numRows; row++) {
+              const data = [
+                whatItTells[row - 1] || '',
+                namesInEnglish[row - 1] || '',
+                namesInArabic[row - 1] || '',
+              ];
+              for (let col = 0; col < 3; col++) {
+                requests.push(
+                  ...insertTableCellTextAndStyle(
+                    tableElementId,
+                    row,
+                    col,
+                    data[col],
+                    false // isHeader
+                  )
+                );
+              }
+            }
+          } else if (dimension === 'Appreciate' && slideContent.zikrFikrShukr) {
+            // Table for Zikr Fikr Shukr
+            const tableElementId = `table_${pageObjectId}`;
+            const { zikr, fikr, shukr } = slideContent.zikrFikrShukr;
 
-          requests.push({
-            createTable: {
-              objectId: tableElementId,
-              elementProperties: {
-                pageObjectId: pageObjectId,
-                size: {
-                  height: { magnitude: 300, unit: 'PT' },
-                  width: { magnitude: 600, unit: 'PT' },
+            const numRows = zikr.length + 1; // +1 for header
+            requests.push({
+              createTable: {
+                objectId: tableElementId,
+                elementProperties: {
+                  pageObjectId: pageObjectId,
+                  size: {
+                    height: { magnitude: 300, unit: 'PT' },
+                    width: { magnitude: 600, unit: 'PT' },
+                  },
+                  transform: {
+                    scaleX: 1,
+                    scaleY: 1,
+                    translateX: 50,
+                    translateY: 100,
+                    unit: 'PT',
+                  },
                 },
-                transform: {
-                  scaleX: 1,
-                  scaleY: 1,
-                  translateX: 50,
-                  translateY: 100,
-                  unit: 'PT',
-                },
+                rows: numRows,
+                columns: 3,
               },
-              rows: numRows,
-              columns: 3,
-            },
-          });
+            });
 
-          // Insert header row and style it
-          const headerCells = ['Zikr', 'Fikr', 'Shukr'];
-          for (let col = 0; col < 3; col++) {
-            requests.push(
-              ...insertTableCellTextAndStyle(
-                tableElementId,
-                0,
-                col,
-                headerCells[col],
-                true // isHeader
-              )
-            );
-          }
-
-          // Insert data rows and style them
-          for (let row = 1; row < numRows; row++) {
-            const data = [
-              zikr[row - 1] || '',
-              fikr[row - 1] || '',
-              shukr[row - 1] || '',
-            ];
+            // Insert header row
+            const headerCells = ['Zikr', 'Fikr', 'Shukr'];
             for (let col = 0; col < 3; col++) {
               requests.push(
                 ...insertTableCellTextAndStyle(
                   tableElementId,
-                  row,
+                  0,
                   col,
-                  data[col],
-                  false, // isHeader
-                  row
+                  headerCells[col],
+                  true
                 )
               );
+            }
+
+            // Insert data rows
+            for (let row = 1; row < numRows; row++) {
+              const data = [zikr[row - 1], fikr[row - 1], shukr[row - 1]];
+              for (let col = 0; col < 3; col++) {
+                requests.push(
+                  ...insertTableCellTextAndStyle(
+                    tableElementId,
+                    row,
+                    col,
+                    data[col],
+                    false
+                  )
+                );
+              }
             }
           }
         }
