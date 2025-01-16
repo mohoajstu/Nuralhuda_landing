@@ -249,15 +249,6 @@
 }
 
 @media (max-width: 768px) {
-  .sidebar-container {
-    /* Make the sidebar span the full viewport width 
-       so it overlays the content on small screens */
-    width: 100%;
-    margin-top: 0;    /* remove if you had .with-navbar margin */
-    position: fixed;  /* keep it pinned on top-left */
-    left: 0;
-    top: 0;
-  }
 
   .dashbrand-container {
     margin-top: 20px; /* if you need more spacing from the top for your brand */
@@ -299,9 +290,6 @@
 }
 
 @media (max-width: 480px) {
-  .sidebar-container {
-    width: 100%; /* or 90%, up to you */
-  }
 
   .dashbrand-container {
     margin-top: 50px;
@@ -318,5 +306,32 @@
   .main-button {
     font-size: 0.9em;
     padding: 6px 0;
+  }
+}
+
+/* When closed, don't allow the .sidebar-container to block clicks. */
+.sidebar-container.closed {
+  pointer-events: none;
+}
+
+/* But ensure the handle can still be clicked. */
+.sidebar-container.closed .drawer-handle {
+  pointer-events: auto;
+  z-index: 9999; /* Keep it above */
+}
+
+@media (max-width: 768px) and (min-width: 481px) {
+  .sidebar-container {
+    width: 200px;
+    /* maybe position: fixed; left: 0; top: 0; etc. */
+  }
+}
+
+@media (max-width: 480px) {
+  .sidebar-container {
+    width: 100%;
+    position: fixed;
+    left: 0;
+    top: 0;
   }
 }

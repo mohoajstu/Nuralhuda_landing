@@ -316,7 +316,14 @@
     text-align: center; /* Center the text */
     padding: 20px 0; /* Add padding to give some spacing */
   }
-
+  
+  @media (max-width: 480px) {
+    .chatscreen-input {
+      font-size: 16px;    /* Bumps it up so iOS won’t auto-zoom */
+      height: 50px;       /* Increase height if you want more tap area */
+    }
+  }
+  
   .chatscreen-container {
     padding-top: 5vh;
     padding-bottom: 10vh; /* Add padding at the bottom to avoid URL overlap */

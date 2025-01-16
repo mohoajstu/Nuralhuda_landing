@@ -92,10 +92,10 @@ import React, {
   
     return (
       <div
-        className={`sidebar-container ${isSidebarOpen ? "open" : "closed"} ${
-          hasNavbar ? "with-navbar" : ""
-        }`}
-      >
+      className={`sidebar-container ${isSidebarOpen ? "open" : "closed"} ${
+        hasNavbar ? "with-navbar" : ""
+      }`}
+    >
         <motion.div
           className="sidebar"
           ref={containerRef}

@@ -541,9 +541,12 @@ const handleRemoveFile = (index) => {
       />
 
       <div className="chatscreen-header-container">
-        <button className="chatscreen-home-button" onClick={handleGoToHome}>
-          Home
-        </button>
+      {!user && (
+  <button className="chatscreen-home-button" onClick={handleGoToHome}>
+    Home
+  </button>
+)}
+
         <div className="chatscreen-header-title">{assistantTitle}</div>
       </div>
       <div ref={scrollViewRef} className="chatscreen-messages-container">
