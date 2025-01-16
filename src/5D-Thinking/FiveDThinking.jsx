@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import PptxGenJS from 'pptxgenjs';
 import { createThread, createMessage, createRun, titleToAssistantIDMap } from '../chat/openAIUtils';
 import SlideContent from './SlideContent';
 import './FiveDAssistant.css';
@@ -11,25 +10,13 @@ import fiveDThinkingImg from '../img/5dlogotransparent.png';
 import { auth, db } from '../config/firebase-config'; // Adjust path based on your setup
 import { doc, getDoc, updateDoc, arrayUnion, increment, setDoc } from 'firebase/firestore';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { title } from 'process';
+
 
 import exportSlidesAsPptx from './Export/ExportAsPPTX.jsx';
 import {
     createPresentation,
     updatePresentation,
   } from './Export/ExportAsGoogleSlides'; // Adjust path as necessary
-
-const titleSubtopicMap = {
-  Objectives: ['Learning Objectives'], // Optional
-  Explore: ['Content', 'Explanation', 'Observations', 'Fascinating Facts'],
-  Compare: ['Analogy', 'Content', 'Explanation', 'Comparison'],
-  Question: ['Negation of Chance', 'Negation of Material Causes', 'Negation of Nature', 'Conclusion'],
-  // Old: Connect: ['Connections', "Allah's Names", 'Analogical Reflection', 'Deeper Connection', 'Contemplation'],
-  Connect: ['Interdependency', 'Interconnectedness', "Allah's Names"], 
-  Appreciate: ['What ifs', 'Zikr Fikr Shukr', 'Character Lessons', 'Connect With Quran', 'Connect With Hadith','Dua'],
-  Activities: ['Explore', 'Compare', 'Question', 'Connect', 'Appreciate'],
-};
-
 
 const dimensionColors = {
   Objectives: '0070C0', // Choose any hex color
@@ -40,9 +27,6 @@ const dimensionColors = {
   Appreciate: '35b8b1',
   Activities: 'ffcccb',
 };
-
-const logoUrl = 'https://drive.google.com/uc?export=view&id=1WoF-kUTfs6mxgeXao2gmM9flISNLkbHT';
-const base64ImageString = process.env.REACT_APP_BASE64_IMAGE_STRING;
 
 const FiveDAssistant = () => {
   const [user] = useAuthState(auth);
@@ -125,15 +109,6 @@ const FiveDAssistant = () => {
     }
   };
 
-  // Helper function to capitalize words and replace underscores
-const capitalizeWords = (text = '') => {
-  return text
-    .replace(/_/g, ' ')
-    .split(' ')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
-};
-
   // Function to handle dimension selection
   const handleDimensionSelect = (dimension) => {
     setSelectedDimension(dimension);
@@ -194,6 +169,7 @@ const capitalizeWords = (text = '') => {
   };
 
   const handleSubmit = async () => {
+
     // Get topicContent
     let topicContent = topic;
     if (topicFile) {
@@ -606,82 +582,6 @@ Focus only on creating a comprehensive ${dimension.title} thinking response.
     } finally {
       setIsLoading(false);
     }
-  };
-  
-  /**
-   * ------------------------------------
-   * UPDATED getContentText
-   *  - to gracefully handle questionCategory
-   * ------------------------------------
-   */
-
-    const getContentText = (slideContent) => {
-        if (slideContent.dimension === 'Objectives') {
-          // Convert the `learningObjectives` object into a bullet list of categories and items
-          const lo = slideContent.learningObjectives || {};
-          let bulletString = '';
-          for (const [category, items] of Object.entries(lo)) {
-            bulletString += `${capitalizeWords(category)}:\n`;
-            items.forEach((obj) => {
-              bulletString += ` - ${obj}\n`;
-            });
-            bulletString += '\n';
-          }
-          return bulletString;
-        }
-      
-      if (slideContent.dimension === 'Question') {
-        // If it's one of the first 3 subtopics, we have questions (an array)
-        if (
-          slideContent.subtopicIndex < 3 &&
-          Array.isArray(slideContent.questions) &&
-          slideContent.questions.length > 0
-        ) {
-          // Join them with newline so it looks like bullet points in a text box
-          return slideContent.questions.join('\n');
-        }
-        // If it's subtopicIndex 3, it's the conclusion
-        if (slideContent.subtopicIndex === 3 && slideContent.conclusion) {
-          // Prepend a label if you want
-          return  slideContent.conclusion;
-        }
-      }
-
-    // Check for other keys
-    const keys = Object.keys(slideContent);
-    for (const key of keys) {
-      // Skip dimension, subtopicIndex, questionCategory, questions already handled
-      if (
-        ['dimension', 'subtopicIndex', 'questionCategory', 'questions', 'allahNames', 'zikrFikrShukr'].includes(key)
-      ) {
-        continue;
-      }
-      if (slideContent[key]) {
-        if (Array.isArray(slideContent[key])) {
-          return slideContent[key].join('\n');
-        } else if (typeof slideContent[key] === 'string') {
-          return slideContent[key];
-        }
-      }
-    }
-    return '';
-  };
-
-  // Helper function to convert hex color to rgb object
-  const hexToRgb = (hex) => {
-    const bigint = parseInt(hex, 16);
-    return {
-      red: ((bigint >> 16) & 255) / 255,
-      green: ((bigint >> 8) & 255) / 255,
-      blue: (bigint & 255) / 255,
-    };
-  };
-
-  const getSubtopicTitle = (slideContent) => {
-    const dimension = slideContent.dimension;
-    const subtopics = titleSubtopicMap[dimension];
-    const subtopicIndex = slideContent.subtopicIndex || 0;
-    return subtopics[subtopicIndex] || 'Output';
   };
 
   const handleError = (error) => {
