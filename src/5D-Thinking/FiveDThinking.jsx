@@ -41,7 +41,9 @@ const FiveDAssistant = () => {
   const [topicFile, setTopicFile] = useState(null);
   const [topicPreview, setTopicPreview] = useState('');
 
-  // State variables for each dimension input (Optional)
+  const [threadId, setThreadId] = useState(null);
+  const [isStreamActive, setIsStreamActive] = useState(false);
+
 
   // State variables for Objectives dimension input
   const [objectivesInput, setObjectivesInput] = useState('');
@@ -96,6 +98,119 @@ const FiveDAssistant = () => {
     };
   }, []);
   
+
+  const handleRefreshSlide = async (slide, slideIndex) => {
+
+    console.log('handleRefreshSlide called:', slide, slideIndex);
+    if (isLoading || isStreamActive) {
+      // Already generating or streaming, block new refresh
+      return;
+    }
+    setIsStreamActive(true);
+  
+    const dimension = slide.dimension; // e.g. "Question"
+    const subtopicIndex = slide.subtopicIndex ?? 0;
+    let subtopicKey = null;
+    
+    // Identify subtopic
+    if (dimension === 'Question') {
+      if (subtopicIndex === 0) subtopicKey = 'negation_of_chance';
+      if (subtopicIndex === 1) subtopicKey = 'negation_of_material_causes';
+      if (subtopicIndex === 2) subtopicKey = 'negation_of_nature';
+      if (subtopicIndex === 3) subtopicKey = 'conclusion';
+    }
+  
+    // Build a strict prompt
+    let prompt = '';
+    if (dimension === 'Question' && subtopicKey !== 'conclusion') {
+      prompt = `
+        Return ONLY valid JSON with no extra text.
+        Focus on ${subtopicKey} in the "Question" dimension.
+        Example:
+        {
+          "dimension": "Question",
+          "questions": {
+            "${subtopicKey}": [...]
+          }
+        }
+        Do not include other subtopics or commentary.
+      `;
+    } else if (dimension === 'Question' && subtopicKey === 'conclusion') {
+      prompt = `
+        Return ONLY valid JSON with no extra text.
+        Focus on the conclusion in the "Question" dimension.
+        Example:
+        {
+          "dimension": "Question",
+          "conclusion": "..."
+        }
+      `;
+    } 
+    // else handle Explore subtopics, etc.
+  
+    try {
+      // Now call createMessage
+      await createMessage(threadId, prompt, '5D Thinking-1');
+      
+      createRun(
+        threadId,
+        titleToAssistantIDMap['5D Thinking-1'],
+        (message) => handleRefreshSubtopicMessage(message, slideIndex),
+        handleError,
+        '5D Thinking-1'
+      );
+    } catch (err) {
+      handleError(err);
+    }
+  };
+  
+  const handleRefreshSubtopicMessage = (message, slideIndex) => {
+    if (message.text === 'END_TOKEN') {
+      // Parse the buffer
+      // Use the "slice out JSON" trick, then JSON.parse
+      let jsonStr = responseBuffer.trim();
+      const start = jsonStr.indexOf('{');
+      const end = jsonStr.lastIndexOf('}');
+      if (start !== -1 && end !== -1 && end > start) {
+        jsonStr = jsonStr.slice(start, end + 1);
+      }
+      
+      let updatedContent;
+      try {
+        updatedContent = JSON.parse(jsonStr);
+      } catch (err) {
+        console.error('Could not parse JSON:', err);
+        setError('Could not parse the refresh data. Please try again.');
+        setIsStreamActive(false);
+        return;
+      }
+  
+      // Merge logic
+      setSlides((prev) => {
+        const newSlides = [...prev];
+        const oldSlide = { ...newSlides[slideIndex] };
+        // Suppose dimension=Question, user updated subtopicKey=negation_of_chance
+        if (oldSlide.dimension === 'Question' && updatedContent?.questions) {
+          if (updatedContent.questions.negation_of_chance) {
+            oldSlide.questions = updatedContent.questions.negation_of_chance;
+          }
+          // or if subtopicKey=negation_of_material_causes, etc.
+        }
+        newSlides[slideIndex] = oldSlide;
+        return newSlides;
+      });
+  
+      setResponseBuffer('');
+      setIsStreamActive(false);
+    } else {
+      // Keep accumulating
+      setResponseBuffer((prev) => prev + message.text);
+    }
+  };
+  
+  
+  
+
   const fetchUserData = async () => {
     if (!user) return;
   
@@ -255,6 +370,7 @@ const FiveDAssistant = () => {
       const assistantTitle = '5D Thinking-1';
       
       const thread = await createThread(assistantTitle);
+      setThreadId(thread.id);
 
       // Store the thread and update usage count in Firebase
       if (user) {
@@ -818,33 +934,39 @@ Focus only on creating a comprehensive ${dimension.title} thinking response.
       </div>
 
       {slides.length > 0 && (
-        <div className="slide-content">
-          <h2>Generated Slides</h2>
-          {slides.map((slide, index) => (
-            <SlideContent key={index} slide={slide} />
-          ))}
-          <div className="export-buttons">
-            <button className="export-button" onClick={() => exportSlidesAsPptx(slides)}>
-              Export as PowerPoint
-            </button>
-            <button
-              className="export-button"
-              onClick={exportSlidesToGoogleSlides}
-              disabled={isLoading}
-            >
-              {isLoading ? 'Exporting...' : 'Export to Google Slides'}
-            </button>
-          </div>
-          {presentationLink && (
-            <div className="presentation-link">
-              <p>Your presentation is ready:</p>
-              <a href={presentationLink} target="_blank" rel="noopener noreferrer">
-                Open Presentation
-              </a>
-            </div>
-          )}
-        </div>
-      )}
+  <div className="slide-content">
+    <h2>Generated Slides</h2>
+    {slides.map((slide, index) => (
+      <SlideContent
+        key={index}
+        slide={slide}
+        onRefresh={(refreshedSlide) => handleRefreshSlide(refreshedSlide, index)}
+      />
+    ))}
+    
+    <div className="export-buttons">
+      <button className="export-button" onClick={() => exportSlidesAsPptx(slides)}>
+        Export as PowerPoint
+      </button>
+      <button
+        className="export-button"
+        onClick={exportSlidesToGoogleSlides}
+        disabled={isLoading}
+      >
+        {isLoading ? 'Exporting...' : 'Export to Google Slides'}
+      </button>
+    </div>
+    {presentationLink && (
+      <div className="presentation-link">
+        <p>Your presentation is ready:</p>
+        <a href={presentationLink} target="_blank" rel="noopener noreferrer">
+          Open Presentation
+        </a>
+      </div>
+    )}
+  </div>
+)}
+
     </div>
   );
 };

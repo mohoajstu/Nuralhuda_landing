@@ -1,25 +1,26 @@
 import React from 'react';
 import './SlideContent.css';
+import { LuRefreshCcw } from "react-icons/lu";
 
-const SlideContent = ({ slide }) => {
+const SlideContent = ({ slide, onRefresh }) => {
   return (
     <div className="slide-container">
       {(() => {
         switch (slide.dimension) {
           case 'Objectives':
-            return <ObjectivesContent {...slide} />;
+            return <ObjectivesContent {...slide} onRefresh={onRefresh} />;
           case 'Explore':
-            return <ExploreContent {...slide} />;
+            return <ExploreContent {...slide} onRefresh={onRefresh} />;
           case 'Compare':
-            return <CompareContent {...slide} />;
+            return <CompareContent {...slide} onRefresh={onRefresh} />;
           case 'Question':
-            return <QuestionContent {...slide} />;
+            return <QuestionContent {...slide} onRefresh={onRefresh} />;
           case 'Connect':
-            return <ConnectContent {...slide} />;
+            return <ConnectContent {...slide} onRefresh={onRefresh} />;
           case 'Appreciate':
-            return <AppreciateContent {...slide} />;
+            return <AppreciateContent {...slide} onRefresh={onRefresh} />;
           case 'Activities':
-            return <ActivitiesContent {...slide} />;
+            return <ActivitiesContent {...slide} onRefresh={onRefresh} />;
           default:
             return null;
         }
@@ -28,9 +29,18 @@ const SlideContent = ({ slide }) => {
   );
 };
 
-const ObjectivesContent = ({ learningObjectives = {} }) => (
+const ObjectivesContent = ({ learningObjectives = {}, onRefresh }) => (
   <div className="slide objectives-content">
-    <h2>Learning Objectives</h2>
+    <div className="slide-title-row">
+      <h2>Learning Objectives</h2>
+      <button
+        className="refresh-button"
+        onClick={() => onRefresh({ dimension: 'Objectives' })}
+      >
+        <LuRefreshCcw />
+      </button>
+    </div>
+    {/* Render objectives as usual */}
     {Object.entries(learningObjectives).map(([category, objectives]) => (
       <div key={category} className="content-section">
         <h3>{capitalizeWords(category)}</h3>
@@ -44,9 +54,18 @@ const ObjectivesContent = ({ learningObjectives = {} }) => (
   </div>
 );
 
-const ActivitiesContent = ({ activities = [] }) => (
+
+const ActivitiesContent = ({ activities = [], onRefresh }) => (
   <div className="slide activities-content">
-    <h2>Activities</h2>
+    <div className="slide-title-row">
+      <h2>Activities</h2>
+      <button
+        className="refresh-button"
+        onClick={() => onRefresh({ dimension: 'Activities' })}
+      >
+         <LuRefreshCcw />
+      </button>
+    </div>
     {activities.map((activity, index) => (
       <div key={index} className="activity-section">
         <h3>{activity.title}</h3>
@@ -73,9 +92,24 @@ const ActivitiesContent = ({ activities = [] }) => (
   </div>
 );
 
-const ExploreContent = ({ content = '', explanation = '', observations = '', fascinatingFacts = '' }) => (
+const ExploreContent = ({
+  content = '',
+  explanation = '',
+  observations = '',
+  fascinatingFacts = '',
+  onRefresh,
+}) => (
   <div className="slide explore-content">
-    <h2>Explore</h2>
+    <div className="slide-title-row">
+      <h2>Explore</h2>
+      <button
+        className="refresh-button"
+        onClick={() => onRefresh({ dimension: 'Explore' })}
+      >
+         <LuRefreshCcw />
+      </button>
+    </div>
+    
     {content && (
       <div className="content-section">
         <h3>Content</h3>
@@ -103,9 +137,17 @@ const ExploreContent = ({ content = '', explanation = '', observations = '', fas
   </div>
 );
 
-const CompareContent = ({ analogy = '', content = '', explanation = '', comparison = '' }) => (
+const CompareContent = ({ analogy = '', content = '', explanation = '', comparison = '', onRefresh }) => (
   <div className="slide compare-content">
-    <h2>Compare</h2>
+    <div className="slide-title-row">
+      <h2>Compare</h2>
+      <button
+        className="refresh-button"
+        onClick={() => onRefresh({ dimension: 'Compare' })}
+      >
+        <LuRefreshCcw />
+      </button>
+    </div>
     {analogy && (
       <div className="content-section">
         <h3>Analogy</h3>
@@ -163,12 +205,21 @@ const QuestionContent = ({
   questions = [],
   conclusion = '',
   subtopicIndex = 0,
+  onRefresh
 }) => {
   const subtopicTitle = titleSubtopicMap.Question[subtopicIndex];
 
   return (
     <div className="slide question-content">
-      <h2>Question</h2>
+      <div className="slide-title-row">
+        <h2>Question</h2>
+        <button
+          className="refresh-button"
+          onClick={() => onRefresh({ dimension: 'Question' })}
+        >
+          <LuRefreshCcw />
+        </button>
+      </div>
 
       {/* Show "questions" container only if it's NOT the conclusion */}
       {subtopicIndex !== 3 && (
@@ -201,12 +252,22 @@ const ConnectContent = ({
   interconnectedness = '',
   allahNames = {},
   subtopicIndex = 0,
+  onRefresh
 }) => {
+  
   const subtopicTitle = titleSubtopicMap.Connect[subtopicIndex];
   
   return (
     <div className="slide connect-content">
-      <h2>Connect</h2>
+      <div className="slide-title-row">
+        <h2>Connect</h2>
+        <button
+          className="refresh-button"
+          onClick={() => onRefresh({ dimension: 'Connect' })}
+        >
+          <LuRefreshCcw />
+        </button>
+      </div>
 
       {/* Slide 0 => Interdependency */}
       {subtopicIndex === 0 && interdependency && (
@@ -260,10 +321,19 @@ const AppreciateContent = ({
   characterLessons = '',
   connectWithQuran = [],
   connectWithHadith = [],
-  dua = ''
+  dua = '',
+  onRefresh
 }) => (
   <div className="slide appreciate-content">
-    <h2>Appreciate</h2>
+    <div className="slide-title-row">
+      <h2>Appreciate</h2>
+      <button
+        className="refresh-button"
+        onClick={() => onRefresh({ dimension: 'Appreciate' })}
+      >
+        <LuRefreshCcw />
+      </button>
+    </div>
 
     {/* What Ifs Section */}
     {whatIfs && (
