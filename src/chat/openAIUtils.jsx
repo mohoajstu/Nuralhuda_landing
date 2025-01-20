@@ -14,7 +14,8 @@ const assistantApiKeyMap = {
   'Auto Grader' : process.env.REACT_APP_OPENAI_API_KEY_NUR_ALHUDA,
   '5D Thinking': process.env.REACT_APP_OPENAI_API_KEY_NUR_ALHUDA,
   '5D Thinking-1': process.env.REACT_APP_OPENAI_API_KEY_NUR_ALHUDA,
-  'Slide Generator': process.env.REACT_APP_OPENAI_API_KEY_NUR_ALHUDA
+  'Slide Generator': process.env.REACT_APP_OPENAI_API_KEY_NUR_ALHUDA,
+  'Lesson Planner': process.env.REACT_APP_OPENAI_API_KEY_NUR_ALHUDA
 };
 
 // Function to initialize OpenAI client with the appropriate API key
@@ -165,4 +166,5 @@ export const titleToAssistantIDMap = {
   '5D Thinking' : "asst_7tVLODKXgClbyXhQCv89DW3w",
   '5D Thinking-1': "asst_zjjLJ9DjptDuCCgwA9uTO51z",
   'Slide Generator': "asst_ts7eHBFDcdcMgNeshbNShuvy",
+  'Lesson Planner': "asst_0UOsgGXyWL19iwxrR1tqt56p",
 };

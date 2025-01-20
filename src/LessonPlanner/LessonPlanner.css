@@ -1,0 +1,229 @@
+  /* Styles for each slide */
+  .input-section {
+    border: 2px solid #14404079; 
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  }
+  
+  .slide {
+    border: none;
+    border-radius: 15px;
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  }
+  
+  .slide h2 {
+    text-align: center;
+    font-size: 2em;
+    color: #fff;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .slide-content {
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .slide-content h3 {
+    font-size: 1.4em;
+    color: #333;
+    margin-bottom: 15px;
+    border-bottom: 2px solid currentColor;
+    padding-bottom: 5px;
+  }
+  
+  .slide-content p, .slide-content li {
+    font-size: 1.1em;
+    color: #444;
+    line-height: 1.6;
+  }
+  
+  .prez-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: #144040;
+    padding-bottom: 0;
+    border-bottom: 2px solid #Dcca98; /* Soft gold border */
+  }
+  
+  .prez-title {
+    font-size: 2.5rem;
+    margin: 0;
+    color: #144040;
+    font-family: 'Arial', sans-serif;
+  }
+  
+  .prez-gen-img {
+    max-width: 100px;
+    height: auto;
+    border-radius: 8px;
+  }
+  
+  /* Custom gradients for each type of slide */
+  .slide.title-slide {
+    background: linear-gradient(135deg, #7b4397 0%, #dc2430 100%);
+  }
+  
+  .slide.overview-slide {
+    background: linear-gradient(135deg, #66cdaa 0%, #20b2aa 100%);
+  }
+  
+  .slide.history-slide {
+    background: linear-gradient(135deg, #f4a460 0%, #ffd700 100%);
+  }
+  
+  .slide.features-slide {
+    background: linear-gradient(135deg, #f08080 0%, #ff6347 100%);
+  }
+  
+  .slide.community-slide {
+    background: linear-gradient(135deg, #90ee90 0%, #32cd32 100%);
+  }
+  
+  .slide.significance-slide {
+    background: linear-gradient(135deg, #dda0dd 0%, #ba55d3 100%);
+  }
+  
+  .slide.tourist-slide {
+    background: linear-gradient(135deg, #8a2be2 0%, #4b0082 100%);
+  }
+  
+  .slide.preservation-slide {
+    background: linear-gradient(135deg, #87ceeb 0%, #1e90ff 100%);
+  }
+  
+  .slide.conclusion-slide {
+    background: linear-gradient(135deg, #ffa500 0%, #ff4500 100%);
+  }
+  
+/* Styles for the export dropdown */
+.export-dropdown-container {
+    position: relative;
+    display: inline-block;
+    margin-top: 20px;
+  }
+  
+  .export-button {
+    background-color: #144040; /* Adjust to match your theme */
+    color: #fff;
+    padding: 10px 16px;
+    border: none;
+    cursor: pointer;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .export-button:hover {
+    background-color: #0f3030; /* Darker shade for hover effect */
+  }
+  
+  .export-dropdown {
+    position: absolute;
+    bottom: 100%; /* This makes the dropdown go up */
+    left: 0;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 8px; /* Adjusted to push the menu up slightly */
+    width: 220px; /* Adjust width if needed */
+  }
+  
+  .export-dropdown button {
+    background: none;
+    border: none;
+    width: 100%;
+    padding: 12px 16px;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    font-size: 15px;
+  }
+  
+  .export-dropdown button:hover {
+    background-color: #f0f0f0;
+  }
+  
+  .export-dropdown button svg {
+    color: #144040; /* Adjust to match your theme */
+  }
+  
+  .ql-container {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #ffffff; 
+    padding: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin-bottom: 10px; 
+  }
+  
+  .ql-editor {
+    min-height: 200px; 
+    font-family: 'Arial', sans-serif; 
+    font-size: 14px;
+    line-height: 1.5;
+    color: #333; 
+  }
+  
+  .ql-toolbar {
+    border: 1px solid #ccc;
+    border-bottom: none;
+    border-radius: 4px 4px 0 0; 
+    background-color: #f9f9f9; 
+    padding: 5px; 
+  }  
+
+  .quill-editor{
+    width: 100%;
+    height: 80vh;
+    max-width: 800;
+    margin-bottom: 30px;
+  }
+  
+  /* Responsive design */
+  @media (max-width: 768px) {
+    .slide {
+      padding: 20px;
+    }
+  
+    .slide h2 {
+      font-size: 1.5em;
+    }
+  
+    .slide-content h3 {
+      font-size: 1.2em;
+    }
+  
+    .slide-content p, .slide-content li {
+      font-size: 1em;
+    }
+  
+    .export-dropdown-container {
+      width: 100%;
+    }
+  
+    .export-button {
+      width: 100%;
+    }
+  
+    .export-dropdown {
+      width: 100%;
+    }
+  }
+  

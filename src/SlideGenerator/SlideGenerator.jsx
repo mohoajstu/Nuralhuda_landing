@@ -16,6 +16,10 @@ import { createThread, createMessage, createRun, titleToAssistantIDMap } from '.
 import GeneralSlides from './GeneralSlides';
 import PptxGenJS from 'pptxgenjs';
 import slideGeneratorIMG from '../img/prez-gen.png';
+import { saveAs } from 'file-saver';
+import { unified } from "unified";
+import markdown from "remark-parse";
+import docx from "remark-docx";
 
 const SlideGenerator = () => {
   // State variables to hold user inputs
@@ -31,6 +35,7 @@ const SlideGenerator = () => {
   const [additionalCriteriaPreview, setAdditionalCriteriaPreview] = useState('');
   const [responseBuffer, setResponseBuffer] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [messageResponse, setMessageResponse] = useState('');
 
   // Handlers for input changes
   const handleTopicChange = (e) => setTopic(e.target.value);
@@ -63,6 +68,23 @@ const SlideGenerator = () => {
         console.error('Error reading file:', error);
       }
     }
+  };
+
+  const createWordDocument = async (markdownContent) => {
+      try {
+        const processor = unified()
+          .use(markdown)
+          .use(docx, { 
+            output: "blob"
+          });
+    
+        const doc = await processor.process(markdownContent);
+        const blob = await doc.result;
+        
+        saveAs(blob, "document.docx");
+      } catch (error) {
+        console.error('Error converting to Word:', error);
+      }
   };
 
   // Function to handle slide generation
@@ -110,6 +132,7 @@ const SlideGenerator = () => {
     setResponseBuffer((prevAccumulated) => {
       if (message.text === 'END_TOKEN') {
         console.log('Accumulated response buffer:', prevAccumulated);
+        setMessageResponse(prevAccumulated);
         try {
           const response = JSON.parse(prevAccumulated);
           console.log('Parsed response:', response);
@@ -228,7 +251,7 @@ const SlideGenerator = () => {
   };
 
   const exportToWord = () => {
-    alert('Export to Microsoft Word is under construction!');
+        createWordDocument(messageResponse);
   };
 
   // Dropdown toggle

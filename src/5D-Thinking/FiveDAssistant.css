@@ -8,9 +8,6 @@ body {
   max-width: 800px;
   margin: 20px auto; /* Added some margin at the top */
   padding: 20px;
-  background-color: #ffffff; /* White background for clarity */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-  border-radius: 12px; /* More rounded corners */
 }
 
 .five-d-assistant-header {
@@ -27,7 +24,7 @@ body {
 .five-d-title {
     font-size: 2.5rem; /* Adjust title font size */
     margin: 0;
-    color: #005c69;
+    color: #144040;
 }
 
 .five-d-assistant-header {
@@ -35,7 +32,7 @@ body {
     align-items: center;
     justify-content: center;
     margin-bottom: 2rem;
-    color: #005c69;
+    color: #144040;
     width: 100%;
     max-width: 800px;
 }

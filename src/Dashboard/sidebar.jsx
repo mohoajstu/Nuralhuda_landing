@@ -75,9 +75,10 @@ const Sidebar = ({ hasNavbar, accountType }) => {
 
     const tools = [
         { name: 'GraderBot', path: '/tools/graderbot' },
-        { name: 'Quiz Generator', path: '/tools/quiz-generator' },
-        { name: '5D Lesson Planner', path: '/tools/5dthinking' },
+        { name: '5D Thinker', path: '/tools/5dthinking' },
         { name: 'Presentation Generator', path: '/tools/slidegenerator' },
+        { name: 'Quiz Generator', path: '/tools/quiz-generator' },
+        { name: 'Lesson Planner', path: '/tools/lessonplanner' },
         // Add more tools here if needed
     ];
 
