@@ -4,7 +4,20 @@ import SlideContent from './SlideContent';
 import './FiveDAssistant.css';
 import LoginModal from '../login/LoginModal'; // Assuming you have a LoginModal component
 import { readFileContent } from '../utils/fileUtils';
-import { FaBook, FaChevronDown, FaPaperclip, FaExclamationCircle, FaGraduationCap, FaListAlt } from 'react-icons/fa'; // Import icons
+import {
+    FaBook,
+    FaChevronDown,
+    FaChevronUp,
+    FaPaperclip,
+    FaExclamationCircle,
+    FaGraduationCap,
+    FaListAlt,
+    FaDownload,
+    FaFilePowerpoint,
+    FaGoogleDrive,
+    FaFileWord,
+    FaSpinner
+  } from 'react-icons/fa';
 import fiveDThinkingImg from '../img/5dlogotransparent.png';
 
 import { auth, db } from '../config/firebase-config'; // Adjust path based on your setup
@@ -13,10 +26,9 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 
 
 import exportSlidesAsPptx from './Export/ExportAsPPTX.jsx';
-import {
-    createPresentation,
-    updatePresentation,
-  } from './Export/ExportAsGoogleSlides'; // Adjust path as necessary
+import exportAsGoogleDoc from './Export/ExportAsGoogleDoc';
+import exportAsWord from './Export/ExportAsWord';
+import { createPresentation, updatePresentation, } from './Export/ExportAsGoogleSlides'; // Adjust path as necessary
 
 const dimensionColors = {
   Objectives: '0070C0', // Choose any hex color
@@ -32,6 +44,34 @@ const FiveDAssistant = () => {
   const [user] = useAuthState(auth);
 
   const [selectedDimension, setSelectedDimension] = useState('Explore');
+  const [isExportDropdownOpen, setIsExportDropdownOpen] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
+
+  const toggleExportDropdown = () => {
+    console.log('Toggle export dropdown clicked');
+    setIsExportDropdownOpen((prev) => !prev);
+  };
+  
+  const handleExportToGoogleDocs = async () => {
+    const accessToken = sessionStorage.getItem('googleAuthToken');
+    const tokenExpiryTime = sessionStorage.getItem('tokenExpiryTime');
+  
+    // Check if access token is missing or expired.
+    if (!accessToken || (tokenExpiryTime && new Date() > new Date(tokenExpiryTime))) {
+      alert('Access token is invalid or expired. Please authenticate again.');
+      // Trigger the login modal to prompt re-authentication.
+      setIsLoginModalOpen(true);
+      return;
+    }
+  
+    setIsExporting(true);
+    await exportAsGoogleDoc(slides);
+    setIsExporting(false);
+  };
+  
+  const handleExportToWord = async () => {
+    await exportAsWord(slides);
+  };
 
   // State variables for required and optional inputs
   const [topic, setTopic] = useState(''); // Required Topic input
@@ -669,16 +709,18 @@ Focus only on creating a comprehensive ${dimension.title} thinking response.
       const maxRetries = 3;
       let attempt = 0;
       let success = false;
-  
+      
       while (attempt < maxRetries && !success) {
         try {
           attempt++;
+          setIsExporting(true);
           const newPresentationId = await createPresentation(accessToken, 'New 5D Lesson Plan');
           await updatePresentation(newPresentationId, accessToken, slides);
           const presentationLink = `https://docs.google.com/presentation/d/${newPresentationId}/edit`;
           setPresentationLink(presentationLink);
           alert('Google Slides presentation created successfully!');
           success = true;
+          setIsExporting(false);
         } catch (error) {
           console.error(`Attempt ${attempt} failed:`, error);
           if (attempt >= maxRetries) {
@@ -928,45 +970,68 @@ Focus only on creating a comprehensive ${dimension.title} thinking response.
         {renderDimensionInput()}
 
         <button onClick={handleSubmit} disabled={isLoading}>
-          {isLoading ? 'Generating Slides...' : 'Generate Slides'}
-        </button>
+  {isLoading ? (
+    <>
+      Generating Slides...
+      <FaSpinner className="spinner-small" style={{ marginLeft: '8px' }} />
+    </>
+  ) : (
+    'Generate Slides'
+  )}
+</button>
+
         {error && <p className="error-message">{error}</p>}
       </div>
 
       {slides.length > 0 && (
-  <div className="slide-content">
-    <h2>Generated Slides</h2>
-    {slides.map((slide, index) => (
-      <SlideContent
-        key={index}
-        slide={slide}
-        onRefresh={(refreshedSlide) => handleRefreshSlide(refreshedSlide, index)}
-      />
-    ))}
-    
-    <div className="export-buttons">
-      <button className="export-button" onClick={() => exportSlidesAsPptx(slides)}>
-        Export as PowerPoint
-      </button>
-      <button
-        className="export-button"
-        onClick={exportSlidesToGoogleSlides}
-        disabled={isLoading}
-      >
-        {isLoading ? 'Exporting...' : 'Export to Google Slides'}
-      </button>
+        <div className="slide-content">
+          <h2>Generated Slides</h2>
+          {slides.map((slide, index) => (
+            <SlideContent key={index} slide={slide} />
+          ))}
+
+          {/* Export Buttons and Dropdown */}
+    <div className="export-dropdown-container">
+    <button onClick={toggleExportDropdown} className="export-button">
+  <FaDownload style={{ marginRight: '8px' }} /> Export Slides {isExportDropdownOpen ? <FaChevronUp style={{ marginLeft: '8px' }} /> : <FaChevronDown style={{ marginLeft: '8px' }} />}
+</button>
+
+      {isExportDropdownOpen && (
+        <div className="export-dropdown">
+          <button className="export-button" onClick={() => exportSlidesAsPptx(slides)}>
+            <FaFilePowerpoint style={{ marginRight: '8px' }} /> Export as PowerPoint
+          </button>
+          <button className="export-button" onClick={exportSlidesToGoogleSlides}>
+            <FaGoogleDrive style={{ marginRight: '8px' }} /> Export to Google Slides
+          </button>
+          <button className="export-button" onClick={handleExportToGoogleDocs}>
+            <FaGoogleDrive style={{ marginRight: '8px' }} /> Export to Google Docs
+          </button>
+          <button className="export-button" onClick={handleExportToWord}>
+            <FaFileWord style={{ marginRight: '8px' }} /> Export to Word
+          </button>
+        </div>
+      )}
     </div>
-    {presentationLink && (
-      <div className="presentation-link">
-        <p>Your presentation is ready:</p>
-        <a href={presentationLink} target="_blank" rel="noopener noreferrer">
-          Open Presentation
-        </a>
+
+    {/* Spinner overlay */}
+    {isExporting && (
+      <div className="export-spinner-overlay">
+        <FaSpinner className="spinner" />
       </div>
     )}
-  </div>
-)}
 
+
+          {presentationLink && (
+            <div className="presentation-link">
+              <p>Your presentation is ready:</p>
+              <a href={presentationLink} target="_blank" rel="noopener noreferrer">
+                Open Presentation
+              </a>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };
