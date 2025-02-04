@@ -258,4 +258,25 @@
         font-size: 1em;
     }
 }
-
+.slide-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem; /* Adjust as needed */
+  }
+  
+  .refresh-button {
+    background-color: #fff200;
+    color: #111111;
+    font-weight: bold;
+    font-size: 1.25rem;
+    border: none;
+    padding: 0.6rem 1rem;
+    border-radius: 32px;
+    cursor: pointer;
+  }
+  
+  .refresh-button:hover {
+    background-color: #d2c810;
+  }
+  
