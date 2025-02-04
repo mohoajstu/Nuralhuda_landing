@@ -16,7 +16,8 @@ import {
     FaFilePowerpoint,
     FaGoogleDrive,
     FaFileWord,
-    FaSpinner
+    FaSpinner,
+    FaInfoCircle
   } from 'react-icons/fa';
 import fiveDThinkingImg from '../img/5dlogotransparent.png';
 
@@ -29,6 +30,7 @@ import exportSlidesAsPptx from './Export/ExportAsPPTX.jsx';
 import exportAsGoogleDoc from './Export/ExportAsGoogleDoc';
 import exportAsWord from './Export/ExportAsWord';
 import { createPresentation, updatePresentation, } from './Export/ExportAsGoogleSlides'; // Adjust path as necessary
+import BetaToggle from './BetaToggle.jsx';
 
 const dimensionColors = {
   Objectives: '0070C0', // Choose any hex color
@@ -117,11 +119,20 @@ const FiveDAssistant = () => {
   const [standardsFile, setStandardsFile] = useState(null);
   const [standardsPreview, setStandardsPreview] = useState('');
 
+  const [isBetaTest, setIsBetaTest] = useState(false);
+  const toggleBetaTest = () => setIsBetaTest((prev) => !prev);
+
   // State to control the visibility of the dropdown
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   // Reference for the dropdown to handle clicks outside
   const dropdownRef = useRef(null);
+
+   
+  const handleBetaToggle = (e) => {
+    setIsBetaTest(e.target.checked);
+  };
+
 
   useEffect(() => {
     // Close the dropdown when clicking outside of it
@@ -292,7 +303,7 @@ const FiveDAssistant = () => {
     ];
 
     try {
-      const assistantTitle = '5D Thinking-1';
+      const assistantTitle = isBetaTest ? '5D Thinking-2' : '5D Thinking-1';
       
       const thread = await createThread(assistantTitle);
 
@@ -731,8 +742,9 @@ Focus only on creating a comprehensive ${dimension.title} thinking response.
       </header>
 
       <div className="input-section">
-        {/* Topic Input (Required) */}
         <div className="input-group">
+            {/* Beta Toggle in top-right corner */}
+    <BetaToggle isBetaTest={isBetaTest} setIsBetaTest={setIsBetaTest} />
           <h3>
             <FaListAlt /> Topic Content (Required):
           </h3>

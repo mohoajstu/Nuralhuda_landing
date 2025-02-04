@@ -14,6 +14,7 @@ const assistantApiKeyMap = {
   'Auto Grader' : process.env.REACT_APP_OPENAI_API_KEY_NUR_ALHUDA,
   '5D Thinking': process.env.REACT_APP_OPENAI_API_KEY_NUR_ALHUDA,
   '5D Thinking-1': process.env.REACT_APP_OPENAI_API_KEY_NUR_ALHUDA,
+  '5D Thinking-2': process.env.REACT_APP_OPENAI_API_KEY_NUR_ALHUDA,
   'Slide Generator': process.env.REACT_APP_OPENAI_API_KEY_NUR_ALHUDA
 };
 
@@ -164,5 +165,6 @@ export const titleToAssistantIDMap = {
   'Auto Grader': "asst_6RiVocNQqbUn9lyeC3aZsde3",
   '5D Thinking' : "asst_7tVLODKXgClbyXhQCv89DW3w",
   '5D Thinking-1': "asst_zjjLJ9DjptDuCCgwA9uTO51z",
+  '5D Thinking-2': "asst_RanK2BnaspTIIM5BqsVvasK5",
   'Slide Generator': "asst_ts7eHBFDcdcMgNeshbNShuvy",
 };

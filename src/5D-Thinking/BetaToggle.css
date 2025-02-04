@@ -1,0 +1,69 @@
+/* Positioning the toggle container */
+.beta-toggle-container {
+    display: flex;
+    justify-content: flex-end; /* Align items to the right */
+    align-items: center;
+    gap: 8px;
+    position: relative;
+}
+
+/* Ensure tooltip appears above info icon */
+.info-container {
+    position: relative;
+}
+
+/* Remove box around the info icon */
+.beta-info-icon {
+    cursor: pointer;
+    font-size: 16px;
+    color: #144040;
+    transition: color 0.2s ease-in-out;
+}
+
+/* Hover effect */
+.beta-info-icon:hover {
+    color: #0d2e2e;
+}
+
+/* Tooltip */
+.tooltip {
+    position: absolute;
+    bottom: 130%; /* Moves it directly above the icon */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 220px;
+    background: #144040;
+    color: #fff;
+    text-align: left;
+    border-radius: 4px;
+    padding: 6px 10px;
+    z-index: 10;
+    font-size: 0.75rem;
+    line-height: 1.2;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 0.2s ease-in-out;
+}
+
+/* Tooltip Arrow */
+.tooltip::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 6px;
+    border-style: solid;
+    border-color: #144040 transparent transparent transparent;
+}
+
+/* Tooltip fade-in effect */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%);
+    }
+}
