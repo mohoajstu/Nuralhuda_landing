@@ -35,11 +35,9 @@ const Pricing = () => {
       </div>
 
       <div id="pricing-section" className="relative">
-        <stripe-pricing-table 
-          pricing-table-id="prctbl_1Py0zm05w9FZLaHVYvlQ9dj2"
-          publishable-key="pk_live_51PLZjS05w9FZLaHVPD3797QnhbMKux0srEkA2gotxNHl5Q9HsYTP6EtOXsyfi4BbTPHXS8IZ7pqbHvav7xQXmTq800myJ6Ejsz"
-        >
-        </stripe-pricing-table>
+      <stripe-pricing-table pricing-table-id="prctbl_1QpGfy05w9FZLaHVaFkMJDFt"
+        publishable-key="pk_live_51PLZjS05w9FZLaHVPD3797QnhbMKux0srEkA2gotxNHl5Q9HsYTP6EtOXsyfi4BbTPHXS8IZ7pqbHvav7xQXmTq800myJ6Ejsz">
+      </stripe-pricing-table>
         
         {!user && <OverlayComponent />}
       </div>
